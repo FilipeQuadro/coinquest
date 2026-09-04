@@ -5,3 +5,6 @@ dist
 *.log
 .env
 .env.*
+
+dev-dist/
+test-results/
