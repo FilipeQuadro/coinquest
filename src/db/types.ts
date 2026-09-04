@@ -129,3 +129,30 @@ export interface AppSetting {
   key: string
   value: string
 }
+
+export interface SyncMetadata {
+  entityKey: string
+  entityType: import('../sync/syncTypes').SyncEntityType
+  baseSnapshot: import('../sync/syncTypes').SyncEntitySnapshot
+  lastSyncedFingerprint: string
+  remoteRevision?: string | number
+  lastSyncedAt: string
+}
+
+export interface SyncState {
+  key: 'default'
+  deviceId: string
+  lastAttemptAt?: string
+  lastSuccessfulSyncAt?: string
+}
+
+export interface SyncConflict {
+  id: string
+  entityKey: string
+  entityType: import('../sync/syncTypes').SyncEntityType
+  base: import('../sync/syncTypes').SyncEntitySnapshot | null
+  local: import('../sync/syncTypes').SyncEntitySnapshot | null
+  remote: import('../sync/syncTypes').SyncEntitySnapshot | null
+  detectedAt: string
+  status: 'pending'
+}

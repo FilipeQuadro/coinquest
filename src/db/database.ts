@@ -10,6 +10,9 @@ import type {
   MonthlyBudget,
   RecurringOccurrenceOverride,
   RecurringRule,
+  SyncConflict,
+  SyncMetadata,
+  SyncState,
   Transaction,
 } from './types'
 
@@ -25,6 +28,9 @@ class CoinQuestDatabase extends Dexie {
   creditCards!: EntityTable<CreditCard, 'id'>
   cardPurchases!: EntityTable<CardPurchase, 'id'>
   cardInvoicePayments!: EntityTable<CardInvoicePayment, 'id'>
+  syncMetadata!: EntityTable<SyncMetadata, 'entityKey'>
+  syncState!: EntityTable<SyncState, 'key'>
+  syncConflicts!: EntityTable<SyncConflict, 'id'>
 
   constructor() {
     super('coinquest-db')
@@ -139,6 +145,23 @@ class CoinQuestDatabase extends Dexie {
           } satisfies GoalContribution)
         }
       }))
+    })
+
+    this.version(7).stores({
+      transactions: '&id, occurredAt, createdAt, type, category, paymentMethod, kind',
+      goals: '&id, status, createdAt, targetDate, updatedAt',
+      goalContributions: '&id, goalId, date, createdAt',
+      settings: '&key',
+      monthlyBudgets: '&id, &[year+month], year, month, updatedAt',
+      categoryBudgets: '&id, &[year+month+category], year, month, category, updatedAt',
+      recurringRules: '&id, active, [startYear+startMonth], [endYear+endMonth], updatedAt',
+      recurringOccurrenceOverrides: '&id, &[ruleId+year+month], ruleId, [year+month], status, linkedTransactionId',
+      creditCards: '&id, active, name, updatedAt',
+      cardPurchases: '&id, cardId, purchaseDate, createdAt, updatedAt',
+      cardInvoicePayments: '&id, &[cardId+invoiceYear+invoiceMonth], cardId, [invoiceYear+invoiceMonth], linkedTransactionId, paymentDate',
+      syncMetadata: '&entityKey, entityType, lastSyncedAt, remoteRevision',
+      syncState: '&key, deviceId',
+      syncConflicts: '&id, entityKey, entityType, detectedAt, status',
     })
   }
 }
