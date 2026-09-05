@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../db/database'
-import type { SyncMetadata } from '../db/types'
+import type { SyncMetadata, Transaction } from '../db/types'
 import { createSyncSnapshot, createSyncTombstone } from './syncIdentity'
 import { contentFingerprint } from './syncMerge'
 import { runSync, type SyncRunResult } from './syncOrchestrator'
@@ -13,6 +13,21 @@ const later = '2026-09-01T10:01:00.000Z'
 
 function settingSnapshot(value: string, key = 'sound') {
   return createSyncSnapshot('setting', { key, value })
+}
+
+function transactionFixture(overrides: Partial<Transaction> = {}): Transaction {
+  return {
+    id: overrides.id ?? crypto.randomUUID(),
+    type: 'expense',
+    kind: 'standard',
+    amount: 42,
+    description: 'Diagnostico sync',
+    category: 'Teste',
+    paymentMethod: 'pix',
+    occurredAt: '2026-09-05',
+    createdAt: now,
+    ...overrides,
+  }
 }
 
 function metadataFor(snapshot: SyncEntitySnapshot, revision = 1): SyncMetadata {
@@ -143,6 +158,61 @@ describe('sync orchestrator', () => {
     expect(result).toMatchObject({ status: 'success', pushed: 1 })
     expect(repository.createCalls).toHaveLength(1)
     await expect(db.syncMetadata.get('setting:sound')).resolves.toMatchObject({ remoteRevision: 1 })
+  })
+
+  it('syncs a transaction lifecycle through create, idempotent noop, update and tombstone', async () => {
+    const transaction = transactionFixture()
+    const repository = new FakeRemoteRepository()
+    await db.transactions.add(transaction)
+
+    const first = await runWith(repository)
+
+    expect(first).toMatchObject({ status: 'success', pushed: 1 })
+    expect(repository.createCalls).toHaveLength(1)
+    expect(repository.records.get(`transaction:${transaction.id}`)).toMatchObject({
+      entityType: 'transaction',
+      deleted: false,
+      revision: 1,
+      payload: transaction,
+    })
+    await expect(db.syncMetadata.get(`transaction:${transaction.id}`)).resolves.toMatchObject({
+      entityType: 'transaction',
+      remoteRevision: 1,
+    })
+
+    const second = await runWith(repository)
+
+    expect(second).toMatchObject({ status: 'success', converged: 1 })
+    expect(repository.createCalls).toHaveLength(1)
+    expect(repository.updateCalls).toHaveLength(0)
+
+    const updatedTransaction = { ...transaction, amount: 84 }
+    await db.transactions.put(updatedTransaction)
+
+    const update = await runWith(repository)
+
+    expect(update).toMatchObject({ status: 'success', pushed: 1 })
+    expect(repository.updateCalls).toHaveLength(1)
+    expect(repository.updateCalls[0].expectedRevision).toBe(1)
+    expect(repository.records.get(`transaction:${transaction.id}`)).toMatchObject({
+      deleted: false,
+      revision: 2,
+      payload: updatedTransaction,
+    })
+
+    await db.transactions.delete(transaction.id)
+
+    const deletion = await runWith(repository)
+
+    expect(deletion).toMatchObject({ status: 'success', remoteDeletes: 1 })
+    expect(repository.tombstoneCalls).toHaveLength(1)
+    expect(repository.tombstoneCalls[0].expectedRevision).toBe(2)
+    expect(repository.records.get(`transaction:${transaction.id}`)).toMatchObject({
+      entityType: 'transaction',
+      deleted: true,
+      payload: null,
+      revision: 3,
+    })
   })
 
   it('pulls remote-only records into Dexie and promotes metadata', async () => {

@@ -1,11 +1,12 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
-import type { MonthlyBudget, SyncMetadata } from '../db/types'
+import type { MonthlyBudget, SyncMetadata, Transaction } from '../db/types'
 import { db } from '../db/database'
 import { backupTableNames, exportBackup } from '../backup/backup'
 import { createSyncSnapshot, createSyncTombstone } from './syncIdentity'
 import { contentFingerprint } from './syncMerge'
 import { createLocalSyncSnapshot, createLocalSyncSnapshotFromDb, diffLocalSnapshot } from './syncSnapshot'
+import type { SyncEntityType } from './syncTypes'
 
 const now = '2026-09-01T10:00:00.000Z'
 
@@ -149,6 +150,61 @@ describe('local sync snapshot', () => {
       'setting:sound',
       'transaction:tx-1',
     ])
+  })
+
+  it('includes a directly inserted transaction and classifies it as new without BASE', async () => {
+    const transaction: Transaction = {
+      id: crypto.randomUUID(),
+      type: 'expense',
+      kind: 'standard',
+      amount: 42,
+      description: 'Diagnostico sync',
+      category: 'Teste',
+      paymentMethod: 'pix',
+      occurredAt: '2026-09-05',
+      createdAt: now,
+    }
+    await db.transactions.add(transaction)
+
+    await expect(db.transactions.count()).resolves.toBe(1)
+
+    const snapshot = await createLocalSyncSnapshotFromDb()
+    const transactionSnapshot = snapshot.get(`transaction:${transaction.id}`)
+
+    expect(snapshot).toBeInstanceOf(Map)
+    expect(transactionSnapshot).toMatchObject({
+      entityType: 'transaction',
+      entityKey: `transaction:${transaction.id}`,
+      payload: transaction,
+      deleted: false,
+    })
+    expect(diffLocalSnapshot(snapshot, [])).toEqual([
+      {
+        status: 'new',
+        entityKey: `transaction:${transaction.id}`,
+        snapshot: transactionSnapshot,
+      },
+    ])
+  })
+
+  it.each([
+    ['transaction', 'transaction:tx-1'],
+    ['goal', 'goal:goal-1'],
+    ['goalContribution', 'goalContribution:contribution-1'],
+    ['setting', 'setting:sound'],
+    ['monthlyBudget', 'monthlyBudget:2026:8'],
+    ['categoryBudget', 'categoryBudget:2026:8:Alimentacao'],
+    ['recurringRule', 'recurringRule:rule-1'],
+    ['recurringOccurrenceOverride', 'recurringOverride:rule-1:2026:8'],
+    ['creditCard', 'creditCard:card-1'],
+    ['cardPurchase', 'cardPurchase:purchase-1'],
+    ['cardInvoicePayment', 'cardInvoicePayment:card-1:2026:8'],
+  ] satisfies Array<[SyncEntityType, string]>)('creates a canonical key for %s', async (_entityType, expectedKey) => {
+    await seedAllSyncEntities()
+
+    const snapshot = await createLocalSyncSnapshotFromDb()
+
+    expect(snapshot.has(expectedKey)).toBe(true)
   })
 
   it('uses natural sync identity even when local UUIDs differ', async () => {

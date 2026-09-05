@@ -85,7 +85,8 @@ function parseRpcResult(data: unknown): { status: string; record?: DbSyncRecord 
 }
 
 export function createRemoteSyncRepository(options: RemoteSyncRepositoryOptions = {}) {
-  const getClient = options.clientProvider ?? (() => options.client ?? getSupabaseClient() as SupabaseLike | null)
+  const getClient = options.clientProvider
+    ?? (() => 'client' in options ? options.client ?? null : getSupabaseClient() as SupabaseLike | null)
 
   async function getAuthenticatedUser(client: SupabaseLike): Promise<RemoteSyncResult<Pick<User, 'id'>>> {
     const { data, error } = await client.auth.getUser()
