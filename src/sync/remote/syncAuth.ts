@@ -1,4 +1,5 @@
 import { getSupabaseClient } from './supabaseClient'
+import type { AuthResponse, Session, UserResponse } from '@supabase/supabase-js'
 
 export type SyncAuthResult<T> =
   | { ok: true; data: T }
@@ -8,7 +9,7 @@ function notConfigured<T>(): SyncAuthResult<T> {
   return { ok: false, error: 'not-configured' }
 }
 
-export async function signUpWithEmail(email: string, password: string) {
+export async function signUpWithEmail(email: string, password: string): Promise<SyncAuthResult<AuthResponse['data']>> {
   const client = getSupabaseClient()
   if (!client) return notConfigured()
 
@@ -17,7 +18,7 @@ export async function signUpWithEmail(email: string, password: string) {
   return { ok: true as const, data }
 }
 
-export async function signInWithEmail(email: string, password: string) {
+export async function signInWithEmail(email: string, password: string): Promise<SyncAuthResult<AuthResponse['data']>> {
   const client = getSupabaseClient()
   if (!client) return notConfigured()
 
@@ -26,7 +27,7 @@ export async function signInWithEmail(email: string, password: string) {
   return { ok: true as const, data }
 }
 
-export async function signOut() {
+export async function signOut(): Promise<SyncAuthResult<null>> {
   const client = getSupabaseClient()
   if (!client) return notConfigured()
 
@@ -35,7 +36,7 @@ export async function signOut() {
   return { ok: true as const, data: null }
 }
 
-export async function getCurrentSession() {
+export async function getCurrentSession(): Promise<SyncAuthResult<Session | null>> {
   const client = getSupabaseClient()
   if (!client) return notConfigured()
 
@@ -44,7 +45,7 @@ export async function getCurrentSession() {
   return { ok: true as const, data: data.session }
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<SyncAuthResult<UserResponse['data']['user']>> {
   const client = getSupabaseClient()
   if (!client) return notConfigured()
 

@@ -13,6 +13,7 @@ import { PurchaseSimulatorPanel } from './components/PurchaseSimulatorPanel'
 import { QuickEntry } from './components/QuickEntry'
 import { RecurringPanel } from './components/RecurringPanel'
 import { Stats } from './components/Stats'
+import { SyncPanel } from './components/SyncPanel'
 import { monthFromDate, validateSelectedMonth, type SelectedMonth } from './finance/month'
 
 const selectedMonthStorageKey = 'coinquest:selected-month'
@@ -53,6 +54,7 @@ export function App() {
           <a href="#projecao">Projecao</a>
           <a href="#cartoes">Cartoes</a>
           <a href="#backup">Backup</a>
+          <a href="#sync">Sync</a>
           <a href="#historico">Historico</a>
         </nav>
       </header>
@@ -81,6 +83,7 @@ export function App() {
           <div className="cards-slot" id="cartoes"><CreditCardsPanel selectedMonth={selectedMonth} /></div>
           <div className="projection-slot" id="projecao"><ProjectionPanel selectedMonth={selectedMonth} /></div>
           <div className="backup-slot" id="backup"><BackupPanel /></div>
+          <div className="sync-slot" id="sync"><SyncPanel /></div>
         </div>
 
         <div id="historico"><History selectedMonth={selectedMonth} /></div>
