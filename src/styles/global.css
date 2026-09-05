@@ -1503,7 +1503,7 @@ input:focus, select:focus { border-color: var(--color-cyan); box-shadow: var(--f
   border-radius: var(--radius-panel);
 }
 .sync-box {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
   align-items: center;
 }
 .sync-box > div { min-width: 0; }
@@ -1547,6 +1547,61 @@ input:focus, select:focus { border-color: var(--color-cyan); box-shadow: var(--f
   background: #2a2410;
   border: 1px solid #80662b;
   border-radius: var(--radius-control);
+}
+.sync-conflicts-panel {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.sync-conflict-list {
+  display: grid;
+  gap: var(--space-3);
+}
+.sync-conflict-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: #0b1222;
+  border: 1px solid #80662b;
+  border-radius: var(--radius-panel);
+}
+.sync-conflict-card h3 {
+  margin: 4px 0 6px;
+  color: #f8fbff;
+  font-size: 20px;
+}
+.sync-conflict-card p,
+.sync-conflict-card .panel-title-row > span {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+.sync-conflict-versions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.sync-conflict-versions > div,
+.sync-conflict-confirm {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: #070d18;
+  border: 1px solid #273756;
+  border-radius: var(--radius-control);
+}
+.sync-conflict-versions strong {
+  color: #f8fbff;
+}
+.sync-conflict-versions span {
+  color: var(--color-muted);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.sync-conflict-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .projection-panel { padding: var(--space-5); }
@@ -2067,6 +2122,7 @@ footer { padding: 28px 8px 0; color: #7482a0; text-align: center; font-size: 14p
   .sync-auth-form,
   .sync-box,
   .sync-result-grid,
+  .sync-conflict-versions,
   .backup-confirm .goal-form-actions,
   .backup-password-box,
   .backup-password-box .goal-form-actions {
@@ -2085,6 +2141,9 @@ footer { padding: 28px 8px 0; color: #7482a0; text-align: center; font-size: 14p
   .sync-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+  .sync-conflict-actions .button {
+    width: 100%;
   }
   .backup-password-box {
     grid-template-columns: 1fr;

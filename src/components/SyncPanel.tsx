@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
+import { SyncConflictsPanel, pendingConflictCountLabel } from './SyncConflictsPanel'
 import { syncCoordinator } from '../sync/syncCoordinator'
 import type { SyncRunResult, SyncRunStatus } from '../sync/syncOrchestrator'
 import {
@@ -81,6 +82,11 @@ export function SyncPanel() {
   const [lastResult, setLastResult] = useState<SyncRunResult | null>(null)
   const [isOnline, setIsOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
   const syncState = useLiveQuery(() => db.syncState.get('default'), [], undefined)
+  const pendingConflictCount = useLiveQuery(
+    () => db.syncConflicts.where('status').equals('pending').count(),
+    [],
+    0,
+  )
 
   useEffect(() => {
     let active = true
@@ -319,6 +325,12 @@ export function SyncPanel() {
             <span>Última sincronização</span>
             <strong>{formatLastSync(syncState?.lastSuccessfulSyncAt)}</strong>
           </div>
+          {pendingConflictCount > 0 && (
+            <div>
+              <span>Conflitos</span>
+              <strong>{pendingConflictCountLabel(pendingConflictCount)}</strong>
+            </div>
+          )}
           <div className="sync-actions">
             <button className="button primary" type="button" onClick={handleManualSync} disabled={syncBusy}>
               {syncBusy ? 'Sincronizando...' : 'Sincronizar agora'}
@@ -355,6 +367,7 @@ export function SyncPanel() {
 
       {message && <p className="success-text" data-testid="sync-message">{message}</p>}
       {error && <p className="form-error" role="alert" data-testid="sync-error">{error}</p>}
+      <SyncConflictsPanel />
     </section>
   )
 }
