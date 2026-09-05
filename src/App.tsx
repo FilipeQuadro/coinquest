@@ -13,6 +13,7 @@ import { PurchaseSimulatorPanel } from './components/PurchaseSimulatorPanel'
 import { QuickEntry } from './components/QuickEntry'
 import { RecurringPanel } from './components/RecurringPanel'
 import { Stats } from './components/Stats'
+import { SyncLifecycle } from './components/SyncLifecycle'
 import { SyncPanel } from './components/SyncPanel'
 import { monthFromDate, validateSelectedMonth, type SelectedMonth } from './finance/month'
 
@@ -93,6 +94,7 @@ export function App() {
         </footer>
       </main>
       <PwaStatus />
+      <SyncLifecycle />
     </>
   )
 }

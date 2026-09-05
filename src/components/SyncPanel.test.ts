@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatLastSync, sanitizeAuthError, syncStatusMessage } from './SyncPanel'
+import { connectionStatusLabel, formatLastSync, sanitizeAuthError, syncStatusMessage } from './SyncPanel'
 
 describe('SyncPanel helpers', () => {
   it('maps SyncRunResult statuses to safe user-facing messages', () => {
@@ -17,5 +17,10 @@ describe('SyncPanel helpers', () => {
 
   it('formats missing last sync as never synchronized', () => {
     expect(formatLastSync()).toBe('Nunca sincronizado.')
+  })
+
+  it('labels browser connectivity without promising server reachability', () => {
+    expect(connectionStatusLabel(true)).toBe('Dispositivo online')
+    expect(connectionStatusLabel(false)).toBe('Dispositivo offline')
   })
 })

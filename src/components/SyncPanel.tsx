@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
-import { runSync, type SyncRunResult, type SyncRunStatus } from '../sync/syncOrchestrator'
+import { syncCoordinator } from '../sync/syncCoordinator'
+import type { SyncRunResult, SyncRunStatus } from '../sync/syncOrchestrator'
 import {
   getCurrentSession,
   onAuthStateChange,
@@ -48,6 +49,10 @@ export function formatLastSync(value?: string): string {
   }).format(new Date(value))
 }
 
+export function connectionStatusLabel(isOnline: boolean): string {
+  return isOnline ? 'Dispositivo online' : 'Dispositivo offline'
+}
+
 function sessionEmail(session: unknown): string {
   const maybeSession = session as { user?: { email?: string } } | null | undefined
   return maybeSession?.user?.email ?? ''
@@ -74,7 +79,7 @@ export function SyncPanel() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [lastResult, setLastResult] = useState<SyncRunResult | null>(null)
-  const syncRunningRef = useRef(false)
+  const [isOnline, setIsOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
   const syncState = useLiveQuery(() => db.syncState.get('default'), [], undefined)
 
   useEffect(() => {
@@ -116,6 +121,19 @@ export function SyncPanel() {
     return () => {
       active = false
       subscription?.data.subscription.unsubscribe()
+    }
+  }, [])
+
+  useEffect(() => {
+    const updateConnectionState = () => {
+      setIsOnline(typeof navigator === 'undefined' ? true : navigator.onLine)
+    }
+
+    window.addEventListener('online', updateConnectionState)
+    window.addEventListener('offline', updateConnectionState)
+    return () => {
+      window.removeEventListener('online', updateConnectionState)
+      window.removeEventListener('offline', updateConnectionState)
     }
   }, [])
 
@@ -200,21 +218,33 @@ export function SyncPanel() {
   }
 
   async function handleManualSync() {
-    if (syncRunningRef.current) return
+    if (syncBusy) return
 
-    syncRunningRef.current = true
+    if (!isOnline) {
+      setMessage('')
+      setError('Dispositivo offline. Seus dados continuam salvos localmente; sincronize quando voltar a ficar online.')
+      return
+    }
+
     setSyncBusy(true)
     setMessage('Sincronizando...')
     setError('')
 
     try {
-      const result = await runSync()
-      setLastResult(result)
-      setMessage(syncStatusMessage(result.status))
+      const coordinatorResult = await syncCoordinator.requestSync({ reason: 'manual' })
+      if (!coordinatorResult.ok) {
+        setMessage('')
+        setError(coordinatorResult.status === 'not-configured'
+          ? syncStatusMessage('not-configured')
+          : 'Sincronização em andamento ou temporariamente adiada.')
+        return
+      }
+
+      setLastResult(coordinatorResult.result)
+      setMessage(syncStatusMessage(coordinatorResult.result.status))
     } catch {
       setError('Não foi possível concluir a sincronização.')
     } finally {
-      syncRunningRef.current = false
       setSyncBusy(false)
     }
   }
@@ -226,6 +256,9 @@ export function SyncPanel() {
           <span className="eyebrow">NUVEM OPCIONAL</span>
           <h2 id="sync-title">Sincronização</h2>
           <p className="muted">Conecte sua conta para sincronizar manualmente este dispositivo com a nuvem.</p>
+          <span className={`connection-chip ${isOnline ? 'online' : 'offline'}`}>
+            {connectionStatusLabel(isOnline)}
+          </span>
         </div>
         <span className={`sync-state-chip ${authState}`}>
           {authState === 'signed-in' ? 'Conectado' : authState === 'checking' ? 'Verificando' : 'Offline local'}
