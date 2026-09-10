@@ -10,6 +10,33 @@ import type { SyncEntitySnapshot } from './syncTypes'
 
 const now = '2026-09-01T10:00:00.000Z'
 const later = '2026-09-01T10:01:00.000Z'
+const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+
+function deterministicGetRandomValues<T extends ArrayBufferView | null>(array: T): T {
+  if (array instanceof Uint8Array) {
+    for (let index = 0; index < array.length; index += 1) {
+      array[index] = index
+    }
+  }
+  return array
+}
+
+async function withCrypto<T>(cryptoValue: unknown, callback: () => Promise<T>): Promise<T> {
+  const original = Object.getOwnPropertyDescriptor(globalThis, 'crypto')
+  Object.defineProperty(globalThis, 'crypto', {
+    configurable: true,
+    value: cryptoValue,
+  })
+  try {
+    return await callback()
+  } finally {
+    if (original) {
+      Object.defineProperty(globalThis, 'crypto', original)
+    } else {
+      Reflect.deleteProperty(globalThis, 'crypto')
+    }
+  }
+}
 
 function settingSnapshot(value: string, key = 'sound') {
   return createSyncSnapshot('setting', { key, value })
@@ -158,6 +185,22 @@ describe('sync orchestrator', () => {
     expect(result).toMatchObject({ status: 'success', pushed: 1 })
     expect(repository.createCalls).toHaveLength(1)
     await expect(db.syncMetadata.get('setting:sound')).resolves.toMatchObject({ remoteRevision: 1 })
+  })
+
+  it('runs first sync on contexts without randomUUID when getRandomValues exists', async () => {
+    await db.settings.add({ key: 'sound', value: 'on' })
+    const repository = new FakeRemoteRepository()
+
+    await withCrypto({ getRandomValues: deterministicGetRandomValues }, async () => {
+      const result = await runWith(repository)
+
+      expect(result).toMatchObject({ status: 'success', pushed: 1 })
+      expect(repository.createCalls).toHaveLength(1)
+      expect(repository.createCalls[0].deviceId).toMatch(uuidV4Pattern)
+      await expect(db.syncState.get('default')).resolves.toMatchObject({
+        deviceId: repository.createCalls[0].deviceId,
+      })
+    })
   })
 
   it('syncs a transaction lifecycle through create, idempotent noop, update and tombstone', async () => {
