@@ -12,10 +12,19 @@ export interface SyncLifecycleEnvironment {
   onAuthStateChange?: AuthStateChangeSubscriber
   windowTarget?: Pick<Window, 'addEventListener' | 'removeEventListener'>
   documentTarget?: Pick<Document, 'addEventListener' | 'removeEventListener' | 'visibilityState'>
+  locationTarget?: Pick<Location, 'hash' | 'search'>
 }
 
 function requestAutoSync(coordinator: SyncCoordinator, reason: SyncReason) {
   void coordinator.requestSync({ reason }).catch(() => undefined)
+}
+
+export function isPasswordRecoveryRedirect(locationLike: Pick<Location, 'hash' | 'search'>): boolean {
+  const candidates = [locationLike.search, locationLike.hash.replace(/^#/, '?')]
+  return candidates.some((value) => {
+    if (!value) return false
+    return new URLSearchParams(value).get('type') === 'recovery'
+  })
 }
 
 export function startSyncLifecycle(environment: SyncLifecycleEnvironment = {}): () => void {
@@ -24,12 +33,14 @@ export function startSyncLifecycle(environment: SyncLifecycleEnvironment = {}): 
   const subscribeAuth: AuthStateChangeSubscriber = environment.onAuthStateChange ?? onAuthStateChange
   const windowTarget = environment.windowTarget ?? (typeof window === 'undefined' ? null : window)
   const documentTarget = environment.documentTarget ?? (typeof document === 'undefined' ? null : document)
+  const locationTarget = environment.locationTarget ?? (typeof window === 'undefined' ? null : window.location)
   let stopped = false
   let initialSessionChecked = false
 
   void loadSession().then((result) => {
     if (stopped || initialSessionChecked) return
     initialSessionChecked = true
+    if (locationTarget && isPasswordRecoveryRedirect(locationTarget)) return
     if (result.ok && result.data) requestAutoSync(coordinator, 'session-restored')
   })
 

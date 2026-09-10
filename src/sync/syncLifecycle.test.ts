@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createSyncCoordinator } from './syncCoordinator'
-import { startSyncLifecycle } from './syncLifecycle'
+import { isPasswordRecoveryRedirect, startSyncLifecycle } from './syncLifecycle'
 import type { SyncCoordinator } from './syncCoordinator'
 import type { SyncRunResult } from './syncOrchestrator'
 
@@ -85,6 +85,12 @@ async function flushMicrotasks() {
 }
 
 describe('sync lifecycle', () => {
+  it('detects password recovery redirects in query string or hash', () => {
+    expect(isPasswordRecoveryRedirect({ search: '?type=recovery', hash: '' } as Location)).toBe(true)
+    expect(isPasswordRecoveryRedirect({ search: '', hash: '#access_token=token&type=recovery' } as Location)).toBe(true)
+    expect(isPasswordRecoveryRedirect({ search: '?type=signup', hash: '' } as Location)).toBe(false)
+  })
+
   it('requests auto sync once when a session is restored on startup', async () => {
     const coordinator = fakeCoordinator()
     const cleanup = startSyncLifecycle({
@@ -167,6 +173,40 @@ describe('sync lifecycle', () => {
 
     expect(coordinator.requestSync).toHaveBeenCalledTimes(1)
     expect(coordinator.requestSync).toHaveBeenCalledWith({ reason: 'signed-in' })
+  })
+
+  it('does not start auto sync for password recovery events', async () => {
+    const coordinator = fakeCoordinator()
+    let callback: AuthCallback = async () => undefined
+    const cleanup = startSyncLifecycle({
+      coordinator,
+      getCurrentSession: vi.fn(async () => ({ ok: true as const, data: null })),
+      onAuthStateChange: vi.fn((handler: AuthCallback) => {
+        callback = handler
+        return { data: { subscription: { unsubscribe: vi.fn() } } }
+      }) as never,
+    })
+    await flushMicrotasks()
+
+    await callback('PASSWORD_RECOVERY', { user: { id: 'user-1' } })
+    cleanup()
+
+    expect(coordinator.requestSync).not.toHaveBeenCalled()
+  })
+
+  it('does not run session-restored auto sync while returning from a password recovery link', async () => {
+    const coordinator = fakeCoordinator()
+    const cleanup = startSyncLifecycle({
+      coordinator,
+      getCurrentSession: vi.fn(async () => ({ ok: true as const, data: { user: { id: 'user-1' } } as never })),
+      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })) as never,
+      locationTarget: { search: '?type=recovery', hash: '' } as Location,
+    })
+
+    await flushMicrotasks()
+    cleanup()
+
+    expect(coordinator.requestSync).not.toHaveBeenCalled()
   })
 
   it('syncs on browser online events and visible foreground events only', async () => {

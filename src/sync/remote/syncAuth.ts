@@ -36,6 +36,27 @@ export async function signOut(): Promise<SyncAuthResult<null>> {
   return { ok: true as const, data: null }
 }
 
+export async function requestPasswordReset(
+  email: string,
+  redirectTo: string,
+): Promise<SyncAuthResult<unknown>> {
+  const client = getSupabaseClient()
+  if (!client) return notConfigured()
+
+  const { data, error } = await client.auth.resetPasswordForEmail(email, { redirectTo })
+  if (error) return { ok: false, error: 'auth-error' as const, cause: error }
+  return { ok: true as const, data }
+}
+
+export async function updatePassword(newPassword: string): Promise<SyncAuthResult<UserResponse['data']>> {
+  const client = getSupabaseClient()
+  if (!client) return notConfigured()
+
+  const { data, error } = await client.auth.updateUser({ password: newPassword })
+  if (error) return { ok: false, error: 'auth-error' as const, cause: error }
+  return { ok: true as const, data }
+}
+
 export async function getCurrentSession(): Promise<SyncAuthResult<Session | null>> {
   const client = getSupabaseClient()
   if (!client) return notConfigured()

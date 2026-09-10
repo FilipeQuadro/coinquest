@@ -1,18 +1,21 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import { SyncConflictsPanel, pendingConflictCountLabel } from './SyncConflictsPanel'
 import { syncCoordinator } from '../sync/syncCoordinator'
 import type { SyncRunResult, SyncRunStatus } from '../sync/syncOrchestrator'
+import type { AuthChangeEvent } from '@supabase/supabase-js'
 import {
   getCurrentSession,
   onAuthStateChange,
+  requestPasswordReset,
   signInWithEmail,
   signOut,
   signUpWithEmail,
+  updatePassword,
 } from '../sync/remote/syncAuth'
 
-type AuthViewState = 'checking' | 'signed-out' | 'signed-in' | 'not-configured'
+type AuthViewState = 'checking' | 'signed-out' | 'signed-in' | 'password-recovery' | 'not-configured'
 
 interface AuthSessionSummary {
   email: string
@@ -54,9 +57,95 @@ export function connectionStatusLabel(isOnline: boolean): string {
   return isOnline ? 'Dispositivo online' : 'Dispositivo offline'
 }
 
+export const SYNC_PASSWORD_MIN_LENGTH = 6
+
+export function passwordResetRedirectTo(locationLike: Pick<Location, 'origin' | 'pathname'>): string {
+  return `${locationLike.origin}${locationLike.pathname}`
+}
+
+export function isPasswordRecoveryLocation(locationLike: Pick<Location, 'hash' | 'search'>): boolean {
+  const candidates = [locationLike.search, locationLike.hash.replace(/^#/, '?')]
+  return candidates.some((value) => {
+    if (!value) return false
+    return new URLSearchParams(value).get('type') === 'recovery'
+  })
+}
+
+export function validatePasswordResetRequest(emailValue: string): string | null {
+  if (!emailValue.trim()) return 'Informe seu e-mail.'
+  return null
+}
+
+export function validateNewPassword(passwordValue: string, confirmPasswordValue: string): string | null {
+  if (!passwordValue || !confirmPasswordValue) return 'Informe a nova senha e a confirmação.'
+  if (passwordValue.length < SYNC_PASSWORD_MIN_LENGTH) {
+    return `A nova senha precisa ter pelo menos ${SYNC_PASSWORD_MIN_LENGTH} caracteres.`
+  }
+  if (passwordValue !== confirmPasswordValue) return 'As senhas não conferem.'
+  return null
+}
+
 function sessionEmail(session: unknown): string {
   const maybeSession = session as { user?: { email?: string } } | null | undefined
   return maybeSession?.user?.email ?? ''
+}
+
+export function authStateFromSession(
+  session: unknown,
+  locationLike?: Pick<Location, 'hash' | 'search'> | null,
+): {
+  authState: AuthViewState
+  sessionSummary: AuthSessionSummary | null
+} {
+  const currentEmail = sessionEmail(session)
+  if (currentEmail && locationLike && isPasswordRecoveryLocation(locationLike)) {
+    return { authState: 'password-recovery', sessionSummary: { email: currentEmail } }
+  }
+  if (currentEmail) return { authState: 'signed-in', sessionSummary: { email: currentEmail } }
+  return { authState: 'signed-out', sessionSummary: null }
+}
+
+export function authStateFromAuthEvent(
+  event: AuthChangeEvent,
+  session: unknown,
+  current?: { authState: AuthViewState; sessionSummary: AuthSessionSummary | null },
+): {
+  authState: AuthViewState
+  sessionSummary: AuthSessionSummary | null
+} {
+  const currentEmail = sessionEmail(session)
+  if (event === 'PASSWORD_RECOVERY') {
+    return {
+      authState: 'password-recovery',
+      sessionSummary: currentEmail ? { email: currentEmail } : current?.sessionSummary ?? null,
+    }
+  }
+  if (current?.authState === 'password-recovery' && event !== 'SIGNED_OUT') {
+    return {
+      authState: 'password-recovery',
+      sessionSummary: currentEmail ? { email: currentEmail } : current.sessionSummary,
+    }
+  }
+  if (currentEmail) return { authState: 'signed-in', sessionSummary: { email: currentEmail } }
+  return { authState: 'signed-out', sessionSummary: null }
+}
+
+export function shouldShowPasswordRecoveryForm(authState: AuthViewState): boolean {
+  return authState === 'password-recovery'
+}
+
+export function shouldShowAuthenticatedSyncControls(authState: AuthViewState): boolean {
+  return authState === 'signed-in'
+}
+
+export function passwordRecoverySuccessTransition() {
+  return {
+    authState: 'signed-in' as const,
+    password: '',
+    newPassword: '',
+    confirmNewPassword: '',
+    message: 'Senha atualizada. Sua conta continua conectada.',
+  }
 }
 
 function resultHasChanges(result: SyncRunResult): boolean {
@@ -75,11 +164,14 @@ export function SyncPanel() {
   const [sessionSummary, setSessionSummary] = useState<AuthSessionSummary | null>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
   const [authBusy, setAuthBusy] = useState(false)
   const [syncBusy, setSyncBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [lastResult, setLastResult] = useState<SyncRunResult | null>(null)
+  const passwordRecoveryActiveRef = useRef(false)
   const [isOnline, setIsOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
   const syncState = useLiveQuery(() => db.syncState.get('default'), [], undefined)
   const pendingConflictCount = useLiveQuery(
@@ -100,28 +192,35 @@ export function SyncPanel() {
         return
       }
 
-      const currentEmail = sessionEmail(result.data)
-      if (currentEmail) {
-        setSessionSummary({ email: currentEmail })
-        setAuthState('signed-in')
-      } else {
-        setSessionSummary(null)
-        setAuthState('signed-out')
+      const nextAuthState = authStateFromSession(
+        result.data,
+        typeof window === 'undefined' ? null : window.location,
+      )
+      passwordRecoveryActiveRef.current = nextAuthState.authState === 'password-recovery'
+      setSessionSummary(nextAuthState.sessionSummary)
+      setAuthState(nextAuthState.authState)
+      if (nextAuthState.authState === 'password-recovery') {
+        setMessage('Informe uma nova senha para concluir a recuperação.')
       }
     }
 
     void loadSession()
 
-    const subscription = onAuthStateChange(async (_event, session) => {
-      const currentEmail = sessionEmail(session)
-      if (currentEmail) {
-        setSessionSummary({ email: currentEmail })
-        setAuthState('signed-in')
-        return
+    const subscription = onAuthStateChange(async (event, session) => {
+      const nextAuthState = authStateFromAuthEvent(event, session, {
+        authState: passwordRecoveryActiveRef.current ? 'password-recovery' : authState,
+        sessionSummary,
+      })
+      passwordRecoveryActiveRef.current = nextAuthState.authState === 'password-recovery'
+      setSessionSummary(nextAuthState.sessionSummary)
+      setAuthState(nextAuthState.authState)
+      if (event === 'PASSWORD_RECOVERY') {
+        setPassword('')
+        setNewPassword('')
+        setConfirmNewPassword('')
+        setMessage('Informe uma nova senha para concluir a recuperação.')
+        setError('')
       }
-
-      setSessionSummary(null)
-      setAuthState('signed-out')
     })
 
     return () => {
@@ -171,7 +270,10 @@ export function SyncPanel() {
       }
 
       const currentEmail = sessionEmail(result.data.session)
+      passwordRecoveryActiveRef.current = false
       setPassword('')
+      setNewPassword('')
+      setConfirmNewPassword('')
 
       if (currentEmail) {
         setSessionSummary({ email: currentEmail })
@@ -199,6 +301,71 @@ export function SyncPanel() {
     await submitAuth(mode)
   }
 
+  async function handleForgotPassword() {
+    if (authBusy) return
+
+    const trimmedEmail = email.trim()
+    const validationError = validatePasswordResetRequest(trimmedEmail)
+    if (validationError) {
+      setError(validationError)
+      return
+    }
+
+    setAuthBusy(true)
+    setMessage('')
+    setError('')
+
+    try {
+      const result = await requestPasswordReset(trimmedEmail, passwordResetRedirectTo(window.location))
+      if (result.ok === false) {
+        setError(sanitizeAuthError(result.error))
+        return
+      }
+
+      setPassword('')
+      setMessage('Enviamos um link de recuperação para seu e-mail.')
+    } catch {
+      setError('Não foi possível enviar o link de recuperação.')
+    } finally {
+      setAuthBusy(false)
+    }
+  }
+
+  async function handlePasswordRecoverySubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (authBusy) return
+
+    const validationError = validateNewPassword(newPassword, confirmNewPassword)
+    if (validationError) {
+      setError(validationError)
+      return
+    }
+
+    setAuthBusy(true)
+    setMessage('')
+    setError('')
+
+    try {
+      const result = await updatePassword(newPassword)
+      if (result.ok === false) {
+        setError(sanitizeAuthError(result.error))
+        return
+      }
+
+      const transition = passwordRecoverySuccessTransition()
+      passwordRecoveryActiveRef.current = false
+      setNewPassword(transition.newPassword)
+      setConfirmNewPassword(transition.confirmNewPassword)
+      setPassword(transition.password)
+      setAuthState(transition.authState)
+      setMessage(transition.message)
+    } catch {
+      setError('Não foi possível atualizar a senha.')
+    } finally {
+      setAuthBusy(false)
+    }
+  }
+
   async function handleLogout() {
     if (authBusy) return
     setAuthBusy(true)
@@ -213,7 +380,10 @@ export function SyncPanel() {
       }
 
       setSessionSummary(null)
+      passwordRecoveryActiveRef.current = false
       setAuthState('signed-out')
+      setNewPassword('')
+      setConfirmNewPassword('')
       setPassword('')
       setMessage('Você saiu da conta de sincronização.')
     } catch {
@@ -267,7 +437,11 @@ export function SyncPanel() {
           </span>
         </div>
         <span className={`sync-state-chip ${authState}`}>
-          {authState === 'signed-in' ? 'Conectado' : authState === 'checking' ? 'Verificando' : 'Offline local'}
+          {authState === 'signed-in'
+            ? 'Conectado'
+            : authState === 'password-recovery'
+              ? 'Recuperação'
+              : authState === 'checking' ? 'Verificando' : 'Offline local'}
         </span>
       </div>
 
@@ -311,11 +485,57 @@ export function SyncPanel() {
             <button className="button ghost" type="button" onClick={() => void submitAuth('signup')} disabled={authBusy}>
               {authBusy ? 'Criando...' : 'Criar conta'}
             </button>
+            <button className="button ghost" type="button" onClick={() => void handleForgotPassword()} disabled={authBusy}>
+              Esqueci minha senha
+            </button>
+          </div>
+          <p className="sync-auth-note">
+            Essa senha será necessária para entrar novamente. O CoinQuest não consegue recuperá-la se você esquecer.
+          </p>
+        </form>
+      )}
+
+      {shouldShowPasswordRecoveryForm(authState) && (
+        <form
+          className="sync-auth-form password-recovery-form"
+          onSubmit={handlePasswordRecoverySubmit}
+          data-testid="sync-password-recovery-form"
+        >
+          <div className="span-2">
+            <strong>Redefinir senha</strong>
+            <p className="muted">Crie uma nova senha para {sessionSummary?.email || 'sua conta'}.</p>
+          </div>
+          <label>
+            Nova senha
+            <input
+              data-testid="sync-new-password"
+              type="password"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </label>
+          <label>
+            Confirmar nova senha
+            <input
+              data-testid="sync-confirm-new-password"
+              type="password"
+              value={confirmNewPassword}
+              onChange={(event) => setConfirmNewPassword(event.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </label>
+          <div className="goal-form-actions">
+            <button className="button primary" type="submit" disabled={authBusy}>
+              {authBusy ? 'Atualizando...' : 'Atualizar senha'}
+            </button>
           </div>
         </form>
       )}
 
-      {authState === 'signed-in' && (
+      {shouldShowAuthenticatedSyncControls(authState) && (
         <div className="sync-box" data-testid="sync-authenticated">
           <div>
             <span>Conta conectada</span>

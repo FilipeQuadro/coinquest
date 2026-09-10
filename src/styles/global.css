@@ -1492,6 +1492,16 @@ input:focus, select:focus { border-color: var(--color-cyan); box-shadow: var(--f
   letter-spacing: 0;
   text-transform: uppercase;
 }
+.sync-auth-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.password-recovery-form {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+}
 .sync-box,
 .sync-result {
   display: grid;
@@ -2120,6 +2130,7 @@ footer { padding: 28px 8px 0; color: #7482a0; text-align: center; font-size: 14p
   }
   .backup-actions,
   .sync-auth-form,
+  .password-recovery-form,
   .sync-box,
   .sync-result-grid,
   .sync-conflict-versions,
