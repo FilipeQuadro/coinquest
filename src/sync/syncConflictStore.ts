@@ -1,5 +1,6 @@
 import { db } from '../db/database'
 import type { SyncConflict } from '../db/types'
+import { createSecureUuidV4 } from '../utils/createSecureUuidV4'
 import type { SyncEntitySnapshot, SyncEntityType } from './syncTypes'
 
 export interface PersistSyncConflictInput {
@@ -19,7 +20,7 @@ export async function persistSyncConflict(input: PersistSyncConflictInput): Prom
     .first()
 
   const conflict: SyncConflict = {
-    id: existing?.id ?? crypto.randomUUID(),
+    id: existing?.id ?? createSecureUuidV4(),
     entityKey: input.entityKey,
     entityType: input.entityType,
     base: input.base,

@@ -1,5 +1,6 @@
 import { db } from '../../db/database'
 import type { CardInvoicePayment, CardPurchase, CreditCard, PaymentMethod, Transaction } from '../../db/types'
+import { createSecureUuidV4 } from '../../utils/createSecureUuidV4'
 import {
   addMonths,
   clampDayToMonth,
@@ -78,7 +79,7 @@ export interface InvoicePaymentInput {
 }
 
 function createId() {
-  return crypto.randomUUID()
+  return createSecureUuidV4()
 }
 
 function invoicePaymentId(cardId: string, month: SelectedMonth) {

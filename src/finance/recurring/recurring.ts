@@ -7,6 +7,7 @@ import type {
   Transaction,
   TransactionType,
 } from '../../db/types'
+import { createSecureUuidV4 } from '../../utils/createSecureUuidV4'
 import {
   compareMonths,
   isDateInMonth,
@@ -64,7 +65,7 @@ const paymentMethods = new Set<PaymentMethod>(['pix', 'debit', 'credit', 'cash',
 const transactionTypes = new Set<TransactionType>(['income', 'expense'])
 
 function createId() {
-  return crypto.randomUUID()
+  return createSecureUuidV4()
 }
 
 function overrideId(ruleId: string, month: SelectedMonth) {

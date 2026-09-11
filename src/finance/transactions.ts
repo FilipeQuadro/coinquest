@@ -1,6 +1,7 @@
 import { db } from '../db/database'
 import type { PaymentMethod, Transaction, TransactionKind, TransactionType } from '../db/types'
 import { emitTransaction, emitTransactionUpdated } from '../game/events'
+import { createSecureUuidV4 } from '../utils/createSecureUuidV4'
 
 export interface TransactionDraft {
   type: TransactionType
@@ -24,7 +25,7 @@ const paymentMethods = new Set<PaymentMethod>(['pix', 'debit', 'credit', 'cash',
 const transactionKinds = new Set<TransactionKind>(['standard', 'credit_card_payment'])
 
 function createId() {
-  return crypto.randomUUID()
+  return createSecureUuidV4()
 }
 
 function normalizeDraft(draft: TransactionDraft): TransactionDraft {

@@ -1,5 +1,6 @@
 import { db } from '../../db/database'
 import type { Goal, GoalContribution, GoalPriority, GoalStatus } from '../../db/types'
+import { createSecureUuidV4 } from '../../utils/createSecureUuidV4'
 
 export interface GoalDraft {
   name: string
@@ -30,7 +31,7 @@ export interface GoalProgress {
 }
 
 function createId() {
-  return crypto.randomUUID()
+  return createSecureUuidV4()
 }
 
 function roundMoney(value: number) {

@@ -1,5 +1,6 @@
 import { db } from '../../db/database'
 import type { CategoryBudget, MonthlyBudget, Transaction } from '../../db/types'
+import { createSecureUuidV4 } from '../../utils/createSecureUuidV4'
 import { monthFromDate, type SelectedMonth } from '../month'
 import { getTransactionKind } from '../transactions'
 
@@ -33,7 +34,7 @@ export const BUDGET_THRESHOLDS = {
 } as const
 
 function createId() {
-  return crypto.randomUUID()
+  return createSecureUuidV4()
 }
 
 export { monthFromDate }
