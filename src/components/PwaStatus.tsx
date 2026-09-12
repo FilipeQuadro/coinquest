@@ -19,7 +19,14 @@ export function PwaStatus() {
         <span>{description}</span>
       </div>
       {needRefresh && <button className="button success" onClick={() => updateServiceWorker(true)}>Atualizar</button>}
-      <button className="icon-button" onClick={() => { setOfflineReady(false); setNeedRefresh(false) }}>x</button>
+      <button
+        className="icon-button"
+        type="button"
+        aria-label="Fechar aviso do PWA"
+        onClick={() => { setOfflineReady(false); setNeedRefresh(false) }}
+      >
+        x
+      </button>
     </div>
   )
 }

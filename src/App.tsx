@@ -61,7 +61,7 @@ export function App() {
       <header className="topbar">
         <div className="brand-mark">CQ</div>
         <div className="brand-copy">
-          <strong>CoinQuest</strong>
+          <strong>CoinQuest <span className="release-badge">RC.1</span></strong>
           <span>RPG financeiro local-first</span>
         </div>
         <button
@@ -124,7 +124,7 @@ export function App() {
         <div id="historico"><History selectedMonth={selectedMonth} /></div>
 
         <footer>
-          CoinQuest v0.1 - dados locais no IndexedDB - sincronizacao entre aparelhos entra em uma proxima fase.
+          CoinQuest - local-first - offline-first - sincronizacao opcional entre dispositivos.
         </footer>
       </main>
       <PwaStatus />
