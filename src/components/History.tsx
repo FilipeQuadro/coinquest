@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import type { SelectedMonth } from '../finance/month'
@@ -38,13 +38,28 @@ export function History({ selectedMonth }: HistoryProps) {
   const transactions = filterTransactionsForHistory(allTransactions, selectedMonth, filters)
   const monthTransactions = filterTransactionsForHistory(allTransactions, selectedMonth, defaultHistoryFilters)
   const availableCategories = getAvailableHistoryCategories(allTransactions, selectedMonth)
-  const hasActiveFilters = filters.query.trim() !== ''
-    || filters.type !== 'all'
-    || filters.category !== null
-    || filters.paymentMethod !== null
+  const activeFiltersCount = [
+    filters.query.trim() !== '',
+    filters.type !== 'all',
+    filters.category !== null,
+    filters.paymentMethod !== null,
+  ].filter(Boolean).length
+  const hasActiveFilters = activeFiltersCount > 0
   const counterText = hasActiveFilters
     ? `${transactions.length} de ${monthTransactions.length} registros`
     : `${monthTransactions.length} ${monthTransactions.length === 1 ? 'registro' : 'registros'}`
+  const activeFiltersText = `${activeFiltersCount} ${activeFiltersCount === 1 ? 'filtro ativo' : 'filtros ativos'}`
+
+  useEffect(() => {
+    if (!filters.category) return
+    if (availableCategories.includes(filters.category)) return
+
+    setFilters((current) => (
+      current.category === filters.category
+        ? { ...current, category: null }
+        : current
+    ))
+  }, [availableCategories, filters.category, selectedMonth.month, selectedMonth.year])
 
   function updateFilters(nextFilters: Partial<HistoryFilters>) {
     setFilters((current) => ({ ...current, ...nextFilters }))
@@ -64,7 +79,24 @@ export function History({ selectedMonth }: HistoryProps) {
           <h2>Historico do sistema</h2>
           <p className="muted">Registros realizados em {formatMonthYear(selectedMonth)}.</p>
         </div>
-        <span className="muted" data-testid="history-counter">{counterText}</span>
+        <div className="history-status-row">
+          <span className="muted" data-testid="history-counter">{counterText}</span>
+          {hasActiveFilters && (
+            <>
+              <span className="history-active-filters" data-testid="history-active-filters">
+                {activeFiltersText}
+              </span>
+              <button
+                className="button ghost compact history-clear"
+                type="button"
+                data-testid="history-clear-filters"
+                onClick={() => setFilters(defaultHistoryFilters)}
+              >
+                Limpar filtros
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="history-toolbar" aria-label="Filtros do historico">
@@ -136,17 +168,6 @@ export function History({ selectedMonth }: HistoryProps) {
             ))}
           </select>
         </label>
-
-        {hasActiveFilters && (
-          <button
-            className="button ghost compact history-clear"
-            type="button"
-            data-testid="history-clear-filters"
-            onClick={() => setFilters(defaultHistoryFilters)}
-          >
-            Limpar filtros
-          </button>
-        )}
       </div>
 
       {monthTransactions.length === 0 ? (

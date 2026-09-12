@@ -2114,9 +2114,28 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
 }
 
 .history-panel { margin-top: var(--space-4); padding: var(--space-5); }
+.history-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-2);
+}
+.history-active-filters {
+  color: #07110c;
+  background: var(--color-gold);
+  border: 1px solid #80662b;
+  border-radius: var(--radius-control);
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .history-toolbar {
   display: grid;
-  grid-template-columns: minmax(220px, 1.4fr) auto minmax(180px, 0.7fr) minmax(180px, 0.7fr) auto;
+  grid-template-columns: minmax(220px, 1.4fr) auto minmax(180px, 0.7fr) minmax(180px, 0.7fr);
   align-items: end;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
@@ -2175,7 +2194,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
 .history-list { display: flex; flex-direction: column; gap: var(--space-2); }
 .history-item {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3);
@@ -2196,9 +2215,22 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   font-weight: 800;
 }
 .history-main { display: flex; flex-direction: column; min-width: 0; }
-.history-main strong { font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.history-main span { color: var(--color-muted); font-size: 15px; line-height: 1.35; }
-.history-item > strong { font-size: 19px; white-space: nowrap; }
+.history-main strong {
+  font-size: 20px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.history-main span {
+  color: var(--color-muted);
+  font-size: 15px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.history-item > strong {
+  font-size: 19px;
+  text-align: right;
+  white-space: nowrap;
+}
 .history-actions {
   display: flex;
   gap: var(--space-2);
@@ -2315,8 +2347,7 @@ footer {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
   .history-search,
-  .history-type-filter,
-  .history-clear {
+  .history-type-filter {
     grid-column: 1 / -1;
   }
   .monthly-overview-grid { grid-template-columns: 1fr; }
@@ -2495,9 +2526,12 @@ footer {
   }
   .history-search,
   .history-filter-field,
-  .history-type-filter,
-  .history-clear {
+  .history-type-filter {
     grid-column: auto;
+  }
+  .history-status-row {
+    width: 100%;
+    justify-content: flex-start;
   }
   .history-clear {
     width: 100%;
