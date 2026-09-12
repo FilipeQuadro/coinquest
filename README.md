@@ -1,82 +1,59 @@
-# CoinQuest v0.1 — RPG financeiro local-first
+# CoinQuest V1
 
-Primeira fundação funcional do projeto: PWA + React + TypeScript + Dexie/IndexedDB + Phaser 3.90.
+CoinQuest e um RPG financeiro local-first para controlar dinheiro real sem perder a sensacao de progresso. A V1 inclui transacoes, orcamento, recorrencias, cartoes, projecoes, metas, simulador de compras, backup local, sincronizacao Supabase opcional, resolucao explicita de conflitos, recuperacao de senha, PWA e experiencia visual game-first com Phaser.
 
-## O que já existe
+## Requisitos
 
-- Registro rápido em português: `gastei 39,90 no mercado no pix`.
-- Registro manual de receita/despesa.
-- Saldo, receitas, despesas e quantidade de registros no mês.
-- Histórico com exclusão.
-- Banco local IndexedDB via Dexie.
-- PWA com Service Worker para abrir offline depois do primeiro carregamento.
-- Cena Phaser em pixel-art desenhada por código, sem assets copiados de Terraria.
-- Baú reage a receitas/despesas.
-- Som de feedback gerado localmente via Web Audio API, sem arquivos externos.
-- Layout responsivo para notebook e iPhone.
+- Node.js 22.12+ ou versao compativel com o Vite atual.
+- npm.
 
-## 1. Pré-requisitos
-
-Use Node.js 22.12+ (ou versão compatível com o Vite atual).
-
-Confira:
-
-```bash
-node -v
-npm -v
-```
-
-## 2. Instalar dependências
-
-Abra o terminal dentro da pasta `coinquest`:
+## Instalar
 
 ```bash
 npm install
 ```
 
-## 3. Rodar no notebook
+## Desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-Abra o endereço mostrado pelo Vite, normalmente `http://localhost:5173`.
+O Vite publica em `0.0.0.0` para permitir testes em outros dispositivos da rede local.
 
-## 4. Testar build
+## Build e preview
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## 5. Sobre o iPhone
+Use o preview para validar o comportamento de producao, PWA e service worker.
 
-Para Service Worker/PWA funcionar corretamente no iPhone, o app precisa ser servido por HTTPS (localhost é exceção apenas no próprio computador). O caminho mais simples depois é publicar gratuitamente em um host HTTPS, mantendo os dados financeiros no IndexedDB do aparelho.
+## Variaveis de ambiente
 
-No iPhone: Safari → Compartilhar → Adicionar à Tela de Início.
+Crie um `.env.local` local quando quiser habilitar sincronizacao Supabase:
 
-## 6. Onde os dados ficam
+```bash
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+```
 
-Nesta fase, cada aparelho possui seu próprio banco IndexedDB. Isso significa que iPhone e notebook ainda **não sincronizam automaticamente**.
+Essas variaveis usam a publishable key do Supabase. Nunca coloque `service_role`, senhas de banco ou secrets no frontend.
 
-A próxima camada será um mecanismo de sincronização opcional, sem quebrar o modo offline.
+## Local-first, sync e backup
 
-## Próximas fases sugeridas
+O CoinQuest salva primeiro no IndexedDB do dispositivo. A sincronizacao com Supabase e opcional e serve para convergir dados entre dispositivos autenticados. Backup local continua separado da nuvem e pode ser usado para exportar/restaurar os dados do aparelho.
 
-1. Orçamento mensal e limites por categoria.
-2. Metas/missões financeiras.
-3. Simulador de compras futuras e parcelas.
-4. Mundo com casa evolutiva, clima, ciclo dia/noite e conquistas.
-5. Backup criptografado e exportação/importação.
-6. Sincronização opcional entre iPhone e notebook.
+## PWA e iPhone
 
-## Estrutura
+Depois do primeiro carregamento em producao, o app pode abrir offline com os assets em cache e manter o uso local. Para instalabilidade e PWA completa em dispositivos reais, publique em HTTPS. No iOS, a instalacao ocorre pelo Safari em Compartilhar > Adicionar a Tela de Inicio, e a sincronizacao acontece quando o app esta aberto, retomado ou volta a ficar online.
 
-```text
-src/
-├── components/   # interface React
-├── db/           # IndexedDB / Dexie
-├── game/         # Phaser e eventos do mundo
-├── lib/          # parser, áudio, dinheiro
-└── styles/       # visual geral
+## Scripts
+
+```bash
+npm run test:run
+npm run typecheck
+npm run build
+npm run preview
 ```
