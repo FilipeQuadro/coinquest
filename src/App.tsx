@@ -61,7 +61,7 @@ export function App() {
       <header className="topbar">
         <div className="brand-mark">CQ</div>
         <div className="brand-copy">
-          <strong>CoinQuest <span className="release-badge">RC.1</span></strong>
+          <strong>CoinQuest</strong>
           <span>RPG financeiro local-first</span>
         </div>
         <button
