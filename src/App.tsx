@@ -7,6 +7,7 @@ import { GoalsPanel } from './components/GoalsPanel'
 import { History } from './components/History'
 import { ManualTransaction } from './components/ManualTransaction'
 import { MonthNavigator } from './components/MonthNavigator'
+import { MonthlyOverviewPanel } from './components/MonthlyOverviewPanel'
 import { ProjectionPanel } from './components/ProjectionPanel'
 import { PwaStatus } from './components/PwaStatus'
 import { PurchaseSimulatorPanel } from './components/PurchaseSimulatorPanel'
@@ -104,6 +105,8 @@ export function App() {
         </section>
 
         <MonthNavigator selectedMonth={selectedMonth} onChange={setSelectedMonth} />
+
+        <MonthlyOverviewPanel selectedMonth={selectedMonth} />
 
         <div id="mundo" className="section-anchor"><GameWorld selectedMonth={selectedMonth} /></div>
 
