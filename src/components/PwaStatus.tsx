@@ -9,14 +9,17 @@ export function PwaStatus() {
 
   if (!offlineReady && !needRefresh) return null
 
+  const title = offlineReady ? 'Modo offline preparado.' : 'Atualizacao disponivel.'
+  const description = offlineReady ? 'O nucleo do CoinQuest pode abrir sem internet.' : 'Existe uma nova versao do app.'
+
   return (
     <div className="pwa-toast">
       <div>
-        <strong>{offlineReady ? 'Modo offline preparado.' : 'Atualização disponível.'}</strong>
-        <span>{offlineReady ? 'O núcleo do CoinQuest pode abrir sem internet.' : 'Existe uma nova versão do app.'}</span>
+        <strong>{title}</strong>
+        <span>{description}</span>
       </div>
       {needRefresh && <button className="button success" onClick={() => updateServiceWorker(true)}>Atualizar</button>}
-      <button className="icon-button" onClick={() => { setOfflineReady(false); setNeedRefresh(false) }}>×</button>
+      <button className="icon-button" onClick={() => { setOfflineReady(false); setNeedRefresh(false) }}>x</button>
     </div>
   )
 }
