@@ -148,22 +148,22 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       <div className="monthly-overview-grid">
         <article className={`monthly-overview-hero tone-${valueTone(overview.actual.net)}`}>
           <span>Resultado realizado</span>
-          <strong data-testid="monthly-overview-actual-net">{formatBRL(overview.actual.net)}</strong>
+          <strong data-testid="summary-balance">{formatBRL(overview.actual.net)}</strong>
           <p>Dinheiro que realmente entrou e saiu neste mes selecionado.</p>
         </article>
 
         <article className="monthly-overview-metrics" aria-label="Metricas realizadas">
           <div>
             <span>Receitas</span>
-            <strong className="income">{formatBRL(overview.actual.income)}</strong>
+            <strong className="income" data-testid="summary-income">{formatBRL(overview.actual.income)}</strong>
           </div>
           <div>
             <span>Despesas</span>
-            <strong className="expense">{formatBRL(overview.actual.expenses)}</strong>
+            <strong className="expense" data-testid="summary-expenses">{formatBRL(overview.actual.expenses)}</strong>
           </div>
           <div>
             <span>Registros</span>
-            <strong>{overview.actual.transactionCount}</strong>
+            <strong data-testid="summary-count">{overview.actual.transactionCount}</strong>
           </div>
         </article>
 
