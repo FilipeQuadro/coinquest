@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import { formatMonthYear, type SelectedMonth } from '../finance/month'
+import { buildMonthlyHighlights } from '../finance/summary/monthlyHighlights'
 import { buildMonthlyOverview } from '../finance/summary/monthlyOverview'
 import { formatBRL } from '../lib/money'
 
@@ -35,6 +36,16 @@ function valueTone(value: number) {
   return 'neutral'
 }
 
+function formatShortDate(isoDate: string) {
+  const date = new Date(isoDate)
+  if (!Number.isFinite(date.getTime())) return '--/--'
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+  }).format(date)
+}
+
 export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProps) {
   const overviewData = useLiveQuery(async () => {
     const [
@@ -45,6 +56,8 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       cardPurchases,
       cardInvoicePayments,
       monthlyBudget,
+      goals,
+      goalContributions,
     ] = await Promise.all([
       db.transactions.toArray(),
       db.recurringRules.toArray(),
@@ -53,6 +66,8 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       db.cardPurchases.toArray(),
       db.cardInvoicePayments.toArray(),
       db.monthlyBudgets.where('[year+month]').equals([selectedMonth.year, selectedMonth.month]).first(),
+      db.goals.toArray(),
+      db.goalContributions.toArray(),
     ])
 
     return {
@@ -63,13 +78,15 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       cardPurchases,
       cardInvoicePayments,
       monthlyBudget: monthlyBudget ?? null,
+      goals,
+      goalContributions,
     }
   }, [selectedMonth.year, selectedMonth.month])
 
-  const overview = useMemo(() => {
+  const summary = useMemo(() => {
     if (!overviewData) return null
 
-    return buildMonthlyOverview({
+    const overview = buildMonthlyOverview({
       selectedMonth,
       transactions: overviewData.transactions,
       recurringRules: overviewData.recurringRules,
@@ -79,9 +96,23 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       cardInvoicePayments: overviewData.cardInvoicePayments,
       monthlyBudget: overviewData.monthlyBudget,
     })
+
+    const highlights = buildMonthlyHighlights({
+      selectedMonth,
+      transactions: overviewData.transactions,
+      recurringRules: overviewData.recurringRules,
+      recurringOverrides: overviewData.recurringOverrides,
+      creditCards: overviewData.creditCards,
+      cardPurchases: overviewData.cardPurchases,
+      cardInvoicePayments: overviewData.cardInvoicePayments,
+      goals: overviewData.goals,
+      goalContributions: overviewData.goalContributions,
+    })
+
+    return { overview, highlights }
   }, [overviewData, selectedMonth])
 
-  if (!overview) {
+  if (!summary) {
     return (
       <section className="panel monthly-overview" aria-busy="true" aria-live="polite">
         <div className="monthly-overview-head">
@@ -95,12 +126,14 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
     )
   }
 
+  const { overview, highlights } = summary
   const tone = budgetTone(overview.budget.percentageUsed)
   const percentLabel = formatPercent(overview.budget.percentageUsed)
   const budgetUsageLabel = `Uso do orcamento: ${percentLabel}`
   const budgetAriaNow = overview.budget.percentageUsed === null
     ? undefined
     : Math.round(barWidth(overview.budget.percentageUsed))
+  const featuredGoalPercent = highlights.featuredGoal?.percentageDisplay ?? 0
 
   return (
     <section className="panel monthly-overview" aria-labelledby="monthly-overview-title" data-testid="monthly-overview-panel">
@@ -203,6 +236,66 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
               </strong>
             </div>
           </div>
+        </article>
+
+        <article className="monthly-overview-commitments">
+          <div className="monthly-overview-card-title">
+            <div>
+              <span className="eyebrow">PROXIMOS COMPROMISSOS</span>
+              <h3>Agenda financeira</h3>
+            </div>
+          </div>
+
+          {highlights.commitments.length > 0 ? (
+            <div className="monthly-overview-commitment-list">
+              {highlights.commitments.map((commitment) => (
+                <div className={`monthly-overview-commitment status-${commitment.status}`} key={commitment.id}>
+                  <div>
+                    <strong>{commitment.label}</strong>
+                    <span>
+                      {formatShortDate(commitment.dueDate)} · {formatBRL(commitment.amount)}
+                    </span>
+                  </div>
+                  {commitment.status === 'overdue' && <span className="commitment-status">ATRASADO</span>}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="monthly-overview-empty-text">Nenhum compromisso pendente neste mes.</p>
+          )}
+        </article>
+
+        <article className="monthly-overview-featured-goal">
+          <div className="monthly-overview-card-title">
+            <div>
+              <span className="eyebrow">META EM DESTAQUE</span>
+              <h3>{highlights.featuredGoal ? highlights.featuredGoal.name : 'Nenhuma meta ativa'}</h3>
+            </div>
+            {highlights.featuredGoal && <strong>{formatPercent(featuredGoalPercent / 100)}</strong>}
+          </div>
+
+          {highlights.featuredGoal ? (
+            <>
+              <div
+                className="goal-progress monthly-overview-goal-progress"
+                aria-label={`Progresso da meta em destaque: ${formatPercent(featuredGoalPercent / 100)}`}
+              >
+                <span style={{ width: `${featuredGoalPercent}%` }} />
+              </div>
+              <div className="monthly-overview-goal-meta">
+                <span>
+                  {formatBRL(highlights.featuredGoal.allocatedAmount)} de {formatBRL(highlights.featuredGoal.targetAmount)}
+                </span>
+                <span>Faltam {formatBRL(highlights.featuredGoal.remainingAmount)}</span>
+              </div>
+              <a className="button ghost compact" href="#missoes">Ver metas</a>
+            </>
+          ) : (
+            <div className="monthly-overview-empty">
+              <p>Nenhuma meta ativa.</p>
+              <a className="button ghost compact" href="#missoes">Ver metas</a>
+            </div>
+          )}
         </article>
       </div>
     </section>
