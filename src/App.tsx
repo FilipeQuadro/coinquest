@@ -7,12 +7,12 @@ import { GoalsPanel } from './components/GoalsPanel'
 import { History } from './components/History'
 import { ManualTransaction } from './components/ManualTransaction'
 import { MonthNavigator } from './components/MonthNavigator'
+import { MonthlyOverviewPanel } from './components/MonthlyOverviewPanel'
 import { ProjectionPanel } from './components/ProjectionPanel'
 import { PwaStatus } from './components/PwaStatus'
 import { PurchaseSimulatorPanel } from './components/PurchaseSimulatorPanel'
 import { QuickEntry } from './components/QuickEntry'
 import { RecurringPanel } from './components/RecurringPanel'
-import { Stats } from './components/Stats'
 import { SyncLifecycle } from './components/SyncLifecycle'
 import { SyncPanel } from './components/SyncPanel'
 import { monthFromDate, validateSelectedMonth, type SelectedMonth } from './finance/month'
@@ -105,13 +105,16 @@ export function App() {
 
         <MonthNavigator selectedMonth={selectedMonth} onChange={setSelectedMonth} />
 
+        <MonthlyOverviewPanel selectedMonth={selectedMonth} />
+
         <div id="mundo" className="section-anchor"><GameWorld selectedMonth={selectedMonth} /></div>
 
         <div className="finance-grid" id="registrar">
           <div className="quick-slot"><QuickEntry /></div>
           <div className="manual-slot"><ManualTransaction selectedMonth={selectedMonth} /></div>
-          <div className="stats-slot section-anchor" id="planejamento"><Stats selectedMonth={selectedMonth} /></div>
-          <div className="budget-slot" id="orcamento"><BudgetPlanner selectedMonth={selectedMonth} /></div>
+          <div className="budget-slot section-anchor" id="planejamento">
+            <div id="orcamento"><BudgetPlanner selectedMonth={selectedMonth} /></div>
+          </div>
           <div className="recurring-slot" id="previsoes"><RecurringPanel selectedMonth={selectedMonth} /></div>
           <div className="projection-slot" id="projecao"><ProjectionPanel selectedMonth={selectedMonth} /></div>
           <div className="simulator-slot" id="simulador"><PurchaseSimulatorPanel selectedMonth={selectedMonth} /></div>

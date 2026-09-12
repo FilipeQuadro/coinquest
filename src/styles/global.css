@@ -204,6 +204,224 @@ a { color: inherit; text-decoration: none; }
   text-transform: capitalize;
 }
 
+.monthly-overview {
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+  overflow: hidden;
+}
+.monthly-overview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.monthly-overview-head h2 {
+  margin-bottom: 0;
+  text-transform: capitalize;
+}
+.monthly-overview-chip {
+  flex: 0 0 auto;
+  color: #07110c;
+  background: linear-gradient(180deg, #8df0ff, #5abed0);
+  border: 2px solid #2d7a8a;
+  border-radius: var(--radius-control);
+  box-shadow: inset 0 -3px #2d7a8a55;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.monthly-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: var(--space-3);
+}
+.monthly-overview-hero,
+.monthly-overview-metrics,
+.monthly-overview-budget,
+.monthly-overview-outlook,
+.monthly-overview-commitments,
+.monthly-overview-featured-goal {
+  min-width: 0;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-panel);
+  background:
+    linear-gradient(180deg, #10182c 0%, #0a1020 100%);
+  box-shadow: 0 14px 34px #00000040, 0 0 0 1px #ffffff08 inset;
+}
+.monthly-overview-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+}
+.monthly-overview-hero span,
+.monthly-overview-metrics span,
+.monthly-overview-outlook-grid span {
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+.monthly-overview-hero strong {
+  color: #f8fbff;
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+.monthly-overview-hero.tone-positive strong,
+.monthly-overview-projected.tone-positive { color: var(--color-income); }
+.monthly-overview-hero.tone-negative strong,
+.monthly-overview-projected.tone-negative { color: var(--color-expense); }
+.monthly-overview-hero.tone-neutral strong,
+.monthly-overview-projected.tone-neutral { color: #f8fbff; }
+.monthly-overview-hero p {
+  max-width: 44ch;
+  margin: 0;
+  color: #b6c1dd;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.monthly-overview-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  background: #2b3b60;
+}
+.monthly-overview-metrics > div,
+.monthly-overview-outlook-grid > div {
+  min-width: 0;
+  padding: var(--space-4);
+  background: #0b1222;
+}
+.monthly-overview-metrics strong,
+.monthly-overview-outlook-grid strong {
+  display: block;
+  margin-top: 5px;
+  color: #f8fbff;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.monthly-overview-budget,
+.monthly-overview-outlook,
+.monthly-overview-commitments,
+.monthly-overview-featured-goal {
+  padding: var(--space-4);
+}
+.monthly-overview-card-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.monthly-overview-card-title h3 {
+  margin: 4px 0 0;
+  color: #f8fbff;
+  font-size: 20px;
+  line-height: 1.15;
+}
+.monthly-overview-card-title > strong {
+  color: #f8fbff;
+  font-size: 18px;
+  white-space: nowrap;
+}
+.monthly-overview-budget-bar {
+  margin-bottom: var(--space-3);
+}
+.monthly-overview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px dashed #3a4c70;
+  border-radius: var(--radius-control);
+  background: #070d18;
+}
+.monthly-overview-empty p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+.monthly-overview-outlook-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid #263758;
+  border-radius: var(--radius-control);
+  background: #263758;
+}
+.monthly-overview-loading {
+  color: var(--color-muted);
+  padding: var(--space-4);
+  border: 1px dashed #3a4c70;
+  border-radius: var(--radius-control);
+  background: #070d18;
+}
+.monthly-overview-commitment-list {
+  display: grid;
+  gap: var(--space-2);
+}
+.monthly-overview-commitment {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: #0b1222;
+  border: 1px solid #263758;
+  border-radius: var(--radius-control);
+}
+.monthly-overview-commitment strong,
+.monthly-overview-goal-meta span {
+  min-width: 0;
+  color: #f8fbff;
+  overflow-wrap: anywhere;
+}
+.monthly-overview-commitment span {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+.monthly-overview-commitment.status-overdue {
+  border-color: #874343;
+  background: #1b1118;
+}
+.commitment-status {
+  align-self: center;
+  margin: 0;
+  padding: 5px 8px;
+  color: #ffe8e8 !important;
+  font-size: 11px !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: #3a1418;
+  border: 1px solid #a85a5a;
+  border-radius: var(--radius-control);
+}
+.monthly-overview-empty-text {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+.monthly-overview-goal-progress {
+  margin-bottom: var(--space-3);
+}
+.monthly-overview-goal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-3);
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
 .panel {
   position: relative;
   background:
@@ -2035,6 +2253,9 @@ footer {
   .month-nav .button { grid-column: 1 / -1; }
   .world-intro { align-items: start; }
   .world-chip { display: none; }
+  .monthly-overview-grid { grid-template-columns: 1fr; }
+  .monthly-overview-hero { padding: var(--space-4); }
+  .monthly-overview-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .finance-grid { grid-template-columns: 1fr; }
   .quick-slot { order: 1; }
@@ -2073,6 +2294,47 @@ footer {
   .world-intro p { font-size: 15px; }
   h2 { font-size: 22px; }
   .muted { font-size: 14px; }
+  .monthly-overview {
+    padding: var(--space-3);
+  }
+  .monthly-overview-head {
+    flex-direction: column;
+    margin-bottom: var(--space-3);
+  }
+  .monthly-overview-chip {
+    align-self: flex-start;
+    white-space: normal;
+  }
+  .monthly-overview-hero,
+  .monthly-overview-budget,
+  .monthly-overview-outlook,
+  .monthly-overview-commitments,
+  .monthly-overview-featured-goal {
+    padding: var(--space-3);
+  }
+  .monthly-overview-hero strong {
+    font-size: clamp(28px, 10vw, 36px);
+  }
+  .monthly-overview-metrics,
+  .monthly-overview-outlook-grid {
+    grid-template-columns: 1fr;
+  }
+  .monthly-overview-metrics > div,
+  .monthly-overview-outlook-grid > div {
+    padding: var(--space-3);
+  }
+  .monthly-overview-empty,
+  .monthly-overview-card-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .monthly-overview-commitment {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+  .commitment-status {
+    justify-self: start;
+  }
   .game-shell, .quick-panel, .manual-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .backup-panel, .sync-panel { padding: var(--space-3); }
   .empty-state { padding: 22px var(--space-3); }
   .game-canvas { height: clamp(310px, 82vw, 370px); }
