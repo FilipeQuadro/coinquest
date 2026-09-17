@@ -77,6 +77,12 @@ async function cardPurchase(page: Page, input: {
   await page.getByTestId('save-purchase').click()
 }
 
+
+async function reloadApp(page: Page) {
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  await expect(page.locator('.game-canvas canvas')).toBeVisible()
+}
+
 function captureErrors(page: Page) {
   const pageErrors: string[] = []
   const consoleErrors: string[] = []
@@ -145,7 +151,7 @@ test('records, persists and deletes financial entries', async ({ page }) => {
   await expect(page.getByTestId('financial-health-card')).toContainText('Apertado')
   await expect(page.locator('.game-canvas canvas')).toHaveAttribute('data-financial-health', 'tight')
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.getByTestId('summary-balance')).toContainText('R$ 0,10')
   await expect(page.getByTestId('history-item')).toHaveCount(3)
 
@@ -187,7 +193,7 @@ test('configures and recalculates a monthly budget', async ({ page }) => {
   await expect(page.getByTestId('budget-spent')).toContainText('R$ 550,00 / R$ 1.000,00')
   await expect(page.getByTestId('budget-percentage')).toContainText('55%')
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.getByTestId('budget-spent')).toContainText('R$ 550,00 / R$ 1.000,00')
   await expect(page.getByTestId('history-item')).toHaveCount(2)
 
@@ -265,7 +271,7 @@ test('navigates months and edits transactions without duplicating records', asyn
   await expect(page.getByTestId('history-item').filter({ hasText: 'mercado semanal' })).toBeVisible()
   await expect(page.getByTestId('summary-expenses')).toContainText('R$ 180,00')
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.getByTestId('selected-month-label')).toContainText(monthName(targetMonth))
   await expect(page.getByTestId('history-item').filter({ hasText: 'mercado semanal' })).toBeVisible()
 
@@ -319,7 +325,7 @@ test('projects recurring commitments and confirms one as actual', async ({ page 
   await expect(page.locator('.game-canvas canvas')).toHaveAttribute('data-finance-reaction', 'expense')
   await expect(page.locator('.game-canvas canvas')).toHaveAttribute('data-planned-commitments', '1')
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.getByTestId('selected-month-label')).toContainText(monthName(futureMonth))
   await expect(page.getByTestId('history-item').filter({ hasText: 'internet' })).toBeVisible()
   await expect(page.getByTestId('recurring-occurrence').filter({ hasText: 'internet' })).toContainText('Realizado')
@@ -372,7 +378,7 @@ test('creates card purchases, invoices and a persisted invoice payment', async (
   await page.getByTestId('edit-transaction').first().click()
   await expect(page.getByTestId('linked-invoice-transaction-warning')).toContainText('area do cartao')
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.getByTestId('selected-month-label')).toContainText(monthName(next))
   await expect(page.getByTestId('invoice-installment').filter({ hasText: 'Notebook 2/4' })).toBeVisible()
   await expect(page.getByTestId('history-item').filter({ hasText: 'Fatura Nubank' })).toBeVisible()
@@ -528,7 +534,7 @@ test('creates mission allocations without creating transactions', async ({ page 
   await expect(page.getByTestId('history-item')).toHaveCount(0)
   await expect(page.getByTestId('summary-count')).toContainText('0')
 
-  await page.reload()
+  await reloadApp(page)
   const persistedMission = page.getByTestId('goal-card').filter({ hasText: 'Novo PC' })
   await expect(persistedMission.getByTestId('goal-allocated')).toContainText('R$ 1.300,00')
   await expect(persistedMission.getByTestId('goal-progress-text')).toContainText('26%')
@@ -552,7 +558,7 @@ test('creates mission allocations without creating transactions', async ({ page 
   await page.getByTestId('save-goal-contribution').click()
   await expect(page.getByTestId('goal-card').filter({ hasText: 'Mesa digital' })).toContainText('Ativa')
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.locator('.game-canvas canvas')).toBeVisible()
   await expect(page.getByTestId('goal-card').filter({ hasText: 'Mesa digital' })).toContainText('Ativa')
   await expect(page.locator('.game-canvas canvas')).not.toHaveAttribute('data-goal-reaction-count', /.+/)
@@ -612,7 +618,7 @@ test('simulates purchase scenarios without persisting real financial records', a
   await expect(page.getByTestId('card-purchase-item')).toHaveCount(0)
   await expect(page.getByTestId('goal-contribution-item')).toHaveCount(0)
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.getByTestId('summary-count')).toContainText('1')
   await expect(page.getByTestId('card-purchase-item')).toHaveCount(0)
 
@@ -644,7 +650,7 @@ test('registers a simulated cash purchase as a real transaction', async ({ page 
   await expect(page.getByTestId('history-item').filter({ hasText: 'Teclado' })).toBeVisible()
   await expect(page.getByTestId('card-purchase-item')).toHaveCount(0)
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.getByTestId('summary-count')).toContainText('1')
   await expect(page.getByTestId('history-item').filter({ hasText: 'Teclado' })).toBeVisible()
 
@@ -687,7 +693,7 @@ test('registers a simulated installment card purchase without immediate cash tra
   await expect(page.getByTestId('card-purchase-item').filter({ hasText: 'Notebook' })).toContainText('6x')
   await expect(page.getByTestId('invoice-installment').filter({ hasText: 'Notebook 1/6' })).toBeVisible()
 
-  await page.reload()
+  await reloadApp(page)
   await expect(page.getByTestId('summary-count')).toContainText('0')
   await expect(page.getByTestId('card-purchase-item').filter({ hasText: 'Notebook' })).toContainText('6x')
 
