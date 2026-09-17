@@ -460,3 +460,26 @@ Goal allocation does not reduce the simulated purchase amount. A completed Goal 
 ## Simulation Result Is Not Bank Balance
 
 PurchaseSimulationResult reuses MonthlyProjection. Its projected and cumulative results are projected monthly results, not a real bank balance, not patrimony and not a guaranteed future account value.
+
+
+## Category Preferences (5.3A)
+
+Financial category fields remain strings. `src/lib/categories.ts` centralizes default values,
+context-specific options and comparison keys (trim, case and accent insensitive). Comparison
+keys are not financial identifiers and must not replace persisted category strings or budget/sync keys.
+
+`settings[categoryPreferences]` stores JSON `CategoryPreferencesV1` with `version: 1`,
+`customCategories` and `hiddenCategoryKeys`. Custom categories are shared across contexts.
+Defaults retain the existing context choices and ordering, including the same transaction choices
+for income and expense. No new table or schema migration is required. Preferences use the existing
+settings backup and optional sync behavior; they work offline.
+
+Reading absent, malformed or unsupported preferences returns defaults without writing to storage.
+Saving validates preferences and deduplicates new custom options; it never rewrites financial records.
+The existing selected category remains available with its exact spelling, even if hidden, unknown
+or equivalent to a canonical default. This also preserves a selection in an in-progress draft.
+Hiding is option filtering, not deletion or retroactive reclassification.
+
+Quick entry emits canonical defaults for new records (`Alimentacao`, `Saude`). Its keyword rules
+remain independent of hidden preferences in this foundation phase. Historical strings are unchanged.
+There is no category management screen, retroactive rename or category merge in 5.3A.

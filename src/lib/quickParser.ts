@@ -1,3 +1,4 @@
+import { canonicalCategory, DEFAULT_CATEGORIES } from './categories'
 import type { PaymentMethod, TransactionType } from '../db/types'
 import { parseMoney } from './money'
 
@@ -10,15 +11,15 @@ export interface ParsedQuickEntry {
 }
 
 const CATEGORY_RULES: Array<[string, RegExp]> = [
-  ['Alimentação', /(mercado|supermercado|lanche|almoço|almoco|jantar|café|cafe|pizza|hamburg|açaí|acai|ifood|comida)/i],
-  ['Transporte', /(uber|99|ônibus|onibus|gasolina|combustível|combustivel|posto|transporte|passagem)/i],
-  ['Casa', /(aluguel|energia|luz|água|agua|internet|casa|condomínio|condominio)/i],
-  ['Assinaturas', /(netflix|spotify|youtube|assinatura|prime|icloud|google one)/i],
-  ['Saúde', /(farmácia|farmacia|remédio|remedio|consulta|médico|medico|saúde|saude)/i],
-  ['Estudos', /(curso|faculdade|livro|escola|material|mensalidade)/i],
-  ['Lazer', /(jogo|cinema|show|lazer|steam|playstation|xbox)/i],
-  ['Compras', /(roupa|tênis|tenis|shopping|compra|comprei|amazon|shopee|mercado livre)/i],
-  ['Renda', /(salário|salario|recebi|pagamento|freela|freelance|renda)/i],
+  [DEFAULT_CATEGORIES.food, /(mercado|supermercado|lanche|almoço|almoco|jantar|café|cafe|pizza|hamburg|açaí|acai|ifood|comida)/i],
+  [DEFAULT_CATEGORIES.transport, /(uber|99|ônibus|onibus|gasolina|combustível|combustivel|posto|transporte|passagem)/i],
+  [DEFAULT_CATEGORIES.home, /(aluguel|energia|luz|água|agua|internet|casa|condomínio|condominio)/i],
+  [DEFAULT_CATEGORIES.subscriptions, /(netflix|spotify|youtube|assinatura|prime|icloud|google one)/i],
+  [DEFAULT_CATEGORIES.health, /(farmácia|farmacia|remédio|remedio|consulta|médico|medico|saúde|saude)/i],
+  [DEFAULT_CATEGORIES.education, /(curso|faculdade|livro|escola|material|mensalidade)/i],
+  [DEFAULT_CATEGORIES.leisure, /(jogo|cinema|show|lazer|steam|playstation|xbox)/i],
+  [DEFAULT_CATEGORIES.shopping, /(roupa|tênis|tenis|shopping|compra|comprei|amazon|shopee|mercado livre)/i],
+  [DEFAULT_CATEGORIES.income, /(salário|salario|recebi|pagamento|freela|freelance|renda)/i],
 ]
 
 function guessType(input: string): TransactionType {
@@ -43,7 +44,10 @@ export function parseQuickEntry(input: string): ParsedQuickEntry | null {
   if (!amount) return null
 
   const type = guessType(input)
-  const category = CATEGORY_RULES.find(([, regex]) => regex.test(input))?.[0] ?? (type === 'income' ? 'Renda' : 'Outros')
+  const category = canonicalCategory(
+    CATEGORY_RULES.find(([, regex]) => regex.test(input))?.[0]
+      ?? (type === 'income' ? DEFAULT_CATEGORIES.income : DEFAULT_CATEGORIES.other),
+  )
   const paymentMethod = guessPayment(input)
 
   const description = input

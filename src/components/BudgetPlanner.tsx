@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import {
@@ -14,8 +15,6 @@ import { buildCreditCardInvoices, getCommittedCardExpenses } from '../finance/ca
 import type { SelectedMonth } from '../finance/month'
 import { formatMonthYear } from '../finance/month'
 import { formatBRL } from '../lib/money'
-
-const categories = ['Alimentacao', 'Transporte', 'Casa', 'Assinaturas', 'Saude', 'Estudos', 'Lazer', 'Compras', 'Outros']
 
 function formatPercent(value: number | null) {
   if (value === null) return 'Sem orcamento'
@@ -50,7 +49,8 @@ export function BudgetPlanner({ selectedMonth }: BudgetPlannerProps) {
   const cardPurchases = useLiveQuery(() => db.cardPurchases.toArray(), [], [])
   const cardPayments = useLiveQuery(() => db.cardInvoicePayments.toArray(), [], [])
   const [totalLimit, setTotalLimit] = useState('')
-  const [category, setCategory] = useState(categories[0])
+  const [category, setCategory] = useState('Alimentacao')
+  const categories = useCategoryOptions('budget', category)
   const [categoryLimit, setCategoryLimit] = useState('')
   const [error, setError] = useState('')
   const cardInvoices = buildCreditCardInvoices(cards, cardPurchases, cardPayments, selectedMonth, transactions)

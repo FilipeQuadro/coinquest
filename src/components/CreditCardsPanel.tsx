@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react'
+import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import type { CardPurchase, CreditCard, PaymentMethod } from '../db/types'
@@ -27,7 +28,6 @@ import {
 import { audioEngine } from '../lib/audio'
 import { formatBRL, parseMoney } from '../lib/money'
 
-const categories = ['Alimentacao', 'Transporte', 'Casa', 'Assinaturas', 'Saude', 'Estudos', 'Lazer', 'Compras', 'Cartao', 'Outros']
 const invoicePaymentMethods: Array<{ value: PaymentMethod; label: string }> = [
   { value: 'pix', label: 'PIX' },
   { value: 'debit', label: 'Debito' },
@@ -62,6 +62,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
   const [purchaseDescription, setPurchaseDescription] = useState('')
   const [purchaseAmount, setPurchaseAmount] = useState('')
   const [purchaseCategory, setPurchaseCategory] = useState('Compras')
+  const categories = useCategoryOptions('card-purchase', purchaseCategory)
   const [purchaseDate, setPurchaseDate] = useState(() => toDateInputValue(new Date().toISOString()))
   const [installmentCount, setInstallmentCount] = useState('1')
   const [pendingDeleteCardId, setPendingDeleteCardId] = useState<string | null>(null)

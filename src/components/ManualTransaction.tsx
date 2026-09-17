@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useCategoryOptions } from '../lib/useCategoryOptions'
 import type { PaymentMethod, TransactionType } from '../db/types'
 import type { SelectedMonth } from '../finance/month'
 import {
@@ -13,8 +14,6 @@ import { recordTransaction, validateTransactionDraft } from '../finance/transact
 import { audioEngine } from '../lib/audio'
 import { parseMoney } from '../lib/money'
 
-const categories = ['Alimentacao', 'Transporte', 'Casa', 'Assinaturas', 'Saude', 'Estudos', 'Lazer', 'Compras', 'Renda', 'Outros']
-
 interface ManualTransactionProps {
   selectedMonth: SelectedMonth
 }
@@ -24,6 +23,7 @@ export function ManualTransaction({ selectedMonth }: ManualTransactionProps) {
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('Outros')
+  const categories = useCategoryOptions(`transaction-${type}`, category)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('pix')
   const [dateValue, setDateValue] = useState(() => todayDateInputValue())
   const [timeValue, setTimeValue] = useState(() => currentTimeInputValue())

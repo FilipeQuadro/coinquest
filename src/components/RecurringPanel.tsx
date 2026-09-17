@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react'
+import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import type { PaymentMethod, RecurringRule, TransactionType } from '../db/types'
@@ -21,8 +22,6 @@ import {
 } from '../finance/recurring/recurring'
 import { audioEngine } from '../lib/audio'
 import { formatBRL, parseMoney } from '../lib/money'
-
-const categories = ['Alimentacao', 'Transporte', 'Casa', 'Assinaturas', 'Saude', 'Estudos', 'Lazer', 'Compras', 'Renda', 'Outros']
 
 const paymentLabels: Record<PaymentMethod, string> = {
   pix: 'PIX',
@@ -69,6 +68,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
   const [confirming, setConfirming] = useState<RecurringOccurrence | null>(null)
   const [error, setError] = useState('')
   const [draft, setDraft] = useState(() => emptyDraft(selectedMonth))
+  const categories = useCategoryOptions('recurring', draft.category)
   const [amountText, setAmountText] = useState('')
   const [startMonthText, setStartMonthText] = useState(() => toMonthInputValue(selectedMonth))
   const [endMonthText, setEndMonthText] = useState('')
