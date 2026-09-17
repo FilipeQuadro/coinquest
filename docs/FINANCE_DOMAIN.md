@@ -271,6 +271,19 @@ If `allocatedAmount >= targetAmount`, an active goal can be marked `completed`. 
 
 Goal completed does not mean purchase completed. A future phase may add "Simular compra desta missão", but Goals V1 does not create purchases, card commitments or expenses automatically.
 
+## World Progression
+
+World progression is a derived visual interpretation of existing monthly financial signals.
+It can consider actual record count, budget presence, budget usage, FinancialHealth and
+Goal/GoalContribution progress already calculated by the finance layer.
+
+It is not balance, budget, cash, XP or a financial source of truth. It must not create or edit
+Transactions, Budgets, Cards, RecurringRules, Goals or GoalContributions. It must not persist
+world state or change FinancialHealth, MonthlyOverview, MonthlyOutlook or Projection.
+
+React/finance code derives the progression state. Phaser may only render or react to that
+state in a later phase; Phaser must not decide financial progression by itself.
+
 ## CreditCard
 
 CreditCard defines one local card profile:
