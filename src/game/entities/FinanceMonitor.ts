@@ -3,6 +3,7 @@ import type { BudgetProgress } from '../../finance/budget/budget'
 import type { FinancialHealth } from '../../finance/health/financialHealth'
 import type { MonthlyOutlook } from '../../finance/recurring/recurring'
 import type { MonthlySummary } from '../../finance/transactions'
+import type { WorldProgressionState, WorldProgressionTier } from '../../finance/world/worldProgression'
 
 const levelColors: Record<FinancialHealth['level'], number> = {
   unknown: 0x7f8aa8,
@@ -21,6 +22,7 @@ export class FinanceMonitor {
   private readonly statusPixel: Phaser.GameObjects.Rectangle
   private readonly budgetRail: Phaser.GameObjects.Rectangle
   private readonly budgetFill: Phaser.GameObjects.Rectangle
+  private readonly worldText: Phaser.GameObjects.Text
   private readonly missionText: Phaser.GameObjects.Text
   private missionTimer?: Phaser.Time.TimerEvent
 
@@ -35,6 +37,14 @@ export class FinanceMonitor {
     this.statusPixel = scene.add.rectangle(-46, -31, 8, 8, 0x7f8aa8)
     this.budgetRail = scene.add.rectangle(0, 23, 78, 5, 0x263656, 0.72)
     this.budgetFill = scene.add.rectangle(-39, 23, 0, 5, 0x42d9f4, 0.82).setOrigin(0, 0.5)
+    this.worldText = scene.add.text(0, -30, 'Base\ninicial', {
+      align: 'center',
+      fontFamily: 'monospace',
+      fontSize: '8px',
+      color: '#c7f7ff',
+      stroke: '#07101f',
+      strokeThickness: 2,
+    }).setOrigin(0.5)
     this.missionText = scene.add.text(0, -10, 'MISSAO\nCONCLUIDA', {
       align: 'center',
       fontFamily: 'monospace',
@@ -54,7 +64,7 @@ export class FinanceMonitor {
       scene.add.rectangle(7, -9, 20, 4, 0xff786f),
     ]
 
-    this.container.add([glow, screen, stand, base, this.statusPixel, ...this.bars, ...this.trend, this.budgetRail, this.budgetFill, cursor, this.missionText])
+    this.container.add([glow, screen, stand, base, this.statusPixel, ...this.bars, ...this.trend, this.budgetRail, this.budgetFill, cursor, this.worldText, this.missionText])
 
     scene.tweens.add({
       targets: cursor,
@@ -141,5 +151,23 @@ export class FinanceMonitor {
         ease: 'Sine.in',
       })
     })
+  }
+
+  setWorldProgression(progression: Pick<WorldProgressionState, 'tier' | 'title'>) {
+    const style = this.getWorldTierStyle(progression.tier)
+    this.worldText.setText(progression.title.replace(' ', '\n'))
+    this.worldText.setColor(style.color)
+    this.worldText.setAlpha(style.alpha)
+  }
+
+  private getWorldTierStyle(tier: WorldProgressionTier) {
+    const styles = {
+      starter: { color: '#c8d2ea', alpha: 0.72 },
+      stable: { color: '#8ee8ff', alpha: 0.82 },
+      focused: { color: '#c7b7ff', alpha: 0.9 },
+      thriving: { color: '#fff0a8', alpha: 1 },
+    } satisfies Record<WorldProgressionTier, { color: string; alpha: number }>
+
+    return styles[tier]
   }
 }

@@ -1,11 +1,13 @@
 import Phaser from 'phaser'
 import type { FinancialHealth } from '../../finance/health/financialHealth'
+import type { WorldProgressionState, WorldProgressionTier } from '../../finance/world/worldProgression'
 import { getTextureKey } from '../assets/spriteLoader'
 
 export class DigitalVault {
   readonly container: Phaser.GameObjects.Container
 
   private core: Phaser.GameObjects.Rectangle
+  private worldAura: Phaser.GameObjects.Ellipse
   private glow: Phaser.GameObjects.Ellipse
   private bars: Phaser.GameObjects.Rectangle[]
   private ring: Phaser.GameObjects.Arc
@@ -17,6 +19,7 @@ export class DigitalVault {
     this.container = scene.add.container(x, y)
 
     const shadow = scene.add.ellipse(0, 53, 128, 18, 0x050711, 0.42)
+    this.worldAura = scene.add.ellipse(0, -8, 160, 136, 0x42d9f4, 0.05)
     this.glow = scene.add.ellipse(0, -8, 138, 122, 0x35d8ff, 0.12)
     const glowDisk = scene.add.image(0, -10, getTextureKey(scene, 'softGlow')).setScale(2.5, 2.2).setAlpha(0.55)
     const shell = scene.add.image(0, 0, getTextureKey(scene, 'digitalVaultShell'))
@@ -34,6 +37,7 @@ export class DigitalVault {
 
     this.container.add([
       shadow,
+      this.worldAura,
       this.glow,
       glowDisk,
       shell,
@@ -140,6 +144,12 @@ export class DigitalVault {
     this.applyFinancialHealthLevel(health.level)
   }
 
+  setWorldProgression(progression: Pick<WorldProgressionState, 'tier'>) {
+    const style = this.getWorldTierStyle(progression.tier)
+    this.worldAura.setFillStyle(style.color, style.alpha)
+    this.worldAura.setScale(style.scale)
+  }
+
   private applyFinancialHealthLevel(level: FinancialHealth['level']) {
     const style = this.getLevelStyle(level)
     this.core.setStrokeStyle(3, style.core)
@@ -172,6 +182,17 @@ export class DigitalVault {
     }>
 
     return styles[level]
+  }
+
+  private getWorldTierStyle(tier: WorldProgressionTier) {
+    const styles = {
+      starter: { color: 0x7f8aa8, alpha: 0.04, scale: 0.92 },
+      stable: { color: 0x42d9f4, alpha: 0.08, scale: 1 },
+      focused: { color: 0x7f67d8, alpha: 0.12, scale: 1.05 },
+      thriving: { color: 0xf3cf64, alpha: 0.16, scale: 1.12 },
+    } satisfies Record<WorldProgressionTier, { color: number; alpha: number; scale: number }>
+
+    return styles[tier]
   }
 
   private flashBars(color: number) {

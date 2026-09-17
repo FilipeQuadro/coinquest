@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import type { Transaction } from '../../db/types'
+import type { WorldProgressionState, WorldProgressionTier } from '../../finance/world/worldProgression'
 import { ensureSpriteFallbacks, getTextureKey, preloadCoinQuestSprites } from '../assets/spriteLoader'
 import { DigitalVault } from '../entities/DigitalVault'
 import { FinanceMonitor } from '../entities/FinanceMonitor'
@@ -24,6 +25,7 @@ export class MainRoomScene extends Phaser.Scene {
   private transactionHandler?: EventListener
   private healthHandler?: EventListener
   private goalCompletedHandler?: EventListener
+  private worldProgressionHandler?: EventListener
   private readonly handleResize = () => this.configureCamera()
 
   constructor() {
@@ -253,11 +255,16 @@ export class MainRoomScene extends Phaser.Scene {
       this.reactToGoalCompleted(event.detail)
     }) as EventListener
     financeBus.addEventListener('goal-completed', this.goalCompletedHandler)
+    this.worldProgressionHandler = ((event: CustomEvent<WorldProgressionState>) => {
+      this.applyWorldProgression(event.detail)
+    }) as EventListener
+    financeBus.addEventListener('world-progression', this.worldProgressionHandler)
 
     const cleanup = () => {
       if (this.transactionHandler) financeBus.removeEventListener('transaction', this.transactionHandler)
       if (this.healthHandler) financeBus.removeEventListener('financial-health', this.healthHandler)
       if (this.goalCompletedHandler) financeBus.removeEventListener('goal-completed', this.goalCompletedHandler)
+      if (this.worldProgressionHandler) financeBus.removeEventListener('world-progression', this.worldProgressionHandler)
       this.scale.off(Phaser.Scale.Events.RESIZE, this.handleResize, this)
     }
 
@@ -374,6 +381,17 @@ export class MainRoomScene extends Phaser.Scene {
     this.game.canvas.dataset.cardCommitments = String(update.monthlyOutlook?.committedCardExpense ?? 0)
   }
 
+  private applyWorldProgression(progression: WorldProgressionState) {
+    if (!this.canRenderReaction()) return
+
+    this.financeMonitor?.setWorldProgression(progression)
+    this.vault?.setWorldProgression(progression)
+    this.applyWorldProgressionMood(progression.tier)
+    this.game.canvas.dataset.worldTier = progression.tier
+    this.game.canvas.dataset.worldTitle = progression.title
+    this.game.canvas.dataset.worldScore = String(progression.score)
+  }
+
   private applyRoomMood(level: FinancialHealthUpdate['health']['level']) {
     const styles = {
       unknown: { color: 0x7f8aa8, alpha: 0.02, light: 0x7f8aa8 },
@@ -389,6 +407,22 @@ export class MainRoomScene extends Phaser.Scene {
     this.healthLights.forEach((light, index) => {
       light.setFillStyle(index % 2 === 0 ? style.light : 0x42d9f4)
       light.setAlpha(level === 'tight' || level === 'critical' ? 0.42 : 0.72)
+    })
+  }
+
+  private applyWorldProgressionMood(tier: WorldProgressionTier) {
+    const styles = {
+      starter: { light: 0x7f8aa8, alpha: 0.38 },
+      stable: { light: 0x42d9f4, alpha: 0.54 },
+      focused: { light: 0x7f67d8, alpha: 0.64 },
+      thriving: { light: 0xf3cf64, alpha: 0.78 },
+    } satisfies Record<WorldProgressionTier, { light: number; alpha: number }>
+    const style = styles[tier]
+
+    this.healthLights.forEach((light, index) => {
+      if (index % 2 === 1) return
+      light.setFillStyle(style.light)
+      light.setAlpha(style.alpha)
     })
   }
 
