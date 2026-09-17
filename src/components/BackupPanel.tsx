@@ -7,6 +7,7 @@ import {
   minimumBackupPasswordLength,
   protectedBackupFilename,
 } from '../backup/encryptedBackup'
+import { buildBackupPreview, type BackupPreviewFileType } from '../backup/backupPreview'
 
 function formatBackupDate(value: string | null) {
   if (!value) return 'Data nao informada'
@@ -21,6 +22,7 @@ export function BackupPanel() {
   const [pendingImport, setPendingImport] = useState('')
   const [pendingEncryptedImport, setPendingEncryptedImport] = useState('')
   const [inspection, setInspection] = useState<BackupInspection | null>(null)
+  const [backupFileType, setBackupFileType] = useState<BackupPreviewFileType>('plain')
   const [importOpen, setImportOpen] = useState(false)
   const [passwordExportOpen, setPasswordExportOpen] = useState(false)
   const [encryptedImportOpen, setEncryptedImportOpen] = useState(false)
@@ -100,6 +102,7 @@ export function BackupPanel() {
     setPendingImport('')
     setPendingEncryptedImport('')
     setInspection(null)
+    setBackupFileType('plain')
     setImportOpen(false)
     setEncryptedImportOpen(false)
     setImportPassword('')
@@ -115,6 +118,7 @@ export function BackupPanel() {
       const text = await file.text()
 
       if (isEncryptedBackupJson(text)) {
+        setBackupFileType('encrypted')
         setPendingEncryptedImport(text)
         setEncryptedImportOpen(true)
         return
@@ -122,9 +126,10 @@ export function BackupPanel() {
 
       const nextInspection = await inspectBackup(text)
       setInspection(nextInspection)
+      setBackupFileType('plain')
 
       if (!nextInspection.valid) {
-        setError(nextInspection.error ?? 'Arquivo de backup invalido.')
+        setError(`${nextInspection.error ?? 'Arquivo de backup invalido.'} Nenhum dado foi restaurado.`)
         return
       }
 
@@ -146,9 +151,10 @@ export function BackupPanel() {
       const decrypted = await decryptBackupPayload(pendingEncryptedImport, importPassword)
       const nextInspection = await inspectBackup(decrypted)
       setInspection(nextInspection)
+      setBackupFileType('encrypted')
 
       if (!nextInspection.valid) {
-        setError(nextInspection.error ?? 'Arquivo de backup invalido.')
+        setError(`${nextInspection.error ?? 'Arquivo de backup invalido.'} Nenhum dado foi restaurado.`)
         return
       }
 
@@ -158,7 +164,7 @@ export function BackupPanel() {
       setEncryptedImportOpen(false)
       setImportOpen(true)
     } catch {
-      setError('Nao foi possivel abrir o backup. Verifique a senha ou a integridade do arquivo.')
+      setError('Nao foi possivel abrir o backup. Verifique a senha ou a integridade do arquivo. Nenhum dado foi restaurado.')
     } finally {
       setBusy(false)
     }
@@ -178,12 +184,13 @@ export function BackupPanel() {
       setPendingEncryptedImport('')
       setSelectedFileName('')
       setInspection(null)
+      setBackupFileType('plain')
       setImportOpen(false)
       setEncryptedImportOpen(false)
       setImportPassword('')
       if (fileInputRef.current) fileInputRef.current.value = ''
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Nao foi possivel restaurar o backup.')
+      setError(`${caught instanceof Error ? caught.message : 'Nao foi possivel restaurar o backup.'} Nenhum dado foi restaurado.`)
     } finally {
       setBusy(false)
     }
@@ -194,12 +201,15 @@ export function BackupPanel() {
     setPendingEncryptedImport('')
     setSelectedFileName('')
     setInspection(null)
+    setBackupFileType('plain')
     setImportOpen(false)
     setEncryptedImportOpen(false)
     setImportPassword('')
     setError('')
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
+
+  const backupPreview = inspection ? buildBackupPreview(inspection, { fileType: backupFileType }) : null
 
   return (
     <section className="panel backup-panel" data-testid="backup-panel" aria-labelledby="backup-title">
@@ -307,30 +317,33 @@ export function BackupPanel() {
         <div className="backup-confirm" data-testid="backup-confirm">
           <strong>Restaurar backup local</strong>
           <span>Arquivo selecionado: {selectedFileName}</span>
-          {inspection && (
+          {backupPreview && (
             <div className="backup-preview" data-testid="backup-preview">
-              <span>Versao: <strong>v{inspection.formatVersion}</strong></span>
-              <span>Exportado em: <strong>{formatBackupDate(inspection.exportedAt)}</strong></span>
-              <span>
-                Integridade:{' '}
-                <strong>
-                  {inspection.integrityStatus === 'verified'
-                    ? 'Integridade verificada.'
-                    : 'Backup antigo sem checksum.'}
-                </strong>
-              </span>
-              {inspection.warnings.map((warning) => <small key={warning}>{warning}</small>)}
+              <div className="backup-preview-summary">
+                <span>Tipo <strong>{backupPreview.fileTypeLabel}</strong></span>
+                <span>Versao <strong>{backupPreview.versionLabel}</strong></span>
+                <span>Exportado em <strong>{formatBackupDate(inspection?.exportedAt ?? null)}</strong></span>
+                <span>Validacao <strong>{backupPreview.validationLabel}</strong></span>
+                <span>Total <strong>{backupPreview.totalRecords}</strong></span>
+              </div>
+              {backupPreview.warnings.map((warning) => <small key={warning}>{warning}</small>)}
               <div className="backup-counts">
-                <span>Transacoes <strong>{inspection.counts.transactions ?? 0}</strong></span>
-                <span>Cartoes <strong>{inspection.counts.creditCards ?? 0}</strong></span>
-                <span>Compras <strong>{inspection.counts.cardPurchases ?? 0}</strong></span>
-                <span>Metas <strong>{inspection.counts.goals ?? 0}</strong></span>
-                <span>Recorrencias <strong>{inspection.counts.recurringRules ?? 0}</strong></span>
-                <span>Orcamentos <strong>{(inspection.counts.monthlyBudgets ?? 0) + (inspection.counts.categoryBudgets ?? 0)}</strong></span>
+                {backupPreview.countGroups.map((group) => (
+                  <span key={group.id}>
+                    <strong>{group.value}</strong>
+                    {group.label}
+                    <small>{group.description}</small>
+                  </span>
+                ))}
               </div>
             </div>
           )}
-          <p>Restaurar este backup substituira os dados atuais do CoinQuest pelos dados presentes no arquivo.</p>
+          {backupPreview && (
+            <div className="backup-restore-note">
+              <p>{backupPreview.replacementMessage}</p>
+              <p>{backupPreview.localOnlyMessage}</p>
+            </div>
+          )}
           <div className="goal-form-actions">
             <button className="button ghost" type="button" onClick={cancelImport} disabled={busy}>
               Cancelar
