@@ -1733,6 +1733,129 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
 .purchase-item strong { color: #f8fbff; overflow-wrap: anywhere; }
 .purchase-item span { color: var(--color-muted); font-size: 14px; line-height: 1.35; }
 
+.local-data-panel {
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+.local-data-panel > .panel-title-row {
+  align-items: flex-start;
+}
+.local-data-status {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  color: #06141a;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: var(--color-cyan);
+  border: 1px solid #a3efff;
+  border-radius: var(--radius-control);
+}
+.local-data-status.status-empty {
+  color: #dce7ff;
+  background: #17233b;
+  border-color: #405d91;
+}
+.local-data-status.status-ok {
+  background: var(--color-income);
+  border-color: #9bf4bd;
+}
+.local-data-status.status-attention {
+  background: var(--color-gold);
+  border-color: #fff1bd;
+}
+.local-data-loading {
+  margin: 0;
+  color: var(--color-muted);
+}
+.local-data-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: #0b1222;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
+.local-data-summary.status-ok { border-color: #2f7a4c; }
+.local-data-summary.status-attention { border-color: #80662b; }
+.local-data-summary strong { color: #f8fbff; }
+.local-data-summary span { color: var(--color-muted); font-size: 14px; line-height: 1.35; }
+.local-data-counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.local-data-count-card {
+  min-width: 0;
+  padding: var(--space-3);
+  background: #10182a;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
+.local-data-count-card span {
+  display: block;
+  color: var(--color-muted);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.local-data-count-card strong {
+  display: block;
+  color: #f8fbff;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+.local-data-count-card p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+.local-data-warnings {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.local-data-empty-warning {
+  margin: 0;
+  color: var(--color-muted);
+}
+.local-data-warning-list {
+  display: grid;
+  gap: var(--space-2);
+}
+.local-data-warning {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  background: #0b1222;
+  border: 1px solid #2b3b60;
+  border-left-width: 4px;
+  border-radius: var(--radius-control);
+}
+.local-data-warning.severity-attention { border-left-color: var(--color-gold); }
+.local-data-warning.severity-info { border-left-color: var(--color-cyan); }
+.local-data-warning strong { color: #f8fbff; }
+.local-data-warning p {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+.local-data-warning > span {
+  display: grid;
+  min-width: 34px;
+  min-height: 34px;
+  place-items: center;
+  color: #f8fbff;
+  background: #17233b;
+  border: 1px solid #405d91;
+  border-radius: var(--radius-control);
+  font-weight: 800;
+}
 .backup-panel { padding: var(--space-5); }
 .backup-actions {
   display: flex;
@@ -2573,7 +2696,7 @@ footer {
   .commitment-status {
     justify-self: start;
   }
-  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .backup-panel, .sync-panel { padding: var(--space-3); }
+  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .local-data-panel, .backup-panel, .sync-panel { padding: var(--space-3); }
   .empty-state { padding: 22px var(--space-3); }
   .game-canvas { height: clamp(310px, 82vw, 370px); }
   .game-hud { grid-template-columns: 1fr; }
@@ -2741,6 +2864,9 @@ footer {
     white-space: normal;
   }
   .backup-actions,
+  .local-data-summary,
+  .local-data-counts,
+  .local-data-warning,
   .sync-auth-form,
   .password-recovery-form,
   .sync-box,
@@ -2780,6 +2906,9 @@ footer {
     grid-template-columns: 1fr;
   }
   .backup-counts {
+    grid-template-columns: 1fr;
+  }
+  .local-data-counts {
     grid-template-columns: 1fr;
   }
   .invoice-lines > div { grid-template-columns: 1fr; gap: 3px; }

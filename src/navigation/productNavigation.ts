@@ -19,7 +19,7 @@ export const productNavItems: ProductNavItem[] = [
   { id: 'cartoes', label: 'Cartoes' },
   { id: 'missoes', label: 'Metas' },
   { id: 'sync', label: 'Nuvem' },
-  { id: 'backup', label: 'Backup' },
+  { id: 'backup', label: 'Dados' },
 ]
 
 const productSectionIds = new Set(productNavItems.map((item) => item.id))
@@ -32,6 +32,8 @@ const productSectionAliases: Record<string, ProductSectionId> = {
   cards: 'cartoes',
   goals: 'missoes',
   cloud: 'sync',
+  data: 'backup',
+  dados: 'backup',
 }
 
 export function normalizeProductSectionHash(hash: string): ProductSectionId | null {
