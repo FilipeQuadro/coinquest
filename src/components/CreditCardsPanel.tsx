@@ -1,4 +1,6 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { hasEquivalentCategory } from '../lib/categories'
+import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import type { CardPurchase, CreditCard, PaymentMethod } from '../db/types'
@@ -27,7 +29,6 @@ import {
 import { audioEngine } from '../lib/audio'
 import { formatBRL, parseMoney } from '../lib/money'
 
-const categories = ['Alimentacao', 'Transporte', 'Casa', 'Assinaturas', 'Saude', 'Estudos', 'Lazer', 'Compras', 'Cartao', 'Outros']
 const invoicePaymentMethods: Array<{ value: PaymentMethod; label: string }> = [
   { value: 'pix', label: 'PIX' },
   { value: 'debit', label: 'Debito' },
@@ -62,6 +63,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
   const [purchaseDescription, setPurchaseDescription] = useState('')
   const [purchaseAmount, setPurchaseAmount] = useState('')
   const [purchaseCategory, setPurchaseCategory] = useState('Compras')
+  const categories = useCategoryOptions('card-purchase', editingPurchase ? purchaseCategory : undefined)
   const [purchaseDate, setPurchaseDate] = useState(() => toDateInputValue(new Date().toISOString()))
   const [installmentCount, setInstallmentCount] = useState('1')
   const [pendingDeleteCardId, setPendingDeleteCardId] = useState<string | null>(null)
@@ -78,6 +80,13 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
   const selectedInvoice = selectedCard ? invoices.find((invoice) => invoice.cardId === selectedCard.id) : invoices[0]
   const selectedCardPurchases = purchases.filter((purchase) => purchase.cardId === cardId)
   const limitUsage = selectedCard ? calculateCreditLimitUsage(selectedCard, selectedCardPurchases, payments, transactions) : null
+
+  useEffect(() => {
+    if (!editingPurchase && categories[0] && !hasEquivalentCategory(categories, purchaseCategory)) {
+      setPurchaseCategory(categories[0])
+    }
+  }, [categories, editingPurchase, purchaseCategory])
+
   const purchasePreview = useMemo(() => {
     if (!selectedCard) return null
     const total = parseMoney(purchaseAmount)

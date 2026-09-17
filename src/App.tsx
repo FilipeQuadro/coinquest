@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BackupPanel } from './components/BackupPanel'
 import { BudgetPlanner } from './components/BudgetPlanner'
+import { CategorySettingsPanel } from './components/CategorySettingsPanel'
 import { CreditCardsPanel } from './components/CreditCardsPanel'
 import { GameWorld } from './components/GameWorld'
 import { GoalsPanel } from './components/GoalsPanel'
@@ -112,6 +113,7 @@ export function App() {
         <div className="finance-grid" id="registrar">
           <div className="quick-slot"><QuickEntry /></div>
           <div className="manual-slot"><ManualTransaction selectedMonth={selectedMonth} /></div>
+          <div className="category-slot"><CategorySettingsPanel /></div>
           <div className="budget-slot section-anchor" id="planejamento">
             <div id="orcamento"><BudgetPlanner selectedMonth={selectedMonth} /></div>
           </div>

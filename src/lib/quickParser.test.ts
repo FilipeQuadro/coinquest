@@ -9,7 +9,7 @@ describe('parseQuickEntry', () => {
         type: 'expense',
         amount: 39.9,
         description: 'mercado',
-        category: 'Alimentação',
+        category: 'Alimentacao',
         paymentMethod: 'pix',
       },
     ],
@@ -39,7 +39,7 @@ describe('parseQuickEntry', () => {
         type: 'expense',
         amount: 25,
         description: 'almoço',
-        category: 'Alimentação',
+        category: 'Alimentacao',
         paymentMethod: 'other',
       },
     ],
@@ -55,6 +55,10 @@ describe('parseQuickEntry', () => {
     ],
   ])('parses "%s"', (input, expected) => {
     expect(parseQuickEntry(input)).toMatchObject(expected)
+  })
+
+  it('uses the canonical health category for new entries', () => {
+    expect(parseQuickEntry('paguei 50 na farmacia')?.category).toBe('Saude')
   })
 
   it('returns null when no amount is found', () => {
