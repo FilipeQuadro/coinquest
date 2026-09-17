@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useCategoryOptions } from '../lib/useCategoryOptions'
 import type { PaymentMethod, Transaction, TransactionType } from '../db/types'
 import {
   localDateTimeToIso,
@@ -7,8 +8,6 @@ import {
 } from '../finance/month'
 import { getTransactionKind, updateTransaction, validateTransactionDraft } from '../finance/transactions'
 import { parseMoney } from '../lib/money'
-
-const categories = ['Alimentacao', 'Transporte', 'Casa', 'Assinaturas', 'Saude', 'Estudos', 'Lazer', 'Compras', 'Renda', 'Outros']
 
 interface TransactionEditorProps {
   transaction: Transaction
@@ -22,6 +21,7 @@ export function TransactionEditor({ transaction, onCancel, onSaved }: Transactio
   const [amount, setAmount] = useState(String(transaction.amount).replace('.', ','))
   const [description, setDescription] = useState(transaction.description)
   const [category, setCategory] = useState(transaction.category)
+  const categories = useCategoryOptions(`transaction-${type}`, category)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(transaction.paymentMethod)
   const [dateValue, setDateValue] = useState(() => toDateInputValue(transaction.occurredAt))
   const [timeValue, setTimeValue] = useState(() => toTimeInputValue(transaction.occurredAt))

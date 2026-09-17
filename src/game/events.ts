@@ -3,6 +3,7 @@ import type { BudgetProgress } from '../finance/budget/budget'
 import type { FinancialHealth } from '../finance/health/financialHealth'
 import type { MonthlyOutlook } from '../finance/recurring/recurring'
 import type { MonthlySummary } from '../finance/transactions'
+import type { WorldProgressionState } from '../finance/world/worldProgression'
 
 export const financeBus = new EventTarget()
 
@@ -32,4 +33,8 @@ export interface FinancialHealthUpdate {
 
 export function emitFinancialHealth(update: FinancialHealthUpdate) {
   financeBus.dispatchEvent(new CustomEvent<FinancialHealthUpdate>('financial-health', { detail: update }))
+}
+
+export function emitWorldProgression(progression: WorldProgressionState) {
+  financeBus.dispatchEvent(new CustomEvent<WorldProgressionState>('world-progression', { detail: progression }))
 }

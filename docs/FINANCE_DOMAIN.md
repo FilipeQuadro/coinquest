@@ -271,6 +271,32 @@ If `allocatedAmount >= targetAmount`, an active goal can be marked `completed`. 
 
 Goal completed does not mean purchase completed. A future phase may add "Simular compra desta missão", but Goals V1 does not create purchases, card commitments or expenses automatically.
 
+## World Progression
+
+World progression is a derived visual interpretation of existing monthly financial signals.
+It can consider actual record count, budget presence, budget usage, FinancialHealth and
+Goal/GoalContribution progress already calculated by the finance layer.
+
+It is not balance, budget, cash, XP or a financial source of truth. It must not create or edit
+Transactions, Budgets, Cards, RecurringRules, Goals or GoalContributions. It must not persist
+world state or change FinancialHealth, MonthlyOverview, MonthlyOutlook or Projection.
+
+React/finance code derives the progression state. Phaser may only render or react to that
+state in a later phase; Phaser must not decide financial progression by itself.
+
+## Financial Insights
+
+Financial insights are derived readings of existing local financial signals, such as monthly
+summary, budget usage, FinancialHealth, commitments, projections and goal allocation.
+
+They do not create or edit Transactions, Budgets, Cards, RecurringRules, Goals,
+GoalContributions, MonthlyOverview, FinancialHealth or Projection. They are not balance,
+not guaranteed forecasts, not investment advice and not a source of truth.
+
+Insights run locally from data already available in the finance layer. They must not depend on
+internet access, remote AI, Supabase or sync. Wording must stay neutral, avoid moral judgment
+and avoid encouraging spending.
+
 ## CreditCard
 
 CreditCard defines one local card profile:
@@ -460,3 +486,26 @@ Goal allocation does not reduce the simulated purchase amount. A completed Goal 
 ## Simulation Result Is Not Bank Balance
 
 PurchaseSimulationResult reuses MonthlyProjection. Its projected and cumulative results are projected monthly results, not a real bank balance, not patrimony and not a guaranteed future account value.
+
+
+## Category Preferences (5.3A)
+
+Financial category fields remain strings. `src/lib/categories.ts` centralizes default values,
+context-specific options and comparison keys (trim, case and accent insensitive). Comparison
+keys are not financial identifiers and must not replace persisted category strings or budget/sync keys.
+
+`settings[categoryPreferences]` stores JSON `CategoryPreferencesV1` with `version: 1`,
+`customCategories` and `hiddenCategoryKeys`. Custom categories are shared across contexts.
+Defaults retain the existing context choices and ordering, including the same transaction choices
+for income and expense. No new table or schema migration is required. Preferences use the existing
+settings backup and optional sync behavior; they work offline.
+
+Reading absent, malformed or unsupported preferences returns defaults without writing to storage.
+Saving validates preferences and deduplicates new custom options; it never rewrites financial records.
+The existing selected category remains available with its exact spelling, even if hidden, unknown
+or equivalent to a canonical default. This also preserves a selection in an in-progress draft.
+Hiding is option filtering, not deletion or retroactive reclassification.
+
+Quick entry emits canonical defaults for new records (`Alimentacao`, `Saude`). Its keyword rules
+remain independent of hidden preferences in this foundation phase. Historical strings are unchanged.
+There is no category management screen, retroactive rename or category merge in 5.3A.

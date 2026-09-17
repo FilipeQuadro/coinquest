@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { hasEquivalentCategory } from '../lib/categories'
+import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import type { CreditCard, Goal, PaymentMethod } from '../db/types'
@@ -21,7 +23,6 @@ import { registerSimulatedPurchase } from '../finance/simulator/registerPurchase
 import { formatBRL, parseMoney } from '../lib/money'
 
 const horizonOptions = [3, 6, 12] as const
-const categories = ['Compras', 'Casa', 'Estudos', 'Lazer', 'Saude', 'Transporte', 'Outros']
 const paymentMethods: { value: PaymentMethod; label: string }[] = [
   { value: 'pix', label: 'PIX' },
   { value: 'debit', label: 'D\u00e9bito' },
@@ -148,7 +149,8 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
   const [amount, setAmount] = useState('1200')
   const [purchaseDate, setPurchaseDate] = useState(() => defaultPurchaseDate(selectedMonth))
   const [horizon, setHorizon] = useState<(typeof horizonOptions)[number]>(6)
-  const [category, setCategory] = useState(categories[0])
+  const [category, setCategory] = useState('Compras')
+  const categories = useCategoryOptions('simulator')
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('pix')
   const [methods, setMethods] = useState<MethodState>({ cash: true, cardOne: true, cardInstallments: true })
   const [cardId, setCardId] = useState('')
@@ -194,6 +196,10 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
   useEffect(() => {
     setPurchaseDate(defaultPurchaseDate(selectedMonth))
   }, [selectedMonth.year, selectedMonth.month])
+
+  useEffect(() => {
+    if (categories[0] && !hasEquivalentCategory(categories, category)) setCategory(categories[0])
+  }, [categories, category])
 
   const simulationState = useMemo(() => {
     if (!submitted || !loaded) return { comparison: null, error: '' }

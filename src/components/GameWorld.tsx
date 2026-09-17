@@ -6,11 +6,12 @@ import { calculateBudgetProgress } from '../finance/budget/budget'
 import { buildCreditCardInvoices, getCommittedCardExpenses, getUnpaidInvoiceCommitment } from '../finance/cards/cards'
 import { calculateFinancialHealth, type FinancialHealth } from '../finance/health/financialHealth'
 import type { SelectedMonth } from '../finance/month'
-import { formatMonthName, referenceDateFromMonth } from '../finance/month'
+import { formatMonthName, isDateInMonth, referenceDateFromMonth } from '../finance/month'
 import { buildRecurringOccurrences, calculateMonthlyOutlook } from '../finance/recurring/recurring'
 import { getMonthlySummary } from '../finance/transactions'
+import { deriveWorldProgression } from '../finance/world/worldProgression'
 import { createCoinQuestGame } from '../game/createGame'
-import { emitFinancialHealth } from '../game/events'
+import { emitFinancialHealth, emitWorldProgression } from '../game/events'
 import { formatBRL } from '../lib/money'
 
 const healthCopy: Record<FinancialHealth['level'], { icon: string; label: string; hint: string }> = {
@@ -71,6 +72,8 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
   const cards = useLiveQuery(() => db.creditCards.toArray(), [], [])
   const cardPurchases = useLiveQuery(() => db.cardPurchases.toArray(), [], [])
   const cardPayments = useLiveQuery(() => db.cardInvoicePayments.toArray(), [], [])
+  const goals = useLiveQuery(() => db.goals.toArray(), [], [])
+  const goalContributions = useLiveQuery(() => db.goalContributions.toArray(), [], [])
   const summary = getMonthlySummary(transactions, referenceDateFromMonth(selectedMonth))
   const cardInvoices = buildCreditCardInvoices(cards, cardPurchases, cardPayments, selectedMonth, transactions)
   const committedCardExpenses = getCommittedCardExpenses(cardInvoices)
@@ -78,6 +81,16 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
   const occurrences = buildRecurringOccurrences(rules, overrides, selectedMonth, transactions)
   const monthlyOutlook = calculateMonthlyOutlook(transactions, occurrences, selectedMonth, getUnpaidInvoiceCommitment(cardInvoices))
   const health = calculateFinancialHealth(summary, budgetProgress)
+  const worldProgression = deriveWorldProgression({
+    transactionCount: summary.count,
+    budgetProgress,
+    financialHealth: health,
+    missions: {
+      activeGoals: goals.filter((goal) => goal.status === 'active').length,
+      completedGoals: goals.filter((goal) => goal.status === 'completed').length,
+      contributionsThisMonth: goalContributions.filter((contribution) => isDateInMonth(contribution.date, selectedMonth)).length,
+    },
+  })
   const healthInfo = healthCopy[health.level]
   const monthLabel = formatMonthName(selectedMonth)
 
@@ -96,6 +109,7 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
 
   useEffect(() => {
     emitFinancialHealth({ health, summary, budgetProgress, monthlyOutlook })
+    emitWorldProgression(worldProgression)
   }, [
     health.level,
     health.expenseRatio,
@@ -114,6 +128,12 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
     monthlyOutlook.committedCardExpense,
     monthlyOutlook.pendingCount,
     monthlyOutlook.overdueCount,
+    worldProgression.tier,
+    worldProgression.title,
+    worldProgression.description,
+    worldProgression.nextHint,
+    worldProgression.score,
+    worldProgression.reasons.join('|'),
   ])
 
   return (
