@@ -242,7 +242,8 @@ a { color: inherit; text-decoration: none; }
 .monthly-overview-budget,
 .monthly-overview-outlook,
 .monthly-overview-commitments,
-.monthly-overview-featured-goal {
+.monthly-overview-featured-goal,
+.monthly-overview-insights {
   min-width: 0;
   border: 1px solid #2b3b60;
   border-radius: var(--radius-panel);
@@ -308,9 +309,50 @@ a { color: inherit; text-decoration: none; }
 .monthly-overview-budget,
 .monthly-overview-outlook,
 .monthly-overview-commitments,
-.monthly-overview-featured-goal {
+.monthly-overview-featured-goal,
+.monthly-overview-insights {
   padding: var(--space-4);
 }
+.monthly-overview-insights {
+  grid-column: 1 / -1;
+}
+.monthly-insight-list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.monthly-insight {
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid #2b3b60;
+  border-left-width: 4px;
+  border-radius: var(--radius-control);
+  background: #070d18;
+}
+.monthly-insight strong {
+  display: block;
+  color: #f8fbff;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.monthly-insight p {
+  margin: 6px 0 0;
+  color: #c1cbe6;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.monthly-insight span {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.monthly-insight.insight-positive { border-left-color: var(--color-income); }
+.monthly-insight.insight-info { border-left-color: var(--color-cyan); }
+.monthly-insight.insight-attention { border-left-color: var(--color-gold); }
+.monthly-insight.insight-warning { border-left-color: var(--color-expense); }
 .monthly-overview-card-title {
   display: flex;
   align-items: flex-start;
@@ -2445,6 +2487,7 @@ footer {
     grid-column: 1 / -1;
   }
   .monthly-overview-grid { grid-template-columns: 1fr; }
+  .monthly-insight-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .monthly-overview-hero { padding: var(--space-4); }
   .monthly-overview-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .stats-grid { grid-template-columns: 1fr 1fr; }
@@ -2502,14 +2545,16 @@ footer {
   .monthly-overview-budget,
   .monthly-overview-outlook,
   .monthly-overview-commitments,
-  .monthly-overview-featured-goal {
+  .monthly-overview-featured-goal,
+  .monthly-overview-insights {
     padding: var(--space-3);
   }
   .monthly-overview-hero strong {
     font-size: clamp(28px, 10vw, 36px);
   }
   .monthly-overview-metrics,
-  .monthly-overview-outlook-grid {
+  .monthly-overview-outlook-grid,
+  .monthly-insight-list {
     grid-template-columns: 1fr;
   }
   .monthly-overview-metrics > div,

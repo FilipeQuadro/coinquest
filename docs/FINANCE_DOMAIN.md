@@ -284,6 +284,19 @@ world state or change FinancialHealth, MonthlyOverview, MonthlyOutlook or Projec
 React/finance code derives the progression state. Phaser may only render or react to that
 state in a later phase; Phaser must not decide financial progression by itself.
 
+## Financial Insights
+
+Financial insights are derived readings of existing local financial signals, such as monthly
+summary, budget usage, FinancialHealth, commitments, projections and goal allocation.
+
+They do not create or edit Transactions, Budgets, Cards, RecurringRules, Goals,
+GoalContributions, MonthlyOverview, FinancialHealth or Projection. They are not balance,
+not guaranteed forecasts, not investment advice and not a source of truth.
+
+Insights run locally from data already available in the finance layer. They must not depend on
+internet access, remote AI, Supabase or sync. Wording must stay neutral, avoid moral judgment
+and avoid encouraging spending.
+
 ## CreditCard
 
 CreditCard defines one local card profile:

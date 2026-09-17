@@ -1,9 +1,15 @@
 import { useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
-import { formatMonthYear, type SelectedMonth } from '../finance/month'
+import type { Transaction } from '../db/types'
+import { calculateCategoryBudgetProgress } from '../finance/budget/budget'
+import { buildCreditCardInvoices, getCommittedCardExpenses } from '../finance/cards/cards'
+import { calculateFinancialHealth } from '../finance/health/financialHealth'
+import { deriveFinancialInsights, type CategoryInsightInput } from '../finance/insights/financialInsights'
+import { formatMonthYear, isDateInMonth, type SelectedMonth } from '../finance/month'
 import { buildMonthlyHighlights } from '../finance/summary/monthlyHighlights'
 import { buildMonthlyOverview } from '../finance/summary/monthlyOverview'
+import { getTransactionKind } from '../finance/transactions'
 import { formatBRL } from '../lib/money'
 
 interface MonthlyOverviewPanelProps {
@@ -46,6 +52,23 @@ function formatShortDate(isoDate: string) {
   }).format(date)
 }
 
+function categoryInsightInputFromTransactions(transactions: Transaction[], selectedMonth: SelectedMonth): CategoryInsightInput[] {
+  const totals = new Map<string, number>()
+
+  transactions
+    .filter((transaction) =>
+      transaction.type === 'expense' &&
+      getTransactionKind(transaction) === 'standard' &&
+      isDateInMonth(transaction.occurredAt, selectedMonth),
+    )
+    .forEach((transaction) => {
+      const category = transaction.category.trim() || 'Outros'
+      totals.set(category, (totals.get(category) ?? 0) + transaction.amount)
+    })
+
+  return [...totals.entries()].map(([category, amount]) => ({ category, amount }))
+}
+
 export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProps) {
   const overviewData = useLiveQuery(async () => {
     const [
@@ -58,6 +81,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       monthlyBudget,
       goals,
       goalContributions,
+      categoryBudgets,
     ] = await Promise.all([
       db.transactions.toArray(),
       db.recurringRules.toArray(),
@@ -68,6 +92,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       db.monthlyBudgets.where('[year+month]').equals([selectedMonth.year, selectedMonth.month]).first(),
       db.goals.toArray(),
       db.goalContributions.toArray(),
+      db.categoryBudgets.where('[year+month]').equals([selectedMonth.year, selectedMonth.month]).sortBy('category'),
     ])
 
     return {
@@ -80,6 +105,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       monthlyBudget: monthlyBudget ?? null,
       goals,
       goalContributions,
+      categoryBudgets,
     }
   }, [selectedMonth.year, selectedMonth.month])
 
@@ -109,7 +135,56 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       goalContributions: overviewData.goalContributions,
     })
 
-    return { overview, highlights }
+    const cardInvoices = buildCreditCardInvoices(
+      overviewData.creditCards,
+      overviewData.cardPurchases,
+      overviewData.cardInvoicePayments,
+      selectedMonth,
+      overviewData.transactions,
+    )
+    const committedCardExpenses = getCommittedCardExpenses(cardInvoices)
+    const categoryProgress = calculateCategoryBudgetProgress(
+      overviewData.categoryBudgets,
+      overviewData.transactions,
+      selectedMonth,
+      committedCardExpenses,
+    )
+    const categoryInsights = categoryProgress.length > 0
+      ? categoryProgress.map((category) => ({
+          category: category.category,
+          amount: category.spent,
+        }))
+      : categoryInsightInputFromTransactions(overviewData.transactions, selectedMonth)
+    const financialHealth = calculateFinancialHealth({
+      income: overview.actual.income,
+      expenses: overview.actual.expenses,
+      balance: overview.actual.net,
+      count: overview.actual.transactionCount,
+    }, overview.budget)
+    const insights = deriveFinancialInsights({
+      transactionCount: overview.actual.transactionCount,
+      financialHealth,
+      budget: overview.budget,
+      categories: categoryInsights,
+      commitments: highlights.commitments,
+      projection: {
+        projectedIncome: overview.outlook.projectedIncome,
+        projectedExpense: overview.outlook.projectedExpense,
+        projectedNet: overview.outlook.projectedNet,
+      },
+      goal: highlights.featuredGoal
+        ? {
+            id: highlights.featuredGoal.id,
+            name: highlights.featuredGoal.name,
+            targetAmount: highlights.featuredGoal.targetAmount,
+            allocatedAmount: highlights.featuredGoal.allocatedAmount,
+            remainingAmount: highlights.featuredGoal.remainingAmount,
+            percentageDisplay: highlights.featuredGoal.percentageDisplay,
+          }
+        : null,
+    })
+
+    return { overview, highlights, insights }
   }, [overviewData, selectedMonth])
 
   if (!summary) {
@@ -126,7 +201,8 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
     )
   }
 
-  const { overview, highlights } = summary
+  const { overview, highlights, insights } = summary
+  const visibleInsights = insights.slice(0, 5)
   const tone = budgetTone(overview.budget.percentageUsed)
   const percentLabel = formatPercent(overview.budget.percentageUsed)
   const budgetUsageLabel = `Uso do orcamento: ${percentLabel}`
@@ -165,6 +241,37 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
             <span>Registros</span>
             <strong data-testid="summary-count">{overview.actual.transactionCount}</strong>
           </div>
+        </article>
+
+        <article className="monthly-overview-insights" data-testid="monthly-insights">
+          <div className="monthly-overview-card-title">
+            <div>
+              <span className="eyebrow">INSIGHTS DO MES</span>
+              <h3>Leituras financeiras</h3>
+            </div>
+          </div>
+
+          {visibleInsights.length > 0 ? (
+            <div className="monthly-insight-list">
+              {visibleInsights.map((insight) => (
+                <div className={`monthly-insight insight-${insight.kind}`} data-testid="monthly-insight-item" key={insight.id}>
+                  <div>
+                    <strong>{insight.title}</strong>
+                    <p>{insight.message}</p>
+                    {(insight.category || insight.amount !== undefined) && (
+                      <span>
+                        {insight.category ? `${insight.category}` : ''}
+                        {insight.category && insight.amount !== undefined ? ' · ' : ''}
+                        {insight.amount !== undefined ? formatBRL(insight.amount) : ''}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="monthly-overview-empty-text">Sem alertas relevantes com os dados atuais do mes.</p>
+          )}
         </article>
 
         <article className={`monthly-overview-budget tone-${tone}`}>
