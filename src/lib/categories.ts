@@ -55,6 +55,16 @@ export function canonicalCategory(value: string): string {
     ?? (value.trim() || DEFAULT_CATEGORIES.other)
 }
 
+export function isDefaultCategory(value: string): boolean {
+  const key = categoryComparisonKey(value)
+  return Object.values(DEFAULT_CATEGORIES).some((category) => categoryComparisonKey(category) === key)
+}
+
+export function hasEquivalentCategory(values: readonly string[], value: string): boolean {
+  const key = categoryComparisonKey(value)
+  return values.some((item) => categoryComparisonKey(item) === key)
+}
+
 export function emptyCategoryPreferences(): CategoryPreferencesV1 {
   return { version: 1, customCategories: [], hiddenCategoryKeys: [] }
 }
@@ -92,6 +102,45 @@ export function preserveCurrentCategory(options: readonly string[], current?: st
   if (index >= 0) result[index] = current
   else result.push(current)
   return result
+}
+
+export function addCustomCategoryPreference(
+  preferences: CategoryPreferencesV1,
+  name: string,
+): CategoryPreferencesV1 {
+  const trimmed = name.trim()
+  if (!categoryComparisonKey(trimmed)) throw new Error('Informe um nome de categoria.')
+  if (isDefaultCategory(trimmed)) throw new Error('Essa categoria ja existe nas categorias padrao.')
+  if (hasEquivalentCategory(preferences.customCategories, trimmed)) {
+    throw new Error('Essa categoria personalizada ja existe.')
+  }
+  return validateCategoryPreferences({
+    ...preferences,
+    customCategories: [...preferences.customCategories, trimmed],
+  })
+}
+
+export function hideCategoryPreference(
+  preferences: CategoryPreferencesV1,
+  category: string,
+): CategoryPreferencesV1 {
+  const key = categoryComparisonKey(category)
+  if (!key) return validateCategoryPreferences(preferences)
+  return validateCategoryPreferences({
+    ...preferences,
+    hiddenCategoryKeys: [...preferences.hiddenCategoryKeys, key],
+  })
+}
+
+export function showCategoryPreference(
+  preferences: CategoryPreferencesV1,
+  category: string,
+): CategoryPreferencesV1 {
+  const key = categoryComparisonKey(category)
+  return validateCategoryPreferences({
+    ...preferences,
+    hiddenCategoryKeys: preferences.hiddenCategoryKeys.filter((item) => categoryComparisonKey(item) !== key),
+  })
 }
 
 export function getCategoryOptions(

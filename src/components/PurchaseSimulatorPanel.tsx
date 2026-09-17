@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { hasEquivalentCategory } from '../lib/categories'
 import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
@@ -149,7 +150,7 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
   const [purchaseDate, setPurchaseDate] = useState(() => defaultPurchaseDate(selectedMonth))
   const [horizon, setHorizon] = useState<(typeof horizonOptions)[number]>(6)
   const [category, setCategory] = useState('Compras')
-  const categories = useCategoryOptions('simulator', category)
+  const categories = useCategoryOptions('simulator')
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('pix')
   const [methods, setMethods] = useState<MethodState>({ cash: true, cardOne: true, cardInstallments: true })
   const [cardId, setCardId] = useState('')
@@ -195,6 +196,10 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
   useEffect(() => {
     setPurchaseDate(defaultPurchaseDate(selectedMonth))
   }, [selectedMonth.year, selectedMonth.month])
+
+  useEffect(() => {
+    if (categories[0] && !hasEquivalentCategory(categories, category)) setCategory(categories[0])
+  }, [categories, category])
 
   const simulationState = useMemo(() => {
     if (!submitted || !loaded) return { comparison: null, error: '' }

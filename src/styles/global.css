@@ -575,6 +575,7 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
 }
 .quick-slot,
 .manual-slot,
+.category-slot,
 .stats-slot,
 .budget-slot,
 .goals-slot,
@@ -584,6 +585,7 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
 .projection-slot,
 .backup-slot,
 .sync-slot { min-width: 0; }
+.category-slot { grid-column: 1 / -1; }
 .stats-slot { grid-column: 1 / -1; }
 .budget-slot { grid-column: 1 / -1; }
 .goals-slot { grid-column: 1 / -1; }
@@ -1201,6 +1203,98 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   background: #0f2c22;
   border: 1px solid #2e8a5c;
   border-radius: var(--radius-control);
+}
+.category-settings-panel {
+  padding: var(--space-5);
+}
+.category-settings-panel > .panel-title-row {
+  align-items: flex-start;
+  margin-bottom: var(--space-4);
+}
+.category-settings-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: #10182a;
+  border: 1px solid #344568;
+  border-radius: var(--radius-panel);
+}
+.category-settings-form label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.category-settings-form .button {
+  align-self: end;
+}
+.category-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.category-settings-box,
+.category-settings-hidden {
+  min-width: 0;
+  padding: var(--space-4);
+  background: #090f1c;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-panel);
+}
+.category-chip-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.category-chip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: #0b1222;
+  border: 1px solid #273756;
+  border-radius: var(--radius-control);
+}
+.category-chip.hidden {
+  border-color: #4d5367;
+  background: #0a0f1a;
+}
+.category-chip > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+.category-chip strong {
+  color: #f8fbff;
+  overflow-wrap: anywhere;
+}
+.category-chip span,
+.category-settings-empty,
+.category-settings-hidden span {
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+.category-settings-hidden {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.category-settings-hidden > strong {
+  color: #f8fbff;
+}
+.category-hidden-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 .sim-register-box {
   display: grid;
@@ -2357,15 +2451,17 @@ footer {
   .finance-grid { grid-template-columns: 1fr; }
   .quick-slot { order: 1; }
   .manual-slot { order: 2; }
-  .stats-slot { order: 3; }
-  .budget-slot { order: 4; }
-  .recurring-slot { order: 5; }
-  .projection-slot { order: 6; }
-  .simulator-slot { order: 7; }
-  .cards-slot { order: 8; }
-  .goals-slot { order: 9; }
-  .sync-slot { order: 10; }
-  .backup-slot { order: 11; }
+  .category-slot { order: 3; }
+  .stats-slot { order: 4; }
+  .budget-slot { order: 5; }
+  .recurring-slot { order: 6; }
+  .projection-slot { order: 7; }
+  .simulator-slot { order: 8; }
+  .cards-slot { order: 9; }
+  .goals-slot { order: 10; }
+  .sync-slot { order: 11; }
+  .backup-slot { order: 12; }
+  .category-slot { grid-column: auto; }
   .stats-slot { grid-column: auto; }
   .budget-slot { grid-column: auto; }
   .goals-slot { grid-column: auto; }
@@ -2432,7 +2528,7 @@ footer {
   .commitment-status {
     justify-self: start;
   }
-  .game-shell, .quick-panel, .manual-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .backup-panel, .sync-panel { padding: var(--space-3); }
+  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .backup-panel, .sync-panel { padding: var(--space-3); }
   .empty-state { padding: 22px var(--space-3); }
   .game-canvas { height: clamp(310px, 82vw, 370px); }
   .game-hud { grid-template-columns: 1fr; }
@@ -2452,6 +2548,8 @@ footer {
   .budget-summary > div:first-child { flex-direction: column; align-items: flex-start; }
   .budget-form,
   .category-budget-form,
+  .category-settings-form,
+  .category-settings-grid,
   .category-budget,
   .goal-form,
   .goal-contribution-form,
@@ -2466,7 +2564,8 @@ footer {
     grid-template-columns: 1fr;
   }
   .budget-form .button,
-  .category-budget-form .button { width: 100%; }
+  .category-budget-form .button,
+  .category-settings-form .button { width: 100%; }
   .button.compact,
   .icon-button {
     min-width: 44px;
@@ -2520,6 +2619,8 @@ footer {
     white-space: normal;
   }
   .category-budget .icon-button { justify-self: end; }
+  .category-chip { grid-template-columns: 1fr; }
+  .category-chip .button { width: 100%; }
   .history-toolbar {
     grid-template-columns: 1fr;
     padding: var(--space-2);

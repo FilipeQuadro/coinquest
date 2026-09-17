@@ -1,4 +1,5 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { hasEquivalentCategory } from '../lib/categories'
 import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
@@ -68,7 +69,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
   const [confirming, setConfirming] = useState<RecurringOccurrence | null>(null)
   const [error, setError] = useState('')
   const [draft, setDraft] = useState(() => emptyDraft(selectedMonth))
-  const categories = useCategoryOptions('recurring', draft.category)
+  const categories = useCategoryOptions('recurring', editingRule ? draft.category : undefined)
   const [amountText, setAmountText] = useState('')
   const [startMonthText, setStartMonthText] = useState(() => toMonthInputValue(selectedMonth))
   const [endMonthText, setEndMonthText] = useState('')
@@ -93,6 +94,12 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
   )
   const cardInvoices = buildCreditCardInvoices(cards, cardPurchases, cardPayments, selectedMonth, transactions)
   const outlook = calculateMonthlyOutlook(transactions, occurrences, selectedMonth, getUnpaidInvoiceCommitment(cardInvoices))
+
+  useEffect(() => {
+    if (!editingRule && categories[0] && !hasEquivalentCategory(categories, draft.category)) {
+      setDraft((current) => ({ ...current, category: categories[0] }))
+    }
+  }, [categories, draft.category, editingRule])
 
   function resetForm(month = selectedMonth) {
     setEditingRule(null)

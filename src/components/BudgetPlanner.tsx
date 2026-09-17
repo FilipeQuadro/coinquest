@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
+import { hasEquivalentCategory } from '../lib/categories'
 import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
@@ -50,7 +51,7 @@ export function BudgetPlanner({ selectedMonth }: BudgetPlannerProps) {
   const cardPayments = useLiveQuery(() => db.cardInvoicePayments.toArray(), [], [])
   const [totalLimit, setTotalLimit] = useState('')
   const [category, setCategory] = useState('Alimentacao')
-  const categories = useCategoryOptions('budget', category)
+  const categories = useCategoryOptions('budget')
   const [categoryLimit, setCategoryLimit] = useState('')
   const [error, setError] = useState('')
   const cardInvoices = buildCreditCardInvoices(cards, cardPurchases, cardPayments, selectedMonth, transactions)
@@ -61,6 +62,10 @@ export function BudgetPlanner({ selectedMonth }: BudgetPlannerProps) {
   const barWidth = progress.percentageUsed === null
     ? 0
     : Math.max(0, Math.min(100, Number.isFinite(progress.percentageUsed) ? progress.percentageUsed * 100 : 100))
+
+  useEffect(() => {
+    if (categories[0] && !hasEquivalentCategory(categories, category)) setCategory(categories[0])
+  }, [categories, category])
 
   async function saveTotal(event: FormEvent) {
     event.preventDefault()

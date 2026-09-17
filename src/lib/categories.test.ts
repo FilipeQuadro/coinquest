@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
-  canonicalCategory, categoryComparisonKey, deduplicateCategories, emptyCategoryPreferences,
-  getCategoryOptions, parseCategoryPreferences, preserveCurrentCategory, validateCategoryPreferences,
+  addCustomCategoryPreference, canonicalCategory, categoryComparisonKey, deduplicateCategories, emptyCategoryPreferences,
+  getCategoryOptions, hideCategoryPreference, parseCategoryPreferences, preserveCurrentCategory,
+  showCategoryPreference, validateCategoryPreferences,
 } from './categories'
 
 describe('category options', () => {
@@ -47,5 +48,46 @@ describe('category options', () => {
       expect(parseCategoryPreferences(json)).toEqual(emptyCategoryPreferences())
     }
     expect(() => validateCategoryPreferences({ version: 2 })).toThrow()
+  })
+
+  it('adds custom categories and rejects empty, default or equivalent duplicates', () => {
+    const preferences = addCustomCategoryPreference(emptyCategoryPreferences(), ' Pets ')
+    expect(preferences.customCategories).toEqual(['Pets'])
+    expect(addCustomCategoryPreference(preferences, 'Viagens').customCategories).toEqual(['Pets', 'Viagens'])
+    expect(() => addCustomCategoryPreference(preferences, ' ')).toThrow('Informe um nome de categoria.')
+    expect(() => addCustomCategoryPreference(preferences, 'pets')).toThrow('Essa categoria personalizada ja existe.')
+    expect(() => addCustomCategoryPreference(preferences, 'Sa\u00fade')).toThrow('Essa categoria ja existe nas categorias padrao.')
+    expect(() => addCustomCategoryPreference(preferences, ' ALIMENTACAO ')).toThrow('Essa categoria ja existe nas categorias padrao.')
+  })
+
+  it('hides and shows categories without removing custom categories', () => {
+    const withCustom = addCustomCategoryPreference(emptyCategoryPreferences(), 'Pets')
+    const hidden = hideCategoryPreference(withCustom, ' Sa\u00fade ')
+    expect(hidden.customCategories).toEqual(['Pets'])
+    expect(hidden.hiddenCategoryKeys).toEqual(['saude'])
+    expect(getCategoryOptions('transaction-expense', hidden)).not.toContain('Saude')
+
+    const hiddenCustom = hideCategoryPreference(hidden, ' pets ')
+    expect(hiddenCustom.customCategories).toEqual(['Pets'])
+    expect(hiddenCustom.hiddenCategoryKeys).toEqual(['saude', 'pets'])
+    expect(getCategoryOptions('transaction-expense', hiddenCustom)).not.toContain('Pets')
+
+    const shownCustom = showCategoryPreference(hiddenCustom, 'PETS')
+    expect(shownCustom.customCategories).toEqual(['Pets'])
+    expect(shownCustom.hiddenCategoryKeys).toEqual(['saude'])
+    expect(getCategoryOptions('transaction-expense', shownCustom)).toContain('Pets')
+  })
+
+  it('hides categories from new options and preserves them only when editing current records', () => {
+    const preferences = validateCategoryPreferences({
+      version: 1,
+      customCategories: ['Pets'],
+      hiddenCategoryKeys: ['pets', 'saude'],
+    })
+
+    expect(getCategoryOptions('transaction-expense', preferences)).not.toContain('Pets')
+    expect(getCategoryOptions('transaction-expense', preferences)).not.toContain('Saude')
+    expect(getCategoryOptions('transaction-expense', preferences, 'Pets')).toContain('Pets')
+    expect(getCategoryOptions('transaction-expense', preferences, 'Sa\u00fade')).toContain('Sa\u00fade')
   })
 })
