@@ -6,6 +6,7 @@ import { CreditCardsPanel } from './components/CreditCardsPanel'
 import { GameWorld } from './components/GameWorld'
 import { GoalsPanel } from './components/GoalsPanel'
 import { History } from './components/History'
+import { LocalDataCenterPanel } from './components/LocalDataCenterPanel'
 import { ManualTransaction } from './components/ManualTransaction'
 import { MonthNavigator } from './components/MonthNavigator'
 import { MonthlyOverviewPanel } from './components/MonthlyOverviewPanel'
@@ -123,7 +124,7 @@ export function App() {
           <div className="cards-slot" id="cartoes"><CreditCardsPanel selectedMonth={selectedMonth} /></div>
           <div className="goals-slot" id="missoes"><GoalsPanel /></div>
           <div className="sync-slot" id="sync"><SyncPanel /></div>
-          <div className="backup-slot" id="backup"><BackupPanel /></div>
+          <div className="backup-slot" id="backup"><LocalDataCenterPanel /><BackupPanel /></div>
         </div>
 
         <div id="historico"><History selectedMonth={selectedMonth} /></div>

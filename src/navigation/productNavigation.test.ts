@@ -22,6 +22,8 @@ describe('product navigation', () => {
     expect(normalizeProductSectionHash('#planning')).toBe('planejamento')
     expect(normalizeProductSectionHash('#cards')).toBe('cartoes')
     expect(normalizeProductSectionHash('#goals')).toBe('missoes')
+    expect(normalizeProductSectionHash('#dados')).toBe('backup')
+    expect(normalizeProductSectionHash('#data')).toBe('backup')
     expect(normalizeProductSectionHash('#historico')).toBeNull()
     expect(normalizeProductSectionHash('')).toBeNull()
   })
