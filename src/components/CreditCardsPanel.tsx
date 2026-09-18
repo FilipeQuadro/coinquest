@@ -318,6 +318,12 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
           {cardFormOpen ? 'Fechar' : 'Adicionar cartao'}
         </button>
       </div>
+      <div className="guided-links" aria-label="Atalhos de cartoes">
+        <span className="guided-links-label">Antes de registrar uma compra maior:</span>
+        <div className="guided-links-row">
+          <a className="inline-link" href="#simulador">Simular antes de registrar</a>
+        </div>
+      </div>
 
       {cardFormOpen && (
         <form className="card-form" data-testid="card-form" onSubmit={submitCard}>
