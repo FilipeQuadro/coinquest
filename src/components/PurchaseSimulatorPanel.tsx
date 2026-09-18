@@ -371,6 +371,14 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
           Limpar simulação
         </button>
       </div>
+      <p className="guidance-note">A simulacao nao cria movimentacao real. Registro so acontece se voce confirmar uma opcao.</p>
+      <div className="guided-links" aria-label="Atalhos do simulador">
+        <span className="guided-links-label">Depois de comparar cenarios:</span>
+        <div className="guided-links-row">
+          <a className="inline-link" href="#cartoes">Registrar compra no cartao</a>
+          <a className="inline-link" href="#registrar">Registrar movimento real</a>
+        </div>
+      </div>
 
       <form className="purchase-simulator-form" data-testid="purchase-simulator-form" onSubmit={submit}>
         <label>

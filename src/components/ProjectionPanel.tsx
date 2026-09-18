@@ -121,6 +121,14 @@ export function ProjectionPanel({ selectedMonth }: ProjectionPanelProps) {
           </select>
         </label>
       </div>
+      <p className="guidance-note">Use a projecao como leitura de planejamento; ela nao substitui seu extrato real.</p>
+      <div className="guided-links" aria-label="Atalhos da projecao">
+        <span className="guided-links-label">A projecao usa compromissos cadastrados:</span>
+        <div className="guided-links-row">
+          <a className="inline-link" href="#previsoes">Ajustar recorrencias</a>
+          <a className="inline-link" href="#cartoes">Revisar cartoes</a>
+        </div>
+      </div>
 
       {!loaded && <div className="empty-state" data-testid="projection-loading">{'Carregando proje\u00e7\u00e3o...'}</div>}
 

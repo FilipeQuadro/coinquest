@@ -370,6 +370,13 @@ export function GoalsPanel() {
           Nova missão
         </button>
       </div>
+      <div className="guided-links" aria-label="Atalhos de missoes">
+        <span className="guided-links-label">Missoes ficam separadas das movimentacoes reais:</span>
+        <div className="guided-links-row">
+          <a className="inline-link" href="#historico">Ver historico</a>
+          <a className="inline-link" href="#registrar">Registrar entrada ou saida</a>
+        </div>
+      </div>
 
       {formOpen && (
         <form className="goal-form" data-testid="goal-form" onSubmit={submitGoal}>
@@ -451,7 +458,10 @@ export function GoalsPanel() {
 
       {!loaded && <p className="empty-state">Carregando missões...</p>}
       {loaded && allGoals.length === 0 && (
-        <p className="empty-state">Nenhuma missão cadastrada ainda.</p>
+        <div className="empty-state empty-state-guide">
+          <strong>Nenhuma missao cadastrada ainda.</strong>
+          <span>Crie uma missao para acompanhar uma reserva ou objetivo. Alocacoes de meta nao viram transacao automaticamente.</span>
+        </div>
       )}
 
       {loaded && (
