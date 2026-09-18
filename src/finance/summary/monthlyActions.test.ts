@@ -87,6 +87,18 @@ describe('deriveMonthlyActions', () => {
     expect(actions).toContainEqual(expect.objectContaining({ source: 'card' }))
   })
 
+  it('ignora compromissos ja encerrados ao derivar acoes', () => {
+    const actions = deriveMonthlyActions(baseInput({
+      commitments: [
+        { id: 'paid-invoice', kind: 'card-invoice', status: 'paid', amount: 600 },
+        { id: 'realized-rent', kind: 'recurring', status: 'realized', amount: 1200 },
+        { id: 'skipped-course', kind: 'recurring', status: 'skipped', amount: 200 },
+      ],
+    }))
+
+    expect(actions).toEqual([])
+  })
+
   it('gera acao de cartao para fatura aberta pendente ou atrasada', () => {
     const actions = deriveMonthlyActions(baseInput({
       commitments: [
@@ -126,6 +138,16 @@ describe('deriveMonthlyActions', () => {
       source: 'goal',
       destinationHash: '#missoes',
     }))
+  })
+
+  it('nao gera acao de meta para meta concluida ou arquivada', () => {
+    expect(deriveMonthlyActions(baseInput({
+      goal: { id: 'goal-completed', status: 'completed' },
+    }))).toEqual([])
+
+    expect(deriveMonthlyActions(baseInput({
+      goal: { id: 'goal-archived', status: 'archived' },
+    }))).toEqual([])
   })
 
   it('nao cria acao de backup ou categoria nesta etapa', () => {

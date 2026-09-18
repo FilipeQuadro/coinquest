@@ -316,7 +316,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
               <div>
                 <span className="eyebrow">ACOES DO MES</span>
                 <h3 id="monthly-actions-title">Pontos para revisar</h3>
-                <p>Pontos para revisar com base nos dados deste mes.</p>
+                <p>Atalhos baseados nos sinais deste mes.</p>
               </div>
             </div>
 
