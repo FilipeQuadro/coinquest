@@ -6,6 +6,7 @@ import { CreditCardsPanel } from './components/CreditCardsPanel'
 import { GameWorld } from './components/GameWorld'
 import { GoalsPanel } from './components/GoalsPanel'
 import { History } from './components/History'
+import { LocalDataCenterPanel } from './components/LocalDataCenterPanel'
 import { ManualTransaction } from './components/ManualTransaction'
 import { MonthNavigator } from './components/MonthNavigator'
 import { MonthlyOverviewPanel } from './components/MonthlyOverviewPanel'
@@ -123,7 +124,31 @@ export function App() {
           <div className="cards-slot" id="cartoes"><CreditCardsPanel selectedMonth={selectedMonth} /></div>
           <div className="goals-slot" id="missoes"><GoalsPanel /></div>
           <div className="sync-slot" id="sync"><SyncPanel /></div>
-          <div className="backup-slot" id="backup"><BackupPanel /></div>
+          <div className="backup-slot" id="backup">
+            <section className="data-area-intro" aria-labelledby="data-area-title">
+              <div>
+                <p className="eyebrow">Dados locais</p>
+                <h2 id="data-area-title">Revise, proteja e restaure seus dados</h2>
+                <p>Seus dados ficam neste dispositivo. Use esta area para revisar sinais locais e fazer backups.</p>
+              </div>
+              <div className="data-area-intro-grid" aria-label="Resumo da area Dados">
+                <article className="data-area-intro-card">
+                  <strong>Local primeiro</strong>
+                  <span>O uso principal continua disponivel neste dispositivo.</span>
+                </article>
+                <article className="data-area-intro-card">
+                  <strong>Revisao</strong>
+                  <span>A central mostra sinais locais sem corrigir nada automaticamente.</span>
+                </article>
+                <article className="data-area-intro-card">
+                  <strong>Backup</strong>
+                  <span>Backup local nao precisa de sincronizacao em nuvem.</span>
+                </article>
+              </div>
+            </section>
+            <LocalDataCenterPanel />
+            <BackupPanel />
+          </div>
         </div>
 
         <div id="historico"><History selectedMonth={selectedMonth} /></div>

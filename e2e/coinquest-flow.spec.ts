@@ -726,9 +726,10 @@ test('exports and restores a local backup', async ({ page }, testInfo) => {
   await expect(page.getByTestId('budget-percentage')).toContainText('Sem orcamento')
 
   await page.getByTestId('backup-file-input').setInputFiles(backupPath)
-  await expect(page.getByTestId('backup-confirm')).toContainText('substituira os dados atuais')
-  await expect(page.getByTestId('backup-preview')).toContainText('Integridade verificada.')
-  await expect(page.getByTestId('backup-preview')).toContainText('Transacoes')
+  await expect(page.getByTestId('backup-confirm')).toContainText('A restauracao substitui os dados locais atuais pelos dados deste arquivo.')
+  await expect(page.getByTestId('backup-preview')).toContainText('Backup simples')
+  await expect(page.getByTestId('backup-preview')).toContainText('Arquivo validado antes da restauracao.')
+  await expect(page.getByTestId('backup-preview')).toContainText('Movimentacoes reais')
   await page.getByTestId('backup-import-confirm').click()
 
   await expect(page.getByTestId('backup-success')).toContainText('Backup restaurado com sucesso.')
@@ -755,7 +756,8 @@ test('exports and restores a local backup', async ({ page }, testInfo) => {
   await expect(page.getByTestId('backup-encrypted-import-box')).toContainText('protegido por senha')
   await page.getByTestId('backup-import-password').fill('senha-forte-local')
   await page.getByTestId('backup-unlock-encrypted').click()
-  await expect(page.getByTestId('backup-preview')).toContainText('Integridade verificada.')
+  await expect(page.getByTestId('backup-preview')).toContainText('Backup protegido')
+  await expect(page.getByTestId('backup-preview')).toContainText('Arquivo validado antes da restauracao.')
   await page.getByTestId('backup-import-confirm').click()
 
   await expect(page.getByTestId('backup-success')).toContainText('Backup restaurado com sucesso.')
