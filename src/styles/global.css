@@ -665,15 +665,18 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
   gap: var(--space-3);
 }
 .data-area-intro-card {
+  display: grid;
+  align-content: start;
+  gap: 5px;
   min-width: 0;
   padding: var(--space-3);
   background: #0b1222;
   border: 1px solid #2b3b60;
+  border-top: 3px solid #285c7c;
   border-radius: var(--radius-control);
 }
 .data-area-intro-card strong {
   display: block;
-  margin-bottom: 5px;
   color: #f8fbff;
 }
 .data-area-intro-card span {
@@ -2628,25 +2631,41 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
 }
 .empty-state-guide strong {
   color: #f8fbff;
+  font-size: 18px;
+  line-height: 1.25;
 }
 .empty-state-guide span {
   max-width: 58ch;
 }
+.empty-state-guide .inline-link {
+  margin-top: 4px;
+}
 .inline-link {
   display: inline-grid;
-  min-height: 36px;
+  min-height: 40px;
   place-items: center;
-  padding: 6px 10px;
+  max-width: 100%;
+  padding: 7px 11px;
   color: var(--color-cyan);
   font-weight: 800;
   text-decoration: none;
   border: 1px solid #285c7c;
   border-radius: var(--radius-control);
   background: #10182a;
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
-.inline-link:hover {
+.inline-link:hover,
+.inline-link:focus-visible {
   color: #f8fbff;
   border-color: var(--color-cyan);
+  background: #13213a;
+}
+.inline-link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.inline-link:active {
+  transform: translateY(1px);
 }
 .guidance-note {
   margin: calc(-1 * var(--space-2)) 0 var(--space-4);
@@ -2655,6 +2674,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   line-height: 1.45;
   background: #0b1222;
   border: 1px solid #2b3b60;
+  border-left: 4px solid #285c7c;
   border-radius: var(--radius-control);
 }
 .guided-links {
@@ -2667,10 +2687,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   padding: 10px 12px;
   background: #0b1222;
   border: 1px solid #2b3b60;
+  border-left: 4px solid #285c7c;
   border-radius: var(--radius-control);
 }
 .guidance-note + .guided-links {
-  margin-top: calc(-1 * var(--space-3));
+  margin-top: calc(-1 * var(--space-2));
 }
 .guided-links-label {
   color: var(--color-muted);
@@ -2681,6 +2702,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   flex-wrap: wrap;
   gap: var(--space-2);
   justify-content: flex-end;
+  min-width: min(100%, 280px);
 }
 
 .pwa-toast {
@@ -2794,6 +2816,10 @@ footer {
   }
   .guided-links-row {
     justify-content: flex-start;
+    min-width: 0;
+  }
+  .guided-links-row .inline-link {
+    width: 100%;
   }
   .monthly-overview {
     padding: var(--space-3);
