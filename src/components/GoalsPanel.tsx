@@ -370,6 +370,13 @@ export function GoalsPanel() {
           Nova missão
         </button>
       </div>
+      <div className="guided-links" aria-label="Atalhos de missoes">
+        <span className="guided-links-label">Missoes ficam separadas das movimentacoes reais:</span>
+        <div className="guided-links-row">
+          <a className="inline-link" href="#historico">Ver historico</a>
+          <a className="inline-link" href="#registrar">Registrar entrada ou saida</a>
+        </div>
+      </div>
 
       {formOpen && (
         <form className="goal-form" data-testid="goal-form" onSubmit={submitGoal}>

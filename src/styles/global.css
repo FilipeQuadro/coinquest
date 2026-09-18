@@ -2657,6 +2657,31 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   border: 1px solid #2b3b60;
   border-radius: var(--radius-control);
 }
+.guided-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  padding: 10px 12px;
+  background: #0b1222;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
+.guidance-note + .guided-links {
+  margin-top: calc(-1 * var(--space-3));
+}
+.guided-links-label {
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+.guided-links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
 
 .pwa-toast {
   position: fixed;
@@ -2763,6 +2788,13 @@ footer {
   .world-intro p { font-size: 15px; }
   h2 { font-size: 22px; }
   .muted { font-size: 14px; }
+  .guided-links {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .guided-links-row {
+    justify-content: flex-start;
+  }
   .monthly-overview {
     padding: var(--space-3);
   }
