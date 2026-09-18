@@ -243,7 +243,8 @@ a { color: inherit; text-decoration: none; }
 .monthly-overview-outlook,
 .monthly-overview-commitments,
 .monthly-overview-featured-goal,
-.monthly-overview-insights {
+.monthly-overview-insights,
+.monthly-overview-actions {
   min-width: 0;
   border: 1px solid #2b3b60;
   border-radius: var(--radius-panel);
@@ -310,10 +311,12 @@ a { color: inherit; text-decoration: none; }
 .monthly-overview-outlook,
 .monthly-overview-commitments,
 .monthly-overview-featured-goal,
-.monthly-overview-insights {
+.monthly-overview-insights,
+.monthly-overview-actions {
   padding: var(--space-4);
 }
-.monthly-overview-insights {
+.monthly-overview-insights,
+.monthly-overview-actions {
   grid-column: 1 / -1;
 }
 .monthly-insight-list {
@@ -353,6 +356,47 @@ a { color: inherit; text-decoration: none; }
 .monthly-insight.insight-info { border-left-color: var(--color-cyan); }
 .monthly-insight.insight-attention { border-left-color: var(--color-gold); }
 .monthly-insight.insight-warning { border-left-color: var(--color-expense); }
+.monthly-overview-actions .monthly-overview-card-title p {
+  margin: 6px 0 0;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.monthly-actions-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.monthly-action {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid #2b3b60;
+  border-left-width: 4px;
+  border-radius: var(--radius-control);
+  background: #070d18;
+}
+.monthly-action strong {
+  display: block;
+  color: #f8fbff;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.monthly-action p {
+  margin: 6px 0 0;
+  color: #c1cbe6;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.monthly-action .inline-link {
+  align-self: flex-start;
+}
+.monthly-action.action-info { border-left-color: var(--color-cyan); }
+.monthly-action.action-attention { border-left-color: var(--color-gold); }
+.monthly-action.action-warning { border-left-color: var(--color-expense); }
 .monthly-overview-card-title {
   display: flex;
   align-items: flex-start;
@@ -2765,6 +2809,7 @@ footer {
   }
   .monthly-overview-grid { grid-template-columns: 1fr; }
   .monthly-insight-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .monthly-actions-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .monthly-overview-hero { padding: var(--space-4); }
   .monthly-overview-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .stats-grid { grid-template-columns: 1fr 1fr; }
@@ -2837,7 +2882,8 @@ footer {
   .monthly-overview-outlook,
   .monthly-overview-commitments,
   .monthly-overview-featured-goal,
-  .monthly-overview-insights {
+  .monthly-overview-insights,
+  .monthly-overview-actions {
     padding: var(--space-3);
   }
   .monthly-overview-hero strong {
@@ -2845,7 +2891,8 @@ footer {
   }
   .monthly-overview-metrics,
   .monthly-overview-outlook-grid,
-  .monthly-insight-list {
+  .monthly-insight-list,
+  .monthly-actions-list {
     grid-template-columns: 1fr;
   }
   .monthly-overview-metrics > div,

@@ -7,6 +7,7 @@ import { buildCreditCardInvoices, getCommittedCardExpenses } from '../finance/ca
 import { calculateFinancialHealth } from '../finance/health/financialHealth'
 import { deriveFinancialInsights, type CategoryInsightInput } from '../finance/insights/financialInsights'
 import { formatMonthYear, isDateInMonth, type SelectedMonth } from '../finance/month'
+import { deriveMonthlyActions } from '../finance/summary/monthlyActions'
 import { buildMonthlyHighlights } from '../finance/summary/monthlyHighlights'
 import { buildMonthlyOverview } from '../finance/summary/monthlyOverview'
 import { getTransactionKind } from '../finance/transactions'
@@ -183,8 +184,42 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
           }
         : null,
     })
+    const monthlyActions = deriveMonthlyActions({
+      budget: {
+        hasBudget: overview.budget.hasBudget,
+        percentageUsed: overview.budget.percentageUsed,
+        isOverLimit: overview.budget.isOverLimit,
+      },
+      commitments: [
+        ...(overview.outlook.plannedRecurringExpense > 0
+          ? [{
+              id: 'monthly-recurring-expense',
+              kind: 'recurring' as const,
+              status: 'pending' as const,
+              amount: overview.outlook.plannedRecurringExpense,
+            }]
+          : []),
+        ...(overview.outlook.committedCardExpense > 0
+          ? [{
+              id: 'monthly-card-invoices',
+              kind: 'card-invoice' as const,
+              status: 'pending' as const,
+              amount: overview.outlook.committedCardExpense,
+            }]
+          : []),
+      ],
+      projection: {
+        projectedNet: overview.outlook.projectedNet,
+      },
+      goal: highlights.featuredGoal
+        ? {
+            id: highlights.featuredGoal.id,
+            active: true,
+          }
+        : null,
+    })
 
-    return { overview, highlights, insights }
+    return { overview, highlights, insights, monthlyActions }
   }, [overviewData, selectedMonth])
 
   if (!summary) {
@@ -201,8 +236,9 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
     )
   }
 
-  const { overview, highlights, insights } = summary
+  const { overview, highlights, insights, monthlyActions } = summary
   const visibleInsights = insights.slice(0, 5)
+  const visibleActions = monthlyActions.slice(0, 4)
   const tone = budgetTone(overview.budget.percentageUsed)
   const percentLabel = formatPercent(overview.budget.percentageUsed)
   const budgetUsageLabel = `Uso do orcamento: ${percentLabel}`
@@ -273,6 +309,30 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
             <p className="monthly-overview-empty-text">Sem alertas relevantes com os dados atuais do mes.</p>
           )}
         </article>
+
+        {visibleActions.length > 0 && (
+          <section className="monthly-overview-actions" aria-labelledby="monthly-actions-title" data-testid="monthly-actions">
+            <div className="monthly-overview-card-title">
+              <div>
+                <span className="eyebrow">ACOES DO MES</span>
+                <h3 id="monthly-actions-title">Pontos para revisar</h3>
+                <p>Atalhos baseados nos sinais deste mes.</p>
+              </div>
+            </div>
+
+            <div className="monthly-actions-list">
+              {visibleActions.map((action) => (
+                <article className={`monthly-action action-${action.kind}`} data-testid="monthly-action-item" key={action.id}>
+                  <div>
+                    <strong>{action.title}</strong>
+                    <p>{action.message}</p>
+                  </div>
+                  <a className="inline-link" href={action.destinationHash}>Ver area</a>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
         <article className={`monthly-overview-budget tone-${tone}`}>
           <div className="monthly-overview-card-title">
