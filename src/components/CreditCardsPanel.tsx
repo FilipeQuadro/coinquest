@@ -554,7 +554,10 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
 
           <div className="purchase-list" aria-label="Compras no cartao">
             {selectedCardPurchases.length === 0 ? (
-              <div className="empty-state">Nenhuma compra cadastrada neste cartao.</div>
+              <div className="empty-state empty-state-guide">
+                <strong>Nenhuma compra neste cartao.</strong>
+                <span>Use Nova compra para registrar compromissos de fatura. Isso nao cria saida de caixa imediata.</span>
+              </div>
             ) : selectedCardPurchases.map((purchase) => {
               const installments = buildInstallmentOccurrences(selectedCard, purchase, payments, transactions)
               const futureInstallments = installments.filter((installment) => installment.status !== 'paid').length
@@ -578,7 +581,12 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
         </>
       )}
 
-      {!selectedCard && <div className="empty-state">Cadastre um cartao para acompanhar faturas e compras parceladas.</div>}
+      {!selectedCard && (
+        <div className="empty-state empty-state-guide">
+          <strong>Nenhum cartao cadastrado.</strong>
+          <span>Cadastre um cartao para acompanhar faturas. O pagamento da fatura continuara separado como movimentacao real.</span>
+        </div>
+      )}
       {error && <div className="message error">{error}</div>}
     </section>
   )

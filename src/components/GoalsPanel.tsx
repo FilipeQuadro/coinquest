@@ -451,7 +451,10 @@ export function GoalsPanel() {
 
       {!loaded && <p className="empty-state">Carregando missões...</p>}
       {loaded && allGoals.length === 0 && (
-        <p className="empty-state">Nenhuma missão cadastrada ainda.</p>
+        <div className="empty-state empty-state-guide">
+          <strong>Nenhuma missao cadastrada ainda.</strong>
+          <span>Crie uma missao para acompanhar uma reserva ou objetivo. Alocacoes de meta nao viram transacao automaticamente.</span>
+        </div>
       )}
 
       {loaded && (
