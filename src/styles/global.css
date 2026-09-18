@@ -637,6 +637,51 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
 .projection-slot { grid-column: 1 / -1; }
 .backup-slot { grid-column: 1 / -1; }
 .sync-slot { grid-column: 1 / -1; }
+.data-area-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--space-4);
+  align-items: stretch;
+  margin-bottom: var(--space-4);
+  padding: var(--space-5);
+  background:
+    linear-gradient(135deg, #17233b 0%, #10182a 58%, #0b1222 100%);
+  border: 2px solid #405d91;
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+}
+.data-area-intro h2 {
+  margin-bottom: 6px;
+}
+.data-area-intro p {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+.data-area-intro-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.data-area-intro-card {
+  min-width: 0;
+  padding: var(--space-3);
+  background: #0b1222;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
+.data-area-intro-card strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #f8fbff;
+}
+.data-area-intro-card span {
+  display: block;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.35;
+}
 .quick-panel, .manual-panel { padding: var(--space-5); }
 .quick-panel {
   background:
@@ -2662,6 +2707,9 @@ footer {
   .projection-slot { grid-column: auto; }
   .backup-slot { grid-column: auto; }
   .sync-slot { grid-column: auto; }
+  .data-area-intro {
+    grid-template-columns: 1fr;
+  }
   .game-canvas { height: clamp(390px, 62vw, 560px); }
 }
 
@@ -2721,7 +2769,7 @@ footer {
   .commitment-status {
     justify-self: start;
   }
-  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .local-data-panel, .backup-panel, .sync-panel { padding: var(--space-3); }
+  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .local-data-panel, .backup-panel, .sync-panel, .data-area-intro { padding: var(--space-3); }
   .empty-state { padding: 22px var(--space-3); }
   .game-canvas { height: clamp(310px, 82vw, 370px); }
   .game-hud { grid-template-columns: 1fr; }
@@ -2934,6 +2982,9 @@ footer {
     grid-template-columns: 1fr;
   }
   .backup-preview-summary {
+    grid-template-columns: 1fr;
+  }
+  .data-area-intro-grid {
     grid-template-columns: 1fr;
   }
   .local-data-counts {
