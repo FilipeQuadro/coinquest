@@ -371,6 +371,7 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
           Limpar simulação
         </button>
       </div>
+      <p className="guidance-note">A simulacao nao cria movimentacao real. Registro so acontece se voce confirmar uma opcao.</p>
 
       <form className="purchase-simulator-form" data-testid="purchase-simulator-form" onSubmit={submit}>
         <label>

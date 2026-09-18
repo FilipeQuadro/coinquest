@@ -171,9 +171,16 @@ export function History({ selectedMonth }: HistoryProps) {
       </div>
 
       {monthTransactions.length === 0 ? (
-        <div className="empty-state">O log deste mes esta vazio. Registros futuros planejados ficam fora de transacoes realizadas.</div>
+        <div className="empty-state empty-state-guide">
+          <strong>Nenhuma movimentacao real neste mes.</strong>
+          <span>Use Registrar para adicionar entradas ou saidas que ja aconteceram. Previsoes e simulacoes ficam separadas.</span>
+          <a className="inline-link" href="#registrar">Ir para Registrar</a>
+        </div>
       ) : transactions.length === 0 ? (
-        <div className="empty-state">Nenhum registro corresponde aos filtros atuais.</div>
+        <div className="empty-state empty-state-guide">
+          <strong>Nenhum registro encontrado.</strong>
+          <span>Ajuste a busca ou limpe os filtros para ver outras movimentacoes reais do mes.</span>
+        </div>
       ) : (
         <div className="history-list">
           {transactions.map((item) => (

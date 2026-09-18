@@ -2620,6 +2620,43 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   border-radius: var(--radius-panel);
   background: #0b1222;
 }
+.empty-state-guide {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  line-height: 1.45;
+}
+.empty-state-guide strong {
+  color: #f8fbff;
+}
+.empty-state-guide span {
+  max-width: 58ch;
+}
+.inline-link {
+  display: inline-grid;
+  min-height: 36px;
+  place-items: center;
+  padding: 6px 10px;
+  color: var(--color-cyan);
+  font-weight: 800;
+  text-decoration: none;
+  border: 1px solid #285c7c;
+  border-radius: var(--radius-control);
+  background: #10182a;
+}
+.inline-link:hover {
+  color: #f8fbff;
+  border-color: var(--color-cyan);
+}
+.guidance-note {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  padding: 10px 12px;
+  color: var(--color-muted);
+  line-height: 1.45;
+  background: #0b1222;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
 
 .pwa-toast {
   position: fixed;
