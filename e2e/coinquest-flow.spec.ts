@@ -1,3 +1,4 @@
+import { writeFile } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 
 async function quickEntry(page: Page, phrase: string) {
@@ -696,6 +697,44 @@ test('registers a simulated installment card purchase without immediate cash tra
   await reloadApp(page)
   await expect(page.getByTestId('summary-count')).toContainText('0')
   await expect(page.getByTestId('card-purchase-item').filter({ hasText: 'Notebook' })).toContainText('6x')
+
+  expect(pageErrors).toEqual([])
+  expect(consoleErrors).toEqual([])
+})
+
+test('previews and manually confirms a local CSV import', async ({ page }, testInfo) => {
+  const { pageErrors, consoleErrors } = captureErrors(page)
+  const currentMonth = selectedMonthFromDate()
+  const importDate = dateInputForMonth(currentMonth, 12)
+  const csvPath = testInfo.outputPath('bank-statement-import.csv')
+  await writeFile(csvPath, [
+    'data;descricao;valor;categoria',
+    `${importDate};Importacao padaria;-12,34;Alimentacao`,
+    `${importDate};Fatura Nubank;-100,00;Cartao`,
+  ].join('\n'), 'utf8')
+
+  await page.goto('/')
+  await expect(page.locator('.game-canvas canvas')).toBeVisible()
+
+  await page.getByTestId('import-csv-input').setInputFiles(csvPath)
+  await expect(page.getByTestId('import-csv-preview')).toContainText('Candidatos')
+  await expect(page.getByTestId('import-selection-summary')).toContainText('1 selecionado')
+  await expect(page.getByTestId('import-candidate-checkbox').nth(0)).toBeChecked()
+  await expect(page.getByTestId('import-candidate-checkbox').nth(1)).not.toBeChecked()
+  await expect(page.getByTestId('import-csv-preview')).toContainText('cartao/fatura')
+
+  await page.getByTestId('import-review-confirmation').click()
+  await expect(page.getByTestId('import-confirm-box')).toContainText('movimentacoes reais no Historico')
+  await page.getByTestId('import-confirm-selected').click()
+
+  await expect(page.getByTestId('import-csv-success')).toContainText('1 movimentacao real criada')
+  await expect(page.getByTestId('history-item').filter({ hasText: 'Importacao padaria' })).toBeVisible()
+  await expect(page.getByTestId('history-item').filter({ hasText: 'Fatura Nubank' })).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'Limpar previa' }).click()
+  await page.getByTestId('import-csv-input').setInputFiles(csvPath)
+  await expect(page.getByTestId('import-csv-preview')).toContainText('Possivel duplicata')
+  await expect(page.getByTestId('import-candidate-checkbox').nth(0)).not.toBeChecked()
 
   expect(pageErrors).toEqual([])
   expect(consoleErrors).toEqual([])

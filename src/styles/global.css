@@ -2037,6 +2037,26 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   display: grid;
   gap: var(--space-3);
 }
+.import-selection-summary {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: #10182a;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
+.import-selection-summary strong {
+  color: #f8fbff;
+}
+.import-selection-summary span {
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+.import-selection-summary > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
 .import-candidate-list,
 .import-rejected-list {
   display: grid;
@@ -2044,13 +2064,26 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
 }
 .import-candidate-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(150px, auto) minmax(0, 1fr) auto;
   gap: var(--space-3);
   align-items: start;
   padding: var(--space-3);
   background: #0b1222;
   border: 1px solid #2b3b60;
   border-radius: var(--radius-control);
+}
+.import-candidate-select {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.35;
+}
+.import-candidate-select input {
+  width: auto;
+  min-width: 18px;
+  min-height: 18px;
 }
 .import-candidate-main {
   min-width: 0;
@@ -2100,6 +2133,27 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   background: #171609;
   border: 1px solid #80662b;
   border-radius: var(--radius-control);
+}
+.import-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.import-confirm-box {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: #102338;
+  border: 1px solid #41668d;
+  border-radius: var(--radius-panel);
+}
+.import-confirm-box strong {
+  color: #f8fbff;
+  font-size: 18px;
+}
+.import-confirm-box p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.45;
 }
 .import-rejected-section > p {
   margin: 0;
@@ -3376,8 +3430,10 @@ footer {
   }
   .backup-actions,
   .import-file-row,
+  .import-selection-summary > div,
   .import-preview-summary,
   .import-candidate-card,
+  .import-confirm-box .goal-form-actions,
   .import-rejected-row,
   .local-data-summary,
   .local-data-counts,
@@ -3394,6 +3450,9 @@ footer {
   }
   .backup-actions .button,
   .import-file-row .button,
+  .import-selection-summary .button,
+  .import-confirm-actions .button,
+  .import-confirm-box .button,
   .backup-confirm .button,
   .backup-password-box .button,
   .sync-auth-form .button,
@@ -3402,6 +3461,9 @@ footer {
   }
   .backup-actions,
   .import-file-row,
+  .import-selection-summary > div,
+  .import-confirm-actions,
+  .import-confirm-box .goal-form-actions,
   .backup-confirm .goal-form-actions,
   .backup-password-box .goal-form-actions,
   .sync-actions {
@@ -3431,6 +3493,9 @@ footer {
   .import-candidate-value {
     justify-items: start;
     text-align: left;
+  }
+  .import-candidate-select {
+    align-items: flex-start;
   }
   .import-candidate-warnings {
     grid-column: auto;
