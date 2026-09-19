@@ -6,6 +6,7 @@ import { CreditCardsPanel } from './components/CreditCardsPanel'
 import { GameWorld } from './components/GameWorld'
 import { GoalsPanel } from './components/GoalsPanel'
 import { History } from './components/History'
+import { ImportLocalFilePanel } from './components/ImportLocalFilePanel'
 import { LocalDataCenterPanel } from './components/LocalDataCenterPanel'
 import { ManualTransaction } from './components/ManualTransaction'
 import { MonthNavigator } from './components/MonthNavigator'
@@ -147,6 +148,7 @@ export function App() {
               </div>
             </section>
             <LocalDataCenterPanel />
+            <ImportLocalFilePanel />
             <BackupPanel />
           </div>
         </div>
