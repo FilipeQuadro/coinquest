@@ -9,6 +9,7 @@ import {
   getAvailableHistoryCategories,
   type HistoryFilters,
 } from '../finance/history/historyFilter'
+import { deriveHistorySummary } from '../finance/history/historySummary'
 import { deleteTransaction } from '../finance/transactions'
 import { formatBRL } from '../lib/money'
 import { TransactionEditor } from './TransactionEditor'
@@ -38,6 +39,13 @@ export function History({ selectedMonth }: HistoryProps) {
   const transactions = filterTransactionsForHistory(allTransactions, selectedMonth, filters)
   const monthTransactions = filterTransactionsForHistory(allTransactions, selectedMonth, defaultHistoryFilters)
   const availableCategories = getAvailableHistoryCategories(allTransactions, selectedMonth)
+  const historySummary = deriveHistorySummary(transactions)
+  const topCategories = historySummary.topCategories.slice(0, 3)
+  const resultClassName = historySummary.netAmount > 0
+    ? 'income'
+    : historySummary.netAmount < 0
+      ? 'expense'
+      : ''
   const activeFiltersCount = [
     filters.query.trim() !== '',
     filters.type !== 'all',
@@ -169,6 +177,54 @@ export function History({ selectedMonth }: HistoryProps) {
           </select>
         </label>
       </div>
+
+      {transactions.length > 0 && (
+        <section className="history-summary-card" aria-labelledby="history-summary-title" data-testid="history-summary">
+          <div className="history-summary-header">
+            <div>
+              <span className="eyebrow">RESUMO DOS FILTROS</span>
+              <h3 id="history-summary-title">Movimentos reais exibidos</h3>
+              <p>Somente movimentacoes reais exibidas neste historico.</p>
+            </div>
+            <span className="history-summary-count" data-testid="history-summary-count">
+              {historySummary.transactionCount} {historySummary.transactionCount === 1 ? 'movimento' : 'movimentos'}
+            </span>
+          </div>
+
+          <div className="history-summary-metrics" aria-label="Resumo dos movimentos filtrados">
+            <article>
+              <span>Entradas</span>
+              <strong className="income" data-testid="history-summary-income">{formatBRL(historySummary.totalIncome)}</strong>
+              <small>{historySummary.incomeCount} {historySummary.incomeCount === 1 ? 'entrada' : 'entradas'}</small>
+            </article>
+            <article>
+              <span>Saidas</span>
+              <strong className="expense" data-testid="history-summary-expense">{formatBRL(historySummary.totalExpense)}</strong>
+              <small>{historySummary.expenseCount} {historySummary.expenseCount === 1 ? 'saida' : 'saidas'}</small>
+            </article>
+            <article>
+              <span>Resultado dos filtros</span>
+              <strong className={resultClassName} data-testid="history-summary-net">{formatBRL(historySummary.netAmount)}</strong>
+              <small>Entradas menos saidas dos registros exibidos</small>
+            </article>
+          </div>
+
+          {topCategories.length > 0 && (
+            <div className="history-summary-categories" aria-label="Principais categorias dos movimentos filtrados">
+              <strong>Principais categorias</strong>
+              <div>
+                {topCategories.map((category) => (
+                  <span className="history-summary-category" key={category.category}>
+                    <span>{category.category}</span>
+                    <strong>{formatBRL(category.amount)}</strong>
+                    <small>{category.transactionCount} {category.transactionCount === 1 ? 'movimento' : 'movimentos'}</small>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {monthTransactions.length === 0 ? (
         <div className="empty-state empty-state-guide">
