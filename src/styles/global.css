@@ -1948,6 +1948,187 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   border-radius: var(--radius-control);
   font-weight: 800;
 }
+.import-panel {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+.import-local-note {
+  display: grid;
+  gap: 4px;
+  padding: var(--space-3);
+  background: #0b1222;
+  border: 1px solid #2b3b60;
+  border-left: 4px solid #285c7c;
+  border-radius: var(--radius-control);
+}
+.import-local-note strong {
+  color: #f8fbff;
+}
+.import-local-note span {
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+.import-file-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.import-file-button {
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+.import-file-button input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.import-selected-file,
+.import-status,
+.import-empty-state,
+.import-list-note,
+.import-next-step {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+.import-selected-file {
+  overflow-wrap: anywhere;
+}
+.import-preview {
+  display: grid;
+  gap: var(--space-4);
+}
+.import-preview-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.import-preview-summary span {
+  min-width: 0;
+  padding: 8px 10px;
+  color: var(--color-muted);
+  background: #10182a;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
+.import-preview-summary strong {
+  display: block;
+  color: #f8fbff;
+  overflow-wrap: anywhere;
+}
+.import-warning-box {
+  display: grid;
+  gap: 6px;
+  padding: var(--space-3);
+  color: #fff1bd;
+  background: #1d1a12;
+  border: 1px solid #80662b;
+  border-radius: var(--radius-control);
+}
+.import-candidate-section,
+.import-rejected-section {
+  display: grid;
+  gap: var(--space-3);
+}
+.import-candidate-list,
+.import-rejected-list {
+  display: grid;
+  gap: var(--space-2);
+}
+.import-candidate-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3);
+  background: #0b1222;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
+.import-candidate-main {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.import-candidate-main span,
+.import-candidate-main small {
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+.import-candidate-main strong {
+  color: #f8fbff;
+  overflow-wrap: anywhere;
+}
+.import-candidate-value {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  text-align: right;
+}
+.import-candidate-value strong {
+  white-space: nowrap;
+}
+.import-type-chip {
+  padding: 4px 7px;
+  color: #06141a;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: var(--radius-control);
+}
+.import-type-chip.type-income {
+  background: var(--color-income);
+}
+.import-type-chip.type-expense {
+  background: var(--color-expense);
+}
+.import-candidate-warnings {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  color: #fff1bd;
+  background: #171609;
+  border: 1px solid #80662b;
+  border-radius: var(--radius-control);
+}
+.import-rejected-section > p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+.import-rejected-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: #140d12;
+  border: 1px solid #5f3948;
+  border-radius: var(--radius-control);
+}
+.import-rejected-row strong {
+  color: #f8fbff;
+  white-space: nowrap;
+}
+.import-rejected-row span {
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+.import-next-step {
+  padding: var(--space-3);
+  background: #10182a;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
 .backup-panel { padding: var(--space-5); }
 .backup-actions {
   display: flex;
@@ -3013,7 +3194,7 @@ footer {
   .commitment-status {
     justify-self: start;
   }
-  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .local-data-panel, .backup-panel, .sync-panel, .data-area-intro { padding: var(--space-3); }
+  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .local-data-panel, .import-panel, .backup-panel, .sync-panel, .data-area-intro { padding: var(--space-3); }
   .empty-state { padding: 22px var(--space-3); }
   .game-canvas { height: clamp(310px, 82vw, 370px); }
   .game-hud { grid-template-columns: 1fr; }
@@ -3194,6 +3375,10 @@ footer {
     white-space: normal;
   }
   .backup-actions,
+  .import-file-row,
+  .import-preview-summary,
+  .import-candidate-card,
+  .import-rejected-row,
   .local-data-summary,
   .local-data-counts,
   .local-data-warning,
@@ -3208,6 +3393,7 @@ footer {
     grid-template-columns: 1fr;
   }
   .backup-actions .button,
+  .import-file-row .button,
   .backup-confirm .button,
   .backup-password-box .button,
   .sync-auth-form .button,
@@ -3215,6 +3401,7 @@ footer {
     width: 100%;
   }
   .backup-actions,
+  .import-file-row,
   .backup-confirm .goal-form-actions,
   .backup-password-box .goal-form-actions,
   .sync-actions {
@@ -3240,6 +3427,13 @@ footer {
   }
   .backup-preview-summary {
     grid-template-columns: 1fr;
+  }
+  .import-candidate-value {
+    justify-items: start;
+    text-align: left;
+  }
+  .import-candidate-warnings {
+    grid-column: auto;
   }
   .data-area-intro-grid {
     grid-template-columns: 1fr;
