@@ -1,11 +1,13 @@
 import { useRef, useState, type ChangeEvent } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
+import type { PaymentMethod } from '../db/types'
 import { deriveCsvImportPreview, type ImportCandidate, type ImportPreview } from '../finance/import/importPreview'
+import { recordTransaction } from '../finance/transactions'
 import { formatBRL } from '../lib/money'
 
-const maxVisibleCandidates = 10
 const maxVisibleRejectedRows = 8
+const csvImportPaymentMethod: PaymentMethod = 'other'
 
 function delimiterLabel(delimiter: ImportPreview['delimiter']) {
   if (delimiter === null) return 'Nao detectado'
@@ -28,26 +30,57 @@ function isSupportedCsvFile(file: File) {
   return lowerName.endsWith('.csv') || file.type === 'text/csv' || file.type === 'text/plain'
 }
 
+function needsManualReview(candidate: ImportCandidate) {
+  return Boolean(candidate.duplicateWarning) || candidate.warnings.some((warning) => (
+    warning.toLocaleLowerCase('pt-BR').includes('cartao/fatura')
+  ))
+}
+
 export function ImportLocalFilePanel() {
   const existingTransactions = useLiveQuery(() => db.transactions.toArray(), [], [])
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedFileName, setSelectedFileName] = useState('')
   const [preview, setPreview] = useState<ImportPreview | null>(null)
+  const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([])
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [isReading, setIsReading] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
 
   function resetPreview() {
     setSelectedFileName('')
     setPreview(null)
+    setSelectedCandidateIds([])
+    setConfirmOpen(false)
     setError('')
+    setSuccessMessage('')
     setIsReading(false)
+    setIsImporting(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  function selectSafeCandidates(nextPreview: ImportPreview) {
+    setSelectedCandidateIds(nextPreview.candidates.filter((candidate) => !needsManualReview(candidate)).map((candidate) => candidate.id))
+  }
+
+  function toggleCandidate(candidateId: string) {
+    setConfirmOpen(false)
+    setSuccessMessage('')
+    setSelectedCandidateIds((current) => (
+      current.includes(candidateId)
+        ? current.filter((id) => id !== candidateId)
+        : [...current, candidateId]
+    ))
   }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     setPreview(null)
+    setSelectedCandidateIds([])
+    setConfirmOpen(false)
     setError('')
+    setSuccessMessage('')
 
     if (!file) {
       setSelectedFileName('')
@@ -71,6 +104,7 @@ export function ImportLocalFilePanel() {
         sourceKind: 'bank-statement',
       })
       setPreview(nextPreview)
+      selectSafeCandidates(nextPreview)
     } catch {
       setError('Nao foi possivel ler o arquivo selecionado. Nenhuma movimentacao real foi criada.')
     } finally {
@@ -78,13 +112,55 @@ export function ImportLocalFilePanel() {
     }
   }
 
-  const visibleCandidates = preview?.candidates.slice(0, maxVisibleCandidates) ?? []
-  const hiddenCandidateCount = preview ? Math.max(0, preview.candidateCount - visibleCandidates.length) : 0
+  async function confirmSelectedImport() {
+    if (!preview || selectedCandidateIds.length === 0 || isImporting) return
+
+    const selectedIds = new Set(selectedCandidateIds)
+    const selectedCandidates = preview.candidates.filter((candidate) => selectedIds.has(candidate.id))
+    let createdCount = 0
+
+    setIsImporting(true)
+    setError('')
+    setSuccessMessage('')
+
+    try {
+      for (const candidate of selectedCandidates) {
+        await recordTransaction({
+          type: candidate.type,
+          amount: candidate.amount,
+          description: candidate.description,
+          category: candidate.category ?? 'Outros',
+          paymentMethod: csvImportPaymentMethod,
+          occurredAt: candidate.occurredAt,
+        })
+        createdCount += 1
+      }
+
+      setSuccessMessage(`${createdCount} ${createdCount === 1 ? 'movimentacao real criada' : 'movimentacoes reais criadas'}.`)
+      setSelectedCandidateIds([])
+      setConfirmOpen(false)
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : 'Nao foi possivel concluir a importacao selecionada.'
+      setError(createdCount > 0
+        ? `${createdCount} ${createdCount === 1 ? 'movimentacao real foi criada' : 'movimentacoes reais foram criadas'} antes do erro. ${message}`
+        : `${message} Nenhuma movimentacao real foi criada.`)
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
+  const visibleCandidates = preview?.candidates ?? []
   const visibleRejectedRows = preview?.rejectedRows.slice(0, maxVisibleRejectedRows) ?? []
   const hiddenRejectedCount = preview ? Math.max(0, preview.rejectedCount - visibleRejectedRows.length) : 0
+  const selectedCount = selectedCandidateIds.length
+  const selectedAmount = preview
+    ? preview.candidates
+      .filter((candidate) => selectedCandidateIds.includes(candidate.id))
+      .reduce((sum, candidate) => sum + candidate.amount, 0)
+    : 0
 
   return (
-    <section className="panel import-panel" data-testid="import-local-file-panel" aria-labelledby="import-local-file-title" aria-busy={isReading}>
+    <section className="panel import-panel" data-testid="import-local-file-panel" aria-labelledby="import-local-file-title" aria-busy={isReading || isImporting}>
       <div className="panel-title-row">
         <div>
           <span className="eyebrow">IMPORTACAO LOCAL</span>
@@ -95,7 +171,7 @@ export function ImportLocalFilePanel() {
 
       <div className="import-local-note">
         <strong>Nenhum dado e enviado.</strong>
-        <span>O arquivo e lido apenas neste dispositivo. Nesta etapa, a importacao ainda e previa; nenhuma movimentacao real sera criada.</span>
+        <span>O arquivo e lido apenas neste dispositivo. Movimentacoes reais so sao criadas depois da confirmacao manual.</span>
       </div>
 
       <div className="import-file-row">
@@ -107,12 +183,12 @@ export function ImportLocalFilePanel() {
             type="file"
             accept=".csv,text/csv,text/plain"
             onChange={handleFileChange}
-            disabled={isReading}
+            disabled={isReading || isImporting}
           />
         </label>
         {selectedFileName ? <span className="import-selected-file">Arquivo: {selectedFileName}</span> : <span className="import-selected-file">Nenhum arquivo selecionado.</span>}
         {(selectedFileName || preview || error) && (
-          <button className="button compact ghost" type="button" onClick={resetPreview} disabled={isReading}>
+          <button className="button compact ghost" type="button" onClick={resetPreview} disabled={isReading || isImporting}>
             Limpar previa
           </button>
         )}
@@ -120,6 +196,7 @@ export function ImportLocalFilePanel() {
 
       {isReading && <p className="import-status">Lendo arquivo local...</p>}
       {error && <p className="form-error" role="alert" data-testid="import-csv-error">{error}</p>}
+      {successMessage && <p className="success-text" data-testid="import-csv-success">{successMessage}</p>}
 
       {!preview && !error && !isReading && (
         <p className="import-empty-state">Escolha um CSV de extrato bancario para ver candidatos, avisos e linhas ignoradas na previa.</p>
@@ -147,9 +224,34 @@ export function ImportLocalFilePanel() {
                 <strong>Candidatos na previa</strong>
                 <span>{preview.candidateCount}</span>
               </div>
+              <div className="import-selection-summary" data-testid="import-selection-summary">
+                <strong>{selectedCount} {selectedCount === 1 ? 'selecionado' : 'selecionados'} para confirmacao</strong>
+                <span>Total dos selecionados: {formatBRL(selectedAmount)}. Possiveis duplicatas e cartao/fatura ficam desmarcados por padrao.</span>
+                <div>
+                  <button className="button compact ghost" type="button" onClick={() => selectSafeCandidates(preview)} disabled={isImporting}>
+                    Selecionar candidatos sem aviso
+                  </button>
+                  <button className="button compact ghost" type="button" onClick={() => {
+                    setSelectedCandidateIds([])
+                    setConfirmOpen(false)
+                  }} disabled={isImporting || selectedCount === 0}>
+                    Desmarcar todos
+                  </button>
+                </div>
+              </div>
               <div className="import-candidate-list">
                 {visibleCandidates.map((candidate) => (
                   <article className="import-candidate-card" key={candidate.id}>
+                    <label className="import-candidate-select">
+                      <input
+                        data-testid="import-candidate-checkbox"
+                        type="checkbox"
+                        checked={selectedCandidateIds.includes(candidate.id)}
+                        onChange={() => toggleCandidate(candidate.id)}
+                        disabled={isImporting}
+                      />
+                      <span>{selectedCandidateIds.includes(candidate.id) ? 'Selecionado' : 'Nao selecionado'}</span>
+                    </label>
                     <div className="import-candidate-main">
                       <span>Linha {candidate.rowNumber} - {formatCandidateDate(candidate.occurredAt)}</span>
                       <strong>{candidate.description}</strong>
@@ -169,10 +271,37 @@ export function ImportLocalFilePanel() {
                   </article>
                 ))}
               </div>
-              {hiddenCandidateCount > 0 && <p className="import-list-note">Mostrando {visibleCandidates.length} de {preview.candidateCount} candidatos.</p>}
+              <div className="import-confirm-actions">
+                <button
+                  className="button primary"
+                  type="button"
+                  data-testid="import-review-confirmation"
+                  onClick={() => setConfirmOpen(true)}
+                  disabled={selectedCount === 0 || isImporting}
+                >
+                  Revisar confirmacao selecionada
+                </button>
+              </div>
             </div>
           ) : (
             <p className="import-empty-state">Nenhum candidato valido foi encontrado neste arquivo.</p>
+          )}
+
+          {confirmOpen && preview && selectedCount > 0 && (
+            <div className="import-confirm-box" data-testid="import-confirm-box">
+              <strong>Confirmacao manual de importacao</strong>
+              <p>{selectedCount} {selectedCount === 1 ? 'candidato selecionado criara' : 'candidatos selecionados criarao'} movimentacoes reais no Historico.</p>
+              <p>A forma de pagamento sera registrada como Outro porque o CSV de extrato nao informa esse campo com seguranca.</p>
+              <p>Revise possiveis duplicatas e descricoes de cartao/fatura antes de confirmar.</p>
+              <div className="goal-form-actions">
+                <button className="button ghost" type="button" onClick={() => setConfirmOpen(false)} disabled={isImporting}>
+                  Voltar para previa
+                </button>
+                <button className="button primary" type="button" data-testid="import-confirm-selected" onClick={confirmSelectedImport} disabled={isImporting}>
+                  {isImporting ? 'Criando...' : 'Confirmar importacao selecionada'}
+                </button>
+              </div>
+            </div>
           )}
 
           {visibleRejectedRows.length > 0 && (
@@ -194,7 +323,7 @@ export function ImportLocalFilePanel() {
             </div>
           )}
 
-          <p className="import-next-step">Confirmacao de importacao entrara na proxima etapa. Nenhuma movimentacao real foi criada.</p>
+          <p className="import-next-step">Apenas candidatos selecionados e confirmados viram movimentacoes reais. Linhas ignoradas nao sao importadas.</p>
         </div>
       )}
     </section>
