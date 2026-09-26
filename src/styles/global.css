@@ -1970,6 +1970,46 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   color: var(--color-muted);
   line-height: 1.4;
 }
+.import-example-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: #10182a;
+  border: 1px solid #2b3b60;
+  border-radius: var(--radius-control);
+}
+.import-example-card strong {
+  color: #f8fbff;
+}
+.import-example-card p {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+.import-example-card pre {
+  margin: 0;
+  padding: var(--space-3);
+  overflow-x: auto;
+  color: #d8e7ff;
+  background: #08111f;
+  border: 1px solid #23324d;
+  border-radius: var(--radius-control);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.import-example-card code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+  white-space: pre;
+}
+.import-example-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.import-example-feedback {
+  color: var(--color-muted);
+  line-height: 1.4;
+}
 .import-file-row {
   display: flex;
   flex-wrap: wrap;
@@ -3464,6 +3504,7 @@ footer {
     grid-template-columns: 1fr;
   }
   .backup-actions .button,
+  .import-example-actions .button,
   .import-file-row .button,
   .import-selection-summary .button,
   .import-confirm-actions .button,
@@ -3475,6 +3516,7 @@ footer {
     width: 100%;
   }
   .backup-actions,
+  .import-example-actions,
   .import-file-row,
   .import-selection-summary > div,
   .import-confirm-actions,
