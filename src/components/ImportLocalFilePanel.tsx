@@ -1,7 +1,7 @@
 import { useRef, useState, type ChangeEvent } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
-import type { PaymentMethod } from '../db/types'
+import type { PaymentMethod, Transaction } from '../db/types'
 import { deriveCsvImportPreview, type ImportCandidate, type ImportPreview } from '../finance/import/importPreview'
 import { recordTransaction } from '../finance/transactions'
 import { useCategoryOptions } from '../lib/useCategoryOptions'
@@ -59,6 +59,7 @@ export function ImportLocalFilePanel() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [createdTransactions, setCreatedTransactions] = useState<Transaction[]>([])
   const [exampleFeedback, setExampleFeedback] = useState('')
   const [isReading, setIsReading] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
@@ -71,6 +72,7 @@ export function ImportLocalFilePanel() {
     setConfirmOpen(false)
     setError('')
     setSuccessMessage('')
+    setCreatedTransactions([])
     setExampleFeedback('')
     setIsReading(false)
     setIsImporting(false)
@@ -78,12 +80,16 @@ export function ImportLocalFilePanel() {
   }
 
   function selectSafeCandidates(nextPreview: ImportPreview) {
+    setConfirmOpen(false)
+    setSuccessMessage('')
+    setCreatedTransactions([])
     setSelectedCandidateIds(nextPreview.candidates.filter((candidate) => !needsManualReview(candidate)).map((candidate) => candidate.id))
   }
 
   function toggleCandidate(candidateId: string) {
     setConfirmOpen(false)
     setSuccessMessage('')
+    setCreatedTransactions([])
     setSelectedCandidateIds((current) => (
       current.includes(candidateId)
         ? current.filter((id) => id !== candidateId)
@@ -102,6 +108,7 @@ export function ImportLocalFilePanel() {
   function updateCandidateCategory(candidateId: string, value: string) {
     setConfirmOpen(false)
     setSuccessMessage('')
+    setCreatedTransactions([])
     setEditedCategoriesByCandidateId((current) => ({ ...current, [candidateId]: value }))
   }
 
@@ -122,6 +129,7 @@ export function ImportLocalFilePanel() {
   function resetCandidateCategory(candidateId: string) {
     setConfirmOpen(false)
     setSuccessMessage('')
+    setCreatedTransactions([])
     setEditedCategoriesByCandidateId((current) => {
       const next = { ...current }
       delete next[candidateId]
@@ -166,6 +174,7 @@ export function ImportLocalFilePanel() {
     setConfirmOpen(false)
     setError('')
     setSuccessMessage('')
+    setCreatedTransactions([])
 
     if (!file) {
       setSelectedFileName('')
@@ -202,15 +211,17 @@ export function ImportLocalFilePanel() {
 
     const selectedIds = new Set(selectedCandidateIds)
     const selectedCandidates = preview.candidates.filter((candidate) => selectedIds.has(candidate.id))
+    const createdDuringImport: Transaction[] = []
     let createdCount = 0
 
     setIsImporting(true)
     setError('')
     setSuccessMessage('')
+    setCreatedTransactions([])
 
     try {
       for (const candidate of selectedCandidates) {
-        await recordTransaction({
+        const createdTransaction = await recordTransaction({
           type: candidate.type,
           amount: candidate.amount,
           description: candidate.description,
@@ -218,14 +229,17 @@ export function ImportLocalFilePanel() {
           paymentMethod: csvImportPaymentMethod,
           occurredAt: candidate.occurredAt,
         })
+        createdDuringImport.push(createdTransaction)
         createdCount += 1
       }
 
+      setCreatedTransactions(createdDuringImport)
       setSuccessMessage(`${createdCount} ${createdCount === 1 ? 'movimentacao real criada' : 'movimentacoes reais criadas'}.`)
       setSelectedCandidateIds([])
       setConfirmOpen(false)
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : 'Nao foi possivel concluir a importacao selecionada.'
+      setCreatedTransactions(createdDuringImport)
       setError(createdCount > 0
         ? `${createdCount} ${createdCount === 1 ? 'movimentacao real foi criada' : 'movimentacoes reais foram criadas'} antes do erro. ${message}`
         : `${message} Nenhuma movimentacao real foi criada.`)
@@ -347,6 +361,7 @@ export function ImportLocalFilePanel() {
                   <button className="button compact ghost" type="button" onClick={() => {
                     setSelectedCandidateIds([])
                     setConfirmOpen(false)
+                    setCreatedTransactions([])
                   }} disabled={isImporting || selectedCount === 0}>
                     Desmarcar todos
                   </button>
@@ -436,6 +451,33 @@ export function ImportLocalFilePanel() {
                 </button>
               </div>
             </div>
+          )}
+
+          {createdTransactions.length > 0 && (
+            <section className="import-created-records" data-testid="import-created-records" aria-labelledby="import-created-records-title">
+              <div className="import-created-records-header">
+                <div>
+                  <strong id="import-created-records-title">Movimentacoes criadas</strong>
+                  <p>As movimentacoes abaixo ja foram criadas como registros reais. Revise no Historico para ajustar descricao, categoria, forma de pagamento, data, tipo ou valor.</p>
+                  <p>Se alguma data estiver em outro mes, ajuste o mes no topo do app para localizar o registro no Historico.</p>
+                </div>
+                <a className="button primary compact" data-testid="import-review-history" href="#historico">Revisar no Historico</a>
+              </div>
+              <div className="import-created-list">
+                {createdTransactions.map((transaction) => (
+                  <article className="import-created-record" data-testid="import-created-record" key={transaction.id}>
+                    <div>
+                      <span>{formatCandidateDate(transaction.occurredAt)} - {typeLabel(transaction.type)}</span>
+                      <strong>{transaction.description}</strong>
+                      <small>{transaction.category} - Outro</small>
+                    </div>
+                    <strong className={transaction.type === 'income' ? 'income' : 'expense'}>
+                      {transaction.type === 'income' ? '+' : '-'} {formatBRL(transaction.amount)}
+                    </strong>
+                  </article>
+                ))}
+              </div>
+            </section>
           )}
 
           {visibleRejectedRows.length > 0 && (
