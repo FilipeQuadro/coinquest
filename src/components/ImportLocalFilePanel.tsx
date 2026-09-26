@@ -8,6 +8,12 @@ import { formatBRL } from '../lib/money'
 
 const maxVisibleRejectedRows = 8
 const csvImportPaymentMethod: PaymentMethod = 'other'
+const csvExampleFileName = 'coinquest-modelo-extrato.csv'
+const csvExampleText = [
+  'data;descricao;valor;categoria',
+  '12/09/2026;Mercado;-123,45;Alimentacao',
+  '13/09/2026;Salario;2500,00;Receita',
+].join('\n')
 
 function delimiterLabel(delimiter: ImportPreview['delimiter']) {
   if (delimiter === null) return 'Nao detectado'
@@ -45,6 +51,7 @@ export function ImportLocalFilePanel() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [exampleFeedback, setExampleFeedback] = useState('')
   const [isReading, setIsReading] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
 
@@ -55,6 +62,7 @@ export function ImportLocalFilePanel() {
     setConfirmOpen(false)
     setError('')
     setSuccessMessage('')
+    setExampleFeedback('')
     setIsReading(false)
     setIsImporting(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
@@ -72,6 +80,35 @@ export function ImportLocalFilePanel() {
         ? current.filter((id) => id !== candidateId)
         : [...current, candidateId]
     ))
+  }
+
+  async function copyCsvExample() {
+    setExampleFeedback('')
+
+    if (!navigator.clipboard?.writeText) {
+      setExampleFeedback('Copia automatica indisponivel neste navegador.')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(csvExampleText)
+      setExampleFeedback('Exemplo copiado.')
+    } catch {
+      setExampleFeedback('Nao foi possivel copiar o exemplo automaticamente.')
+    }
+  }
+
+  function downloadCsvExample() {
+    const blob = new Blob([csvExampleText], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = csvExampleFileName
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+    setExampleFeedback('Modelo CSV gerado neste dispositivo.')
   }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -153,11 +190,16 @@ export function ImportLocalFilePanel() {
   const visibleRejectedRows = preview?.rejectedRows.slice(0, maxVisibleRejectedRows) ?? []
   const hiddenRejectedCount = preview ? Math.max(0, preview.rejectedCount - visibleRejectedRows.length) : 0
   const selectedCount = selectedCandidateIds.length
-  const selectedAmount = preview
+  const selectedCandidates = preview
     ? preview.candidates
       .filter((candidate) => selectedCandidateIds.includes(candidate.id))
-      .reduce((sum, candidate) => sum + candidate.amount, 0)
-    : 0
+    : []
+  const selectedIncomeAmount = selectedCandidates
+    .filter((candidate) => candidate.type === 'income')
+    .reduce((sum, candidate) => sum + candidate.amount, 0)
+  const selectedExpenseAmount = selectedCandidates
+    .filter((candidate) => candidate.type === 'expense')
+    .reduce((sum, candidate) => sum + candidate.amount, 0)
 
   return (
     <section className="panel import-panel" data-testid="import-local-file-panel" aria-labelledby="import-local-file-title" aria-busy={isReading || isImporting}>
@@ -172,6 +214,23 @@ export function ImportLocalFilePanel() {
       <div className="import-local-note">
         <strong>Nenhum dado e enviado.</strong>
         <span>O arquivo e lido apenas neste dispositivo. Movimentacoes reais so sao criadas depois da confirmacao manual.</span>
+      </div>
+
+      <div className="import-example-card" aria-labelledby="import-example-title">
+        <div>
+          <strong id="import-example-title">Exemplo basico</strong>
+          <p>Use como referencia para montar um CSV simples. O arquivo real pode variar conforme o banco; a previa vai mostrar candidatos, avisos e linhas ignoradas antes de qualquer confirmacao.</p>
+        </div>
+        <pre aria-label="Exemplo de CSV aceito"><code>{csvExampleText}</code></pre>
+        <div className="import-example-actions">
+          <button className="button compact ghost" type="button" onClick={copyCsvExample}>
+            Copiar exemplo
+          </button>
+          <button className="button compact ghost" type="button" onClick={downloadCsvExample}>
+            Baixar modelo CSV
+          </button>
+        </div>
+        {exampleFeedback && <span className="import-example-feedback" role="status">{exampleFeedback}</span>}
       </div>
 
       <div className="import-file-row">
@@ -226,7 +285,12 @@ export function ImportLocalFilePanel() {
               </div>
               <div className="import-selection-summary" data-testid="import-selection-summary">
                 <strong>{selectedCount} {selectedCount === 1 ? 'selecionado' : 'selecionados'} para confirmacao</strong>
-                <span>Total dos selecionados: {formatBRL(selectedAmount)}. Possiveis duplicatas e cartao/fatura ficam desmarcados por padrao.</span>
+                <div className="import-selection-totals" aria-label="Totais separados dos candidatos selecionados">
+                  <span>Entradas selecionadas <strong className="income">{formatBRL(selectedIncomeAmount)}</strong></span>
+                  <span>Saidas selecionadas <strong className="expense">{formatBRL(selectedExpenseAmount)}</strong></span>
+                </div>
+                <span>Arquivos CSV de extrato nao informam forma de pagamento com seguranca. Movimentacoes criadas aqui serao registradas como Outro e podem ser revisadas depois no Historico.</span>
+                <span>Possiveis duplicatas e cartao/fatura ficam desmarcados por padrao.</span>
                 <div>
                   <button className="button compact ghost" type="button" onClick={() => selectSafeCandidates(preview)} disabled={isImporting}>
                     Selecionar candidatos sem aviso
@@ -290,7 +354,8 @@ export function ImportLocalFilePanel() {
           {confirmOpen && preview && selectedCount > 0 && (
             <div className="import-confirm-box" data-testid="import-confirm-box">
               <strong>Confirmacao manual de importacao</strong>
-              <p>{selectedCount} {selectedCount === 1 ? 'candidato selecionado criara' : 'candidatos selecionados criarao'} movimentacoes reais no Historico.</p>
+              <p>Somente {selectedCount} {selectedCount === 1 ? 'candidato selecionado sera criado' : 'candidatos selecionados serao criados'} como movimentacoes reais no Historico.</p>
+              <p>Candidatos desmarcados e linhas ignoradas nao serao importados.</p>
               <p>A forma de pagamento sera registrada como Outro porque o CSV de extrato nao informa esse campo com seguranca.</p>
               <p>Revise possiveis duplicatas e descricoes de cartao/fatura antes de confirmar.</p>
               <div className="goal-form-actions">
