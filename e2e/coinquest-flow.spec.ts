@@ -122,6 +122,30 @@ function dateInputForMonth(month: { year: number; month: number }, day = 15) {
   ].join('-')
 }
 
+test('keeps key data areas reachable on a mobile viewport', async ({ page }) => {
+  const { pageErrors, consoleErrors } = captureErrors(page)
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await expect(page.locator('.game-canvas canvas')).toBeVisible()
+
+  const productNavigation = page.locator('#product-navigation')
+  await expect(productNavigation).not.toBeVisible()
+
+  await page.getByRole('button', { name: 'Menu' }).click()
+  await expect(productNavigation).toBeVisible()
+
+  await page.getByRole('link', { name: 'Dados' }).click()
+  await expect(page).toHaveURL(/#backup$/)
+  await expect(productNavigation).not.toBeVisible()
+  await expect(page.getByTestId('local-data-panel')).toBeVisible()
+  await expect(page.getByTestId('import-local-file-panel')).toBeVisible()
+  await expect(page.getByTestId('backup-panel')).toBeVisible()
+
+  expect(pageErrors).toEqual([])
+  expect(consoleErrors).toEqual([])
+})
+
 test('records, persists and deletes financial entries', async ({ page }) => {
   const { pageErrors, consoleErrors } = captureErrors(page)
 
