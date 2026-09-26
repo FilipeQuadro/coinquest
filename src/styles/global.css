@@ -3419,6 +3419,16 @@ footer {
     min-width: 44px;
     min-height: 44px;
   }
+  .button,
+  .inline-link,
+  .history-type-filter button {
+    min-height: 46px;
+    touch-action: manipulation;
+  }
+  .button.compact {
+    padding: 10px 12px;
+    line-height: 1.25;
+  }
   .goals-panel > .panel-title-row,
   .goal-card-head {
     align-items: stretch;
@@ -3498,9 +3508,23 @@ footer {
   .history-clear {
     width: 100%;
   }
-  .history-item { grid-template-columns: auto 1fr; align-items: start; }
-  .history-item > strong { grid-column: 2; }
-  .history-actions { grid-column: 1 / -1; flex-direction: column; justify-content: stretch; }
+  .history-item {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 10px;
+    padding: 14px;
+  }
+  .history-item > strong {
+    grid-column: 2;
+    text-align: left;
+    white-space: normal;
+  }
+  .history-actions {
+    grid-column: 1 / -1;
+    flex-direction: column;
+    justify-content: stretch;
+    gap: 10px;
+  }
   .history-actions .button { width: 100%; }
   .transaction-editor { grid-template-columns: 1fr; }
   .transaction-editor-actions { flex-direction: column-reverse; }
@@ -3602,6 +3626,7 @@ footer {
   .sync-actions {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
   .sync-conflict-actions .button {
     width: 100%;
@@ -3628,10 +3653,36 @@ footer {
     text-align: left;
   }
   .import-candidate-select {
-    align-items: flex-start;
+    min-height: 44px;
+    align-items: center;
+  }
+  .import-candidate-select input {
+    min-width: 22px;
+    min-height: 22px;
+  }
+  .import-candidate-category {
+    gap: 8px;
+  }
+  .import-candidate-category .button,
+  .import-selection-totals span {
+    width: 100%;
+  }
+  .import-selection-totals span {
+    justify-content: space-between;
   }
   .import-candidate-warnings {
     grid-column: auto;
+  }
+  .import-confirm-box,
+  .import-created-records,
+  .backup-confirm,
+  .backup-password-box,
+  .sync-box {
+    padding: var(--space-3);
+  }
+  .import-created-record > strong {
+    justify-self: start;
+    white-space: normal;
   }
   .data-area-intro-grid {
     grid-template-columns: 1fr;
