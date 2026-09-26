@@ -2228,6 +2228,61 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   color: var(--color-muted);
   line-height: 1.45;
 }
+.import-created-records {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: #0a1d1a;
+  border: 1px solid #2f6f63;
+  border-radius: var(--radius-panel);
+}
+.import-created-records-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.import-created-records-header strong {
+  color: #f8fbff;
+  font-size: 18px;
+}
+.import-created-records-header p {
+  margin: 6px 0 0;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+.import-created-list {
+  display: grid;
+  gap: var(--space-2);
+}
+.import-created-record {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  background: #081512;
+  border: 1px solid #28574e;
+  border-radius: var(--radius-control);
+}
+.import-created-record div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.import-created-record span,
+.import-created-record small {
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+.import-created-record strong {
+  color: #f8fbff;
+  overflow-wrap: anywhere;
+}
+.import-created-record > strong {
+  white-space: nowrap;
+}
 .import-rejected-section > p {
   margin: 0;
   color: var(--color-muted);
@@ -3507,6 +3562,7 @@ footer {
   .import-preview-summary,
   .import-candidate-card,
   .import-confirm-box .goal-form-actions,
+  .import-created-record,
   .import-rejected-row,
   .local-data-summary,
   .local-data-counts,
@@ -3527,6 +3583,7 @@ footer {
   .import-selection-summary .button,
   .import-confirm-actions .button,
   .import-confirm-box .button,
+  .import-created-records-header .button,
   .backup-confirm .button,
   .backup-password-box .button,
   .sync-auth-form .button,
@@ -3539,6 +3596,7 @@ footer {
   .import-selection-summary > div,
   .import-confirm-actions,
   .import-confirm-box .goal-form-actions,
+  .import-created-records-header,
   .backup-confirm .goal-form-actions,
   .backup-password-box .goal-form-actions,
   .sync-actions {
