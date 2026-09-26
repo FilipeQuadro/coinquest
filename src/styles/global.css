@@ -2155,6 +2155,24 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-cyan); box
   color: #f8fbff;
   overflow-wrap: anywhere;
 }
+.import-candidate-category {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+}
+.import-candidate-category label {
+  display: grid;
+  gap: 4px;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+.import-candidate-category input {
+  min-height: 38px;
+}
+.import-candidate-category .button {
+  justify-self: start;
+}
 .import-candidate-value {
   display: grid;
   justify-items: end;
