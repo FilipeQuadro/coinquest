@@ -4,6 +4,7 @@ import { db } from '../db/database'
 import type { PaymentMethod } from '../db/types'
 import { deriveCsvImportPreview, type ImportCandidate, type ImportPreview } from '../finance/import/importPreview'
 import { recordTransaction } from '../finance/transactions'
+import { useCategoryOptions } from '../lib/useCategoryOptions'
 import { formatBRL } from '../lib/money'
 
 const maxVisibleRejectedRows = 8
@@ -25,6 +26,10 @@ function typeLabel(type: ImportCandidate['type']) {
   return type === 'income' ? 'Entrada' : 'Saida'
 }
 
+function categoryDatalistId(type: ImportCandidate['type']) {
+  return type === 'income' ? 'import-category-options-income' : 'import-category-options-expense'
+}
+
 function formatCandidateDate(value: string) {
   const date = new Date(value)
   if (!Number.isFinite(date.getTime())) return 'Data invalida'
@@ -44,10 +49,13 @@ function needsManualReview(candidate: ImportCandidate) {
 
 export function ImportLocalFilePanel() {
   const existingTransactions = useLiveQuery(() => db.transactions.toArray(), [], [])
+  const incomeCategoryOptions = useCategoryOptions('transaction-income')
+  const expenseCategoryOptions = useCategoryOptions('transaction-expense')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedFileName, setSelectedFileName] = useState('')
   const [preview, setPreview] = useState<ImportPreview | null>(null)
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([])
+  const [editedCategoriesByCandidateId, setEditedCategoriesByCandidateId] = useState<Record<string, string>>({})
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -59,6 +67,7 @@ export function ImportLocalFilePanel() {
     setSelectedFileName('')
     setPreview(null)
     setSelectedCandidateIds([])
+    setEditedCategoriesByCandidateId({})
     setConfirmOpen(false)
     setError('')
     setSuccessMessage('')
@@ -80,6 +89,44 @@ export function ImportLocalFilePanel() {
         ? current.filter((id) => id !== candidateId)
         : [...current, candidateId]
     ))
+  }
+
+  function defaultCategoryForCandidate(candidate: ImportCandidate) {
+    return candidate.category?.trim() || 'Outros'
+  }
+
+  function effectiveCategoryForCandidate(candidate: ImportCandidate) {
+    return editedCategoriesByCandidateId[candidate.id]?.trim() || defaultCategoryForCandidate(candidate)
+  }
+
+  function updateCandidateCategory(candidateId: string, value: string) {
+    setConfirmOpen(false)
+    setSuccessMessage('')
+    setEditedCategoriesByCandidateId((current) => ({ ...current, [candidateId]: value }))
+  }
+
+  function normalizeCandidateCategory(candidate: ImportCandidate) {
+    const currentValue = editedCategoriesByCandidateId[candidate.id]
+    if (currentValue === undefined) return
+
+    const trimmed = currentValue.trim()
+    const defaultCategory = defaultCategoryForCandidate(candidate)
+    setEditedCategoriesByCandidateId((current) => {
+      const next = { ...current }
+      if (!trimmed || trimmed === defaultCategory) delete next[candidate.id]
+      else next[candidate.id] = trimmed
+      return next
+    })
+  }
+
+  function resetCandidateCategory(candidateId: string) {
+    setConfirmOpen(false)
+    setSuccessMessage('')
+    setEditedCategoriesByCandidateId((current) => {
+      const next = { ...current }
+      delete next[candidateId]
+      return next
+    })
   }
 
   async function copyCsvExample() {
@@ -115,6 +162,7 @@ export function ImportLocalFilePanel() {
     const file = event.target.files?.[0]
     setPreview(null)
     setSelectedCandidateIds([])
+    setEditedCategoriesByCandidateId({})
     setConfirmOpen(false)
     setError('')
     setSuccessMessage('')
@@ -166,7 +214,7 @@ export function ImportLocalFilePanel() {
           type: candidate.type,
           amount: candidate.amount,
           description: candidate.description,
-          category: candidate.category ?? 'Outros',
+          category: effectiveCategoryForCandidate(candidate),
           paymentMethod: csvImportPaymentMethod,
           occurredAt: candidate.occurredAt,
         })
@@ -290,6 +338,7 @@ export function ImportLocalFilePanel() {
                   <span>Saidas selecionadas <strong className="expense">{formatBRL(selectedExpenseAmount)}</strong></span>
                 </div>
                 <span>Arquivos CSV de extrato nao informam forma de pagamento com seguranca. Movimentacoes criadas aqui serao registradas como Outro e podem ser revisadas depois no Historico.</span>
+                <span>Revise as categorias antes de confirmar; as categorias escolhidas aqui serao usadas nas movimentacoes reais criadas.</span>
                 <span>Possiveis duplicatas e cartao/fatura ficam desmarcados por padrao.</span>
                 <div>
                   <button className="button compact ghost" type="button" onClick={() => selectSafeCandidates(preview)} disabled={isImporting}>
@@ -319,7 +368,26 @@ export function ImportLocalFilePanel() {
                     <div className="import-candidate-main">
                       <span>Linha {candidate.rowNumber} - {formatCandidateDate(candidate.occurredAt)}</span>
                       <strong>{candidate.description}</strong>
-                      <small>{candidate.category ? `Categoria: ${candidate.category}` : 'Sem categoria no arquivo'}</small>
+                      <div className="import-candidate-category">
+                        <label>
+                          Categoria para importar
+                          <input
+                            data-testid="import-candidate-category-input"
+                            list={categoryDatalistId(candidate.type)}
+                            value={editedCategoriesByCandidateId[candidate.id] ?? defaultCategoryForCandidate(candidate)}
+                            onChange={(event) => updateCandidateCategory(candidate.id, event.target.value)}
+                            onBlur={() => normalizeCandidateCategory(candidate)}
+                            disabled={isImporting}
+                            autoComplete="off"
+                          />
+                        </label>
+                        {editedCategoriesByCandidateId[candidate.id] !== undefined && (
+                          <button className="button compact ghost" type="button" onClick={() => resetCandidateCategory(candidate.id)} disabled={isImporting}>
+                            Restaurar
+                          </button>
+                        )}
+                        <small>{candidate.category ? `Categoria do arquivo: ${candidate.category}` : 'Sem categoria no arquivo; fallback Outros.'}</small>
+                      </div>
                     </div>
                     <div className="import-candidate-value">
                       <span className={`import-type-chip type-${candidate.type}`}>{typeLabel(candidate.type)}</span>
@@ -357,6 +425,7 @@ export function ImportLocalFilePanel() {
               <p>Somente {selectedCount} {selectedCount === 1 ? 'candidato selecionado sera criado' : 'candidatos selecionados serao criados'} como movimentacoes reais no Historico.</p>
               <p>Candidatos desmarcados e linhas ignoradas nao serao importados.</p>
               <p>A forma de pagamento sera registrada como Outro porque o CSV de extrato nao informa esse campo com seguranca.</p>
+              <p>As categorias revisadas na previa serao usadas nas movimentacoes reais criadas.</p>
               <p>Revise possiveis duplicatas e descricoes de cartao/fatura antes de confirmar.</p>
               <div className="goal-form-actions">
                 <button className="button ghost" type="button" onClick={() => setConfirmOpen(false)} disabled={isImporting}>
@@ -389,6 +458,12 @@ export function ImportLocalFilePanel() {
           )}
 
           <p className="import-next-step">Apenas candidatos selecionados e confirmados viram movimentacoes reais. Linhas ignoradas nao sao importadas.</p>
+          <datalist id="import-category-options-income">
+            {incomeCategoryOptions.map((category) => <option key={category} value={category} />)}
+          </datalist>
+          <datalist id="import-category-options-expense">
+            {expenseCategoryOptions.map((category) => <option key={category} value={category} />)}
+          </datalist>
         </div>
       )}
     </section>

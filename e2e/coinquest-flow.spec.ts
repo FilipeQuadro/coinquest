@@ -722,13 +722,18 @@ test('previews and manually confirms a local CSV import', async ({ page }, testI
   await expect(page.getByTestId('import-candidate-checkbox').nth(0)).toBeChecked()
   await expect(page.getByTestId('import-candidate-checkbox').nth(1)).not.toBeChecked()
   await expect(page.getByTestId('import-csv-preview')).toContainText('cartao/fatura')
+  await expect(page.getByTestId('import-candidate-category-input').nth(0)).toHaveValue('Alimentacao')
+  await page.getByTestId('import-candidate-category-input').nth(0).fill('Padaria importada')
+  await expect(page.getByTestId('import-candidate-category-input').nth(0)).toHaveValue('Padaria importada')
 
   await page.getByTestId('import-review-confirmation').click()
   await expect(page.getByTestId('import-confirm-box')).toContainText('movimentacoes reais no Historico')
   await page.getByTestId('import-confirm-selected').click()
 
   await expect(page.getByTestId('import-csv-success')).toContainText('1 movimentacao real criada')
-  await expect(page.getByTestId('history-item').filter({ hasText: 'Importacao padaria' })).toBeVisible()
+  const importedHistoryItem = page.getByTestId('history-item').filter({ hasText: 'Importacao padaria' })
+  await expect(importedHistoryItem).toBeVisible()
+  await expect(importedHistoryItem).toContainText('Padaria importada')
   await expect(page.getByTestId('history-item').filter({ hasText: 'Fatura Nubank' })).toHaveCount(0)
 
   await page.getByRole('button', { name: 'Limpar previa' }).click()
