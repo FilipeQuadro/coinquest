@@ -8,6 +8,7 @@ import { calculateFinancialHealth } from '../finance/health/financialHealth'
 import { deriveFinancialInsights, type CategoryInsightInput } from '../finance/insights/financialInsights'
 import { formatMonthYear, isDateInMonth, type SelectedMonth } from '../finance/month'
 import { deriveMonthlyActions } from '../finance/summary/monthlyActions'
+import { buildMonthlyDecisionReport } from '../finance/summary/monthlyDecisionCenter'
 import { buildMonthlyHighlights } from '../finance/summary/monthlyHighlights'
 import { buildMonthlyOverview } from '../finance/summary/monthlyOverview'
 import { getTransactionKind } from '../finance/transactions'
@@ -68,6 +69,11 @@ function categoryInsightInputFromTransactions(transactions: Transaction[], selec
     })
 
   return [...totals.entries()].map(([category, amount]) => ({ category, amount }))
+}
+
+function formatSecondaryDecisionCount(count: number) {
+  if (count === 1) return 'Mais 1 ponto para acompanhar no mes.'
+  return `Mais ${count} pontos para acompanhar no mes.`
 }
 
 export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProps) {
@@ -219,7 +225,15 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
         : null,
     })
 
-    return { overview, highlights, insights, monthlyActions }
+    const decisionReport = buildMonthlyDecisionReport({
+      overview,
+      actions: monthlyActions,
+      highlights,
+      insights,
+      maxPrimaryItems: 3,
+    })
+
+    return { overview, highlights, insights, monthlyActions, decisionReport }
   }, [overviewData, selectedMonth])
 
   if (!summary) {
@@ -236,9 +250,10 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
     )
   }
 
-  const { overview, highlights, insights, monthlyActions } = summary
+  const { overview, highlights, insights, monthlyActions, decisionReport } = summary
   const visibleInsights = insights.slice(0, 5)
   const visibleActions = monthlyActions.slice(0, 4)
+  const visibleDecisionItems = decisionReport.primaryItems
   const tone = budgetTone(overview.budget.percentageUsed)
   const percentLabel = formatPercent(overview.budget.percentageUsed)
   const budgetUsageLabel = `Uso do orcamento: ${percentLabel}`
@@ -278,6 +293,42 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
             <strong data-testid="summary-count">{overview.actual.transactionCount}</strong>
           </div>
         </article>
+
+        {decisionReport.status !== 'empty' && (
+          <section
+            className={`monthly-decision-center status-${decisionReport.status}`}
+            aria-labelledby="monthly-decision-title"
+            data-testid="monthly-decision-center"
+          >
+            <div className="monthly-overview-card-title monthly-decision-header">
+              <div>
+                <span className="eyebrow">CENTRO DE DECISAO</span>
+                <h3 id="monthly-decision-title">{decisionReport.headline}</h3>
+                <p>{decisionReport.summaryMessage}</p>
+              </div>
+            </div>
+
+            {visibleDecisionItems.length > 0 && (
+              <div className="monthly-decision-list">
+                {visibleDecisionItems.map((item) => (
+                  <article className={`monthly-decision-item decision-${item.kind}`} key={item.id}>
+                    <div>
+                      <strong>{item.title}</strong>
+                      <p>{item.message}</p>
+                    </div>
+                    <a className="inline-link" href={item.destinationHash}>Ver area</a>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {decisionReport.secondaryItems.length > 0 && (
+              <p className="monthly-decision-more">
+                {formatSecondaryDecisionCount(decisionReport.secondaryItems.length)}
+              </p>
+            )}
+          </section>
+        )}
 
         <article className="monthly-overview-insights" data-testid="monthly-insights">
           <div className="monthly-overview-card-title">
