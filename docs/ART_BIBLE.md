@@ -2,6 +2,8 @@
 
 CoinQuest is a 2D pixel-art tech RPG about a programmer managing personal finance. The world should feel alive, comfortable and modern. It must not copy sprites, tiles, UI, music, proportions or identity from Terraria or any other game.
 
+For the V2.2 cinematic/cozy direction, see `docs/CINEMATIC_COZY_ART_DIRECTION.md`. That document expands the future art direction without changing the current finance/domain rules or Phaser/React responsibilities.
+
 ## Base Resolution
 
 - World canvas: 960x540 logical pixels.
