@@ -64,6 +64,23 @@ describe('deriveCsvImportPreview', () => {
     })
   })
 
+  it('uses title as a description alias', () => {
+    const result = preview('date,title,amount\n2026-10-21,"Compra exemplo",-25.90')
+
+    expect(result.delimiter).toBe(',')
+    expect(result.candidateCount).toBe(1)
+    expect(result.candidates[0]).toMatchObject({
+      rowNumber: 2,
+      description: 'Compra exemplo',
+      amount: 25.9,
+      type: 'expense',
+    })
+    const date = new Date(result.candidates[0].occurredAt)
+    expect(date.getFullYear()).toBe(2026)
+    expect(date.getMonth()).toBe(9)
+    expect(date.getDate()).toBe(21)
+  })
+
   it('parses CSV with tab delimiter', () => {
     const result = preview('data\tdescricao\tvalor\n10/09/2026\tInternet\t-90,00')
 
@@ -163,6 +180,14 @@ describe('deriveCsvImportPreview', () => {
     expect(result.totalRows).toBe(1)
     expect(result.candidateCount).toBe(1)
     expect(result.rejectedCount).toBe(0)
+  })
+
+  it('keeps incomplete header warning when no description alias is present', () => {
+    const result = preview('date,merchant,amount\n2026-10-21,Compra exemplo,-25.90')
+
+    expect(result.candidateCount).toBe(0)
+    expect(result.rejectedCount).toBe(0)
+    expect(result.warnings).toEqual(['Cabecalho incompleto: descricao.'])
   })
 
   it('flags probable duplicates as a warning, not a certainty', () => {

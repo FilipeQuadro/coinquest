@@ -147,7 +147,7 @@ function detectDelimiter(headerLine: string): CsvDelimiter | null {
 
 const aliases: Record<keyof HeaderIndexes, string[]> = {
   date: ['data', 'date', 'occurredat', 'ocorrido em'],
-  description: ['descricao', 'description', 'historico', 'memo'],
+  description: ['descricao', 'description', 'historico', 'memo', 'title'],
   amount: ['valor', 'amount', 'value'],
   type: ['tipo', 'type', 'movimento'],
   category: ['categoria', 'category'],
