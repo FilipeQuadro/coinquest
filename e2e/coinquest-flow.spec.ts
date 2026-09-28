@@ -146,6 +146,29 @@ test('keeps key data areas reachable on a mobile viewport', async ({ page }) => 
   expect(consoleErrors).toEqual([])
 })
 
+test('loads the optional 3D prototype on demand and returns to the 2D world', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.game-canvas canvas')).toBeVisible()
+  await expect(page.getByTestId('three-world-toggle')).toHaveText('Testar prototipo 3D')
+  await expect(page.getByTestId('three-world-prototype')).toHaveCount(0)
+
+  await page.getByTestId('three-world-toggle').click()
+  await expect(page.getByTestId('three-world-toggle')).toHaveText('Voltar ao mundo 2D')
+  await expect.poll(async () => (
+    await page.getByTestId('three-world-prototype').locator('canvas').count()
+    + await page.getByTestId('three-world-fallback').count()
+  )).toBeGreaterThan(0)
+  await expect.poll(async () => {
+    const canvas = page.locator('.three-world-canvas canvas')
+    const fallback = page.getByTestId('three-world-fallback')
+    return await canvas.isVisible().catch(() => false) || await fallback.isVisible().catch(() => false)
+  }).toBe(true)
+
+  await page.getByTestId('three-world-toggle').click()
+  await expect(page.locator('.game-canvas canvas')).toBeVisible()
+  await expect(page.getByTestId('three-world-prototype')).toHaveCount(0)
+})
+
 test('records, persists and deletes financial entries', async ({ page }) => {
   const { pageErrors, consoleErrors } = captureErrors(page)
 
