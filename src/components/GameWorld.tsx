@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { Component, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import type Phaser from 'phaser'
 import { db } from '../db/database'
@@ -13,6 +13,29 @@ import { deriveWorldProgression } from '../finance/world/worldProgression'
 import { createCoinQuestGame } from '../game/createGame'
 import { emitFinancialHealth, emitWorldProgression } from '../game/events'
 import { formatBRL } from '../lib/money'
+
+const LazyThreeWorldPrototype = lazy(() => import('./ThreeWorldPrototype'))
+
+class ThreeWorldErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="three-world-fallback" role="alert" data-testid="three-world-fallback">
+          <strong>O prototipo 3D nao pode ser exibido.</strong>
+          <span>O mundo 2D continua disponivel. Volte ao mundo 2D para continuar.</span>
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}
 
 const healthCopy: Record<FinancialHealth['level'], { icon: string; label: string; hint: string }> = {
   unknown: {
@@ -54,6 +77,7 @@ interface GameWorldProps {
 export function GameWorld({ selectedMonth }: GameWorldProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
+  const [isThreeWorldActive, setIsThreeWorldActive] = useState(false)
   const transactions = useLiveQuery(() => db.transactions.toArray(), [], [])
   const budget = useLiveQuery(
     () => db.monthlyBudgets.where('[year+month]').equals([selectedMonth.year, selectedMonth.month]).first(),
@@ -108,6 +132,14 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
   }, [])
 
   useEffect(() => {
+    if (!isThreeWorldActive || !gameRef.current) return
+    gameRef.current.scene.sleep('main-room')
+    return () => {
+      gameRef.current?.scene.wake('main-room')
+    }
+  }, [isThreeWorldActive])
+
+  useEffect(() => {
     emitFinancialHealth({ health, summary, budgetProgress, monthlyOutlook })
     emitWorldProgression(worldProgression)
   }, [
@@ -146,7 +178,31 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
         <span className="status-chip">LOCAL-FIRST</span>
       </div>
 
-      <div ref={containerRef} className="game-canvas" aria-label="Mundo pixel art do CoinQuest" />
+      <div className="three-world-controls">
+        <p>Experimento visual opcional, separado dos dados e das funcoes financeiras.</p>
+        <button
+          className="button compact"
+          type="button"
+          aria-pressed={isThreeWorldActive}
+          data-testid="three-world-toggle"
+          onClick={() => setIsThreeWorldActive((active) => !active)}
+        >
+          {isThreeWorldActive ? 'Voltar ao mundo 2D' : 'Testar prototipo 3D'}
+        </button>
+      </div>
+
+      <div className="game-world-stage">
+        <div ref={containerRef} className="game-canvas" aria-label="Mundo pixel art do CoinQuest" aria-hidden={isThreeWorldActive} />
+        {isThreeWorldActive && (
+          <div className="three-world-overlay">
+            <ThreeWorldErrorBoundary>
+              <Suspense fallback={<div className="three-world-fallback" role="status">Carregando o prototipo 3D...</div>}>
+                <LazyThreeWorldPrototype />
+              </Suspense>
+            </ThreeWorldErrorBoundary>
+          </div>
+        )}
+      </div>
 
       <div className="game-hud" aria-label="HUD financeiro do mundo">
         <div>

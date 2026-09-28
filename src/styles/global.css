@@ -897,6 +897,55 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
   height: 100% !important;
   image-rendering: pixelated;
 }
+.three-world-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-3) 0;
+}
+.three-world-controls p,
+.three-world-description,
+.three-world-motion-note {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.three-world-controls .button { flex: 0 0 auto; }
+.game-world-stage { position: relative; }
+.three-world-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  border: 4px solid #05070d;
+  border-radius: calc(var(--radius-panel) + 2px);
+  background: #101820;
+  box-shadow: 0 22px 56px #00000082, 0 0 0 1px #6fffe83a, 0 0 28px #42d9f426;
+}
+.three-world-prototype,
+.three-world-canvas { width: 100%; height: 100%; min-height: 0; }
+.three-world-prototype { display: flex; flex-direction: column; }
+.three-world-description,
+.three-world-motion-note { padding: 8px 12px; }
+.three-world-canvas { flex: 1; min-height: 0; }
+.three-world-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+.three-world-fallback {
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  margin: 0;
+  padding: var(--space-4);
+  color: var(--color-text);
+  text-align: center;
+  background: #101820;
+}
+.three-world-fallback span { color: var(--color-muted); }
+.three-world-motion-note { padding-top: 0; }
 .game-hud {
   display: grid;
   grid-template-columns: 1fr 1fr 1.2fr;
@@ -3615,6 +3664,7 @@ footer {
     grid-template-columns: 1fr;
   }
   .game-canvas { height: clamp(390px, 62vw, 560px); }
+  .three-world-overlay { height: clamp(390px, 62vw, 560px); }
 }
 
 @media (max-width: 560px) {
@@ -3711,6 +3761,9 @@ footer {
   .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .local-data-panel, .import-panel, .backup-panel, .sync-panel, .data-area-intro { padding: var(--space-3); }
   .empty-state { padding: 22px var(--space-3); }
   .game-canvas { height: clamp(310px, 82vw, 370px); }
+  .three-world-overlay { height: clamp(310px, 82vw, 370px); }
+  .three-world-controls { align-items: stretch; flex-direction: column; }
+  .three-world-controls .button { width: 100%; }
   .game-hud { grid-template-columns: 1fr; }
   .game-hud > div { padding: 8px 10px; }
   .health-card {
@@ -4035,6 +4088,7 @@ footer {
 
 @media (max-width: 400px) {
   .game-canvas { height: 318px; }
+  .three-world-overlay { height: 318px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4063,4 +4117,5 @@ footer {
   .history-type-filter button:active {
     transform: none;
   }
+  .three-world-motion-note { opacity: 0.9; }
 }
