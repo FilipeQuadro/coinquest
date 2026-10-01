@@ -147,6 +147,7 @@ test('keeps key data areas reachable on a mobile viewport', async ({ page }) => 
 })
 
 test('loads the optional 3D prototype on demand and returns to the 2D world', async ({ page }) => {
+  const { pageErrors, consoleErrors } = captureErrors(page)
   await page.goto('/')
   await expect(page.locator('.game-canvas canvas')).toBeVisible()
   await expect(page.getByTestId('three-world-control-copy')).toContainText('Experimento visual 3D opcional')
@@ -156,19 +157,75 @@ test('loads the optional 3D prototype on demand and returns to the 2D world', as
 
   await page.getByTestId('three-world-toggle').click()
   await expect(page.getByTestId('three-world-toggle')).toHaveText('Voltar ao mundo 2D padrao')
-  await expect.poll(async () => (
-    await page.getByTestId('three-world-prototype').locator('canvas').count()
-    + await page.getByTestId('three-world-fallback').count()
-  )).toBeGreaterThan(0)
-  await expect.poll(async () => {
-    const canvas = page.locator('.three-world-canvas canvas')
-    const fallback = page.getByTestId('three-world-fallback')
-    return await canvas.isVisible().catch(() => false) || await fallback.isVisible().catch(() => false)
-  }).toBe(true)
+  const canvas = page.locator('.three-world-canvas canvas')
+  const loading = page.getByTestId('three-world-loading')
+  const errorFallback = page.getByTestId('three-world-fallback')
+  const loadState = async () => {
+    if (await errorFallback.isVisible().catch(() => false)) return 'error'
+    if (await canvas.isVisible().catch(() => false)) return 'canvas'
+    if (await loading.isVisible().catch(() => false)) return 'loading'
+    return 'missing'
+  }
+
+  await expect.poll(loadState, {
+    timeout: 5_000,
+    message: '3D activation should promptly expose a loading, canvas, or error state',
+  }).not.toBe('missing')
+  await expect.poll(loadState, {
+    timeout: 30_000,
+    message: '3D loading should resolve to a canvas; an error fallback is not a successful load',
+  }).toBe('canvas')
+  await expect(loading).toHaveCount(0)
+  await expect(errorFallback).toBeHidden()
 
   await page.getByTestId('three-world-toggle').click()
   await expect(page.locator('.game-canvas canvas')).toBeVisible()
   await expect(page.getByTestId('three-world-prototype')).toHaveCount(0)
+  expect(pageErrors).toEqual([])
+  expect(consoleErrors).toEqual([])
+})
+
+test('keeps the 2D return available while the optional 3D module is loading', async ({ page }) => {
+  const modulePattern = '**/src/components/ThreeWorldPrototype.tsx*'
+  let releaseModule!: () => void
+  let resolveModuleResponse!: () => void
+  let moduleRequested = false
+  const moduleGate = new Promise<void>((resolve) => { releaseModule = resolve })
+  const moduleResponse = new Promise<void>((resolve) => { resolveModuleResponse = resolve })
+
+  await page.route(modulePattern, async (route) => {
+    moduleRequested = true
+    try {
+      await moduleGate
+      await route.continue()
+    } finally {
+      resolveModuleResponse()
+    }
+  })
+
+  try {
+    await page.goto('/')
+    await expect(page.locator('.game-canvas canvas')).toBeVisible()
+    await expect(page.getByTestId('three-world-toggle')).toHaveText('Abrir experimento 3D')
+    expect(moduleRequested).toBe(false)
+
+    await page.getByTestId('three-world-toggle').click()
+    await expect.poll(() => moduleRequested, {
+      timeout: 10_000,
+      message: 'The lazy 3D module should be requested only after activation',
+    }).toBe(true)
+    await expect(page.getByTestId('three-world-loading')).toBeVisible()
+    await expect(page.getByTestId('three-world-toggle')).toHaveText('Voltar ao mundo 2D padrao')
+
+    await page.getByTestId('three-world-toggle').click()
+    await expect(page.getByTestId('three-world-toggle')).toHaveText('Abrir experimento 3D')
+    await expect(page.locator('.game-canvas canvas')).toBeVisible()
+    await expect(page.getByTestId('three-world-prototype')).toHaveCount(0)
+  } finally {
+    releaseModule()
+    if (moduleRequested) await moduleResponse
+    await page.unroute(modulePattern)
+  }
 })
 
 test('records, persists and deletes financial entries', async ({ page }) => {
