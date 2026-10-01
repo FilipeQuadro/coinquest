@@ -27,8 +27,8 @@ class ThreeWorldErrorBoundary extends Component<{ children: ReactNode }, { hasEr
     if (this.state.hasError) {
       return (
         <div className="three-world-fallback" role="alert" data-testid="three-world-fallback">
-          <strong>O prototipo 3D nao pode ser exibido.</strong>
-          <span>O mundo 2D continua disponivel. Volte ao mundo 2D para continuar.</span>
+          <strong>O experimento 3D nao pode ser exibido.</strong>
+          <span>O mundo 2D padrao continua disponivel. Volte ao 2D para continuar.</span>
         </div>
       )
     }
@@ -179,15 +179,18 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
       </div>
 
       <div className="three-world-controls">
-        <p>Experimento visual opcional, separado dos dados e das funcoes financeiras.</p>
+        <p id="three-world-control-copy" data-testid="three-world-control-copy">
+          <strong>Experimento visual 3D opcional.</strong> O mundo 2D continua sendo o padrao; a cena nao representa saldo nem conselho financeiro.
+        </p>
         <button
           className="button compact"
           type="button"
           aria-pressed={isThreeWorldActive}
+          aria-describedby="three-world-control-copy"
           data-testid="three-world-toggle"
           onClick={() => setIsThreeWorldActive((active) => !active)}
         >
-          {isThreeWorldActive ? 'Voltar ao mundo 2D' : 'Testar prototipo 3D'}
+          {isThreeWorldActive ? 'Voltar ao mundo 2D padrao' : 'Abrir experimento 3D'}
         </button>
       </div>
 
@@ -196,7 +199,7 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
         {isThreeWorldActive && (
           <div className="three-world-overlay">
             <ThreeWorldErrorBoundary>
-              <Suspense fallback={<div className="three-world-fallback" role="status">Carregando o prototipo 3D...</div>}>
+              <Suspense fallback={<div className="three-world-fallback" role="status">Carregando experimento 3D opcional...</div>}>
                 <LazyThreeWorldPrototype />
               </Suspense>
             </ThreeWorldErrorBoundary>

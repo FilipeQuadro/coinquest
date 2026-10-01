@@ -149,11 +149,13 @@ test('keeps key data areas reachable on a mobile viewport', async ({ page }) => 
 test('loads the optional 3D prototype on demand and returns to the 2D world', async ({ page }) => {
   await page.goto('/')
   await expect(page.locator('.game-canvas canvas')).toBeVisible()
-  await expect(page.getByTestId('three-world-toggle')).toHaveText('Testar prototipo 3D')
+  await expect(page.getByTestId('three-world-control-copy')).toContainText('Experimento visual 3D opcional')
+  await expect(page.getByTestId('three-world-control-copy')).toContainText('mundo 2D continua sendo o padrao')
+  await expect(page.getByTestId('three-world-toggle')).toHaveText('Abrir experimento 3D')
   await expect(page.getByTestId('three-world-prototype')).toHaveCount(0)
 
   await page.getByTestId('three-world-toggle').click()
-  await expect(page.getByTestId('three-world-toggle')).toHaveText('Voltar ao mundo 2D')
+  await expect(page.getByTestId('three-world-toggle')).toHaveText('Voltar ao mundo 2D padrao')
   await expect.poll(async () => (
     await page.getByTestId('three-world-prototype').locator('canvas').count()
     + await page.getByTestId('three-world-fallback').count()

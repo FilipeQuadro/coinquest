@@ -912,7 +912,9 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
   font-size: 13px;
   line-height: 1.45;
 }
-.three-world-controls .button { flex: 0 0 auto; }
+.three-world-controls p { min-width: 0; max-width: 70ch; }
+.three-world-controls p strong { color: var(--color-text); }
+.three-world-controls .button { flex: 0 0 auto; white-space: nowrap; }
 .game-world-stage { position: relative; }
 .three-world-overlay {
   position: absolute;
