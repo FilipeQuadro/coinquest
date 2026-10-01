@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, type ThreeElements } from '@react-three/fiber'
 
 const reducedMotionQuery = '(prefers-reduced-motion: reduce)'
+const compactCanvasQuery = '(max-width: 700px), (pointer: coarse)'
 
 type GroupInstanceFromRef<T> = T extends { current: infer Instance }
   ? Instance
@@ -11,35 +12,53 @@ type GroupInstanceFromRef<T> = T extends { current: infer Instance }
 
 type GroupInstance = GroupInstanceFromRef<NonNullable<ThreeElements['group']['ref']>>
 
-function getPrefersReducedMotion() {
-  return typeof window !== 'undefined' && window.matchMedia?.(reducedMotionQuery).matches === true
+function getMediaQueryMatch(query: string) {
+  return typeof window !== 'undefined' && window.matchMedia?.(query).matches === true
 }
 
-function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getPrefersReducedMotion)
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() => getMediaQueryMatch(query))
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const mediaQuery = window.matchMedia?.(reducedMotionQuery)
+    const mediaQuery = window.matchMedia?.(query)
     if (!mediaQuery) return
-    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches)
+    const updatePreference = () => setMatches(mediaQuery.matches)
     updatePreference()
     mediaQuery.addEventListener?.('change', updatePreference)
     return () => mediaQuery.removeEventListener?.('change', updatePreference)
-  }, [])
+  }, [query])
 
-  return prefersReducedMotion
+  return matches
 }
 
-function CameraRig({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+function getIsDocumentVisible() {
+  return typeof document === 'undefined' || document.visibilityState !== 'hidden'
+}
+
+function useIsDocumentVisible() {
+  const [isDocumentVisible, setIsDocumentVisible] = useState(getIsDocumentVisible)
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const updateVisibility = () => setIsDocumentVisible(getIsDocumentVisible())
+    updateVisibility()
+    document.addEventListener('visibilitychange', updateVisibility)
+    return () => document.removeEventListener('visibilitychange', updateVisibility)
+  }, [])
+
+  return isDocumentVisible
+}
+
+function CameraRig({ shouldAnimate }: { shouldAnimate: boolean }) {
   const elapsedTime = useRef(0)
 
   useFrame(({ camera }, delta) => {
-    if (!prefersReducedMotion) elapsedTime.current += delta
-    const drift = prefersReducedMotion ? 0 : Math.sin(elapsedTime.current * 0.2) * 0.14
+    if (shouldAnimate) elapsedTime.current += delta
+    const drift = shouldAnimate ? Math.sin(elapsedTime.current * 0.2) * 0.14 : 0
     const targetX = 5.7 + drift
     const targetZ = 8 + drift * 0.45
-    const smoothing = 1 - Math.exp(-delta * 1.4)
+    const smoothing = shouldAnimate ? 1 - Math.exp(-delta * 1.4) : 1
 
     camera.position.x += (targetX - camera.position.x) * smoothing
     camera.position.z += (targetZ - camera.position.z) * smoothing
@@ -49,12 +68,12 @@ function CameraRig({ prefersReducedMotion }: { prefersReducedMotion: boolean }) 
   return null
 }
 
-function Character({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+function Character({ shouldAnimate }: { shouldAnimate: boolean }) {
   const characterRef = useRef<GroupInstance | null>(null)
   const elapsedTime = useRef(0)
 
   useFrame((_state, delta) => {
-    if (prefersReducedMotion || !characterRef.current) return
+    if (!shouldAnimate || !characterRef.current) return
     elapsedTime.current += delta
     characterRef.current.position.y = 0.18 + Math.sin(elapsedTime.current * 1.8) * 0.035
     characterRef.current.rotation.y = Math.sin(elapsedTime.current * 0.55) * 0.045
@@ -144,7 +163,7 @@ function Vault() {
   )
 }
 
-function CentralBeacon() {
+function CentralBeacon({ lightweightRendering }: { lightweightRendering: boolean }) {
   return (
     <group position={[0.05, 0.15, 0.72]}>
       <mesh receiveShadow position={[0, 0.09, 0]}>
@@ -159,26 +178,34 @@ function CentralBeacon() {
         <octahedronGeometry args={[0.19, 0]} />
         <meshStandardMaterial color="#ffc96e" emissive="#c86c35" emissiveIntensity={1.15} roughness={0.35} />
       </mesh>
-      <pointLight position={[0, 0.55, 0]} intensity={13} distance={4.2} color="#f3ad60" />
+      <pointLight position={[0, 0.55, 0]} intensity={lightweightRendering ? 9 : 13} distance={4.2} color="#f3ad60" />
     </group>
   )
 }
 
-function LocalBaseScene({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+function LocalBaseScene({
+  enableDetailedShadows,
+  lightweightRendering,
+  shouldAnimate,
+}: {
+  enableDetailedShadows: boolean
+  lightweightRendering: boolean
+  shouldAnimate: boolean
+}) {
   return (
     <>
       <color attach="background" args={['#101820']} />
       <fog attach="fog" args={['#101820', 12, 24]} />
-      <ambientLight intensity={0.72} color="#c7d8d5" />
+      <ambientLight intensity={lightweightRendering ? 0.82 : 0.72} color="#c7d8d5" />
       <directionalLight
-        castShadow
+        castShadow={enableDetailedShadows}
         position={[-3, 7, 4]}
         intensity={2}
         color="#ffe0a3"
         shadow-mapSize-width={512}
         shadow-mapSize-height={512}
       />
-      <pointLight position={[1.35, 1.65, -0.3]} intensity={18} distance={4.5} color="#53d8df" />
+      {!lightweightRendering && <pointLight position={[1.35, 1.65, -0.3]} intensity={18} distance={4.5} color="#53d8df" />}
 
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.17, 0]}>
         <planeGeometry args={[18, 18]} />
@@ -266,35 +293,47 @@ function LocalBaseScene({ prefersReducedMotion }: { prefersReducedMotion: boolea
         <meshStandardMaterial color="#7eaa75" roughness={0.88} />
       </mesh>
 
-      <CentralBeacon />
+      <CentralBeacon lightweightRendering={lightweightRendering} />
       <Vault />
-      <Character prefersReducedMotion={prefersReducedMotion} />
-      <CameraRig prefersReducedMotion={prefersReducedMotion} />
+      <Character shouldAnimate={shouldAnimate} />
+      <CameraRig shouldAnimate={shouldAnimate} />
     </>
   )
 }
 
 export default function ThreeWorldPrototype() {
-  const prefersReducedMotion = usePrefersReducedMotion()
+  const prefersReducedMotion = useMediaQuery(reducedMotionQuery)
+  const isCompactCanvas = useMediaQuery(compactCanvasQuery)
+  const isDocumentVisible = useIsDocumentVisible()
+  const shouldAnimate = !prefersReducedMotion && isDocumentVisible
+  const lightweightRendering = prefersReducedMotion || isCompactCanvas
+  const dpr: [number, number] = [1, lightweightRendering ? 1 : 1.25]
 
   return (
-    <section className="three-world-prototype" data-testid="three-world-prototype" aria-label="Prototipo decorativo em 3D">
+    <section className="three-world-prototype" data-testid="three-world-prototype" aria-label="Experimento visual 3D opcional">
       <p className="three-world-description">
-        Cena demonstrativa local, sem dados financeiros. Uma base compacta com personagem e cofre decorativos.
+        Experimento visual 3D opcional, local e decorativo. Sem dados financeiros reais.
       </p>
-      <div className="three-world-canvas" role="group" aria-label="Diorama decorativo com personagem, base e cofre">
+      <div className="three-world-canvas" role="group" aria-label="Diorama 3D decorativo com personagem, base e cofre">
         <Canvas
-          dpr={[1, 1.5]}
+          dpr={dpr}
           camera={{ position: [5.7, 4.8, 8], fov: 38 }}
-          shadows="percentage"
+          frameloop={shouldAnimate ? 'always' : 'demand'}
+          shadows={lightweightRendering ? false : 'percentage'}
           gl={{ antialias: true, powerPreference: 'low-power' }}
-          fallback={<p className="three-world-fallback" role="status" data-testid="three-world-fallback">Renderizacao 3D indisponivel neste navegador.</p>}
+          fallback={<p className="three-world-fallback" role="status" data-testid="three-world-fallback">Renderizacao 3D indisponivel neste navegador. O mundo 2D continua disponivel.</p>}
         >
-          <LocalBaseScene prefersReducedMotion={prefersReducedMotion} />
+          <LocalBaseScene
+            enableDetailedShadows={!lightweightRendering}
+            lightweightRendering={lightweightRendering}
+            shouldAnimate={shouldAnimate}
+          />
         </Canvas>
       </div>
       <p className="three-world-motion-note" aria-live="polite">
-        {prefersReducedMotion ? 'Movimento reduzido conforme a preferencia do dispositivo.' : 'Diorama experimental, sem interacao financeira.'}
+        {prefersReducedMotion
+          ? 'Movimento reduzido conforme a preferencia do dispositivo. O mundo 2D continua sendo o padrao.'
+          : 'Diorama opcional em teste, sem interacao financeira.'}
       </p>
     </section>
   )
