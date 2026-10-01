@@ -199,7 +199,7 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
         {isThreeWorldActive && (
           <div className="three-world-overlay">
             <ThreeWorldErrorBoundary>
-              <Suspense fallback={<div className="three-world-fallback" role="status">Carregando experimento 3D opcional...</div>}>
+              <Suspense fallback={<div className="three-world-fallback" role="status" data-testid="three-world-loading">Carregando experimento 3D opcional...</div>}>
                 <LazyThreeWorldPrototype />
               </Suspense>
             </ThreeWorldErrorBoundary>
