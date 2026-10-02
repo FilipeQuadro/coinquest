@@ -36,7 +36,7 @@ function loadSelectedMonth(): SelectedMonth {
 
 export function App() {
   const [selectedMonth, setSelectedMonth] = useState<SelectedMonth>(() => loadSelectedMonth())
-  const [activeSection, setActiveSection] = useState<ProductSectionId>(() => normalizeProductSectionHash(window.location.hash) ?? 'mundo')
+  const [activeSection, setActiveSection] = useState<ProductSectionId>(() => normalizeProductSectionHash(window.location.hash) ?? 'inicio')
   const [isNavOpen, setIsNavOpen] = useState(false)
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export function App() {
             <a
               key={item.id}
               href={`#${item.id}`}
-              aria-current={activeSection === item.id ? 'page' : undefined}
+              aria-current={activeSection === item.id || (item.id === 'backup' && activeSection === 'sync') ? 'page' : undefined}
               onClick={() => {
                 setActiveSection(item.id)
                 setIsNavOpen(false)
@@ -101,7 +101,11 @@ export function App() {
         <section className="world-intro">
           <div>
             <h1>Seu dinheiro virou um mundo.</h1>
-            <p>Registre, acompanhe e veja sua base reagir. Tudo local-first, direto no aparelho.</p>
+            <p>Registre movimentos e acompanhe o mes, mesmo offline.</p>
+            <nav className="world-intro-actions" aria-label="Acoes principais">
+              <a className="button primary compact" href="#registrar">Registrar movimento</a>
+              <a className="button ghost compact" href="#historico">Ver historico</a>
+            </nav>
           </div>
           <span className="world-chip">offline first</span>
         </section>
@@ -109,6 +113,14 @@ export function App() {
         <MonthNavigator selectedMonth={selectedMonth} onChange={setSelectedMonth} />
 
         <MonthlyOverviewPanel selectedMonth={selectedMonth} />
+
+        <nav className="dashboard-shortcuts" aria-label="Acesso rapido as areas">
+          <a href="#planejamento">Planejamento</a>
+          <a href="#cartoes">Cartoes</a>
+          <a href="#missoes">Metas</a>
+          <a href="#backup">Dados</a>
+          <a href="#mundo">Mundo</a>
+        </nav>
 
         <div id="mundo" className="section-anchor"><GameWorld selectedMonth={selectedMonth} /></div>
 
@@ -124,30 +136,16 @@ export function App() {
           <div className="simulator-slot" id="simulador"><PurchaseSimulatorPanel selectedMonth={selectedMonth} /></div>
           <div className="cards-slot" id="cartoes"><CreditCardsPanel selectedMonth={selectedMonth} /></div>
           <div className="goals-slot" id="missoes"><GoalsPanel /></div>
-          <div className="sync-slot" id="sync"><SyncPanel /></div>
           <div className="backup-slot" id="backup">
             <section className="data-area-intro" aria-labelledby="data-area-title">
               <div>
-                <p className="eyebrow">Dados locais</p>
-                <h2 id="data-area-title">Revise, proteja e restaure seus dados</h2>
-                <p>Seus dados ficam neste dispositivo. Use esta area para revisar sinais locais e fazer backups.</p>
-              </div>
-              <div className="data-area-intro-grid" aria-label="Resumo da area Dados">
-                <article className="data-area-intro-card">
-                  <strong>Local primeiro</strong>
-                  <span>O uso principal continua disponivel neste dispositivo.</span>
-                </article>
-                <article className="data-area-intro-card">
-                  <strong>Revisao</strong>
-                  <span>A central mostra sinais locais sem corrigir nada automaticamente.</span>
-                </article>
-                <article className="data-area-intro-card">
-                  <strong>Backup</strong>
-                  <span>Backup local nao precisa de sincronizacao em nuvem.</span>
-                </article>
+                <p className="eyebrow">Dados e ferramentas</p>
+                <h2 id="data-area-title">Seus dados ficam sob seu controle</h2>
+                <p>Importe um CSV, revise os dados locais, exporte um backup ou configure a sincronizacao opcional.</p>
               </div>
             </section>
             <LocalDataCenterPanel />
+            <div className="sync-slot section-anchor" id="sync"><SyncPanel /></div>
             <ImportLocalFilePanel />
             <BackupPanel />
           </div>

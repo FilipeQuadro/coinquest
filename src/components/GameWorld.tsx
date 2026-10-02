@@ -150,7 +150,7 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
 
       <div className="game-hud" aria-label="HUD financeiro do mundo">
         <div>
-          <span>SALDO</span>
+          <span>RESULTADO DO MES</span>
           <strong data-testid="game-hud-balance">{formatBRL(summary.balance)}</strong>
         </div>
         <div>

@@ -128,6 +128,17 @@ test('keeps key data areas reachable on a mobile viewport', async ({ page }) => 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
   await expect(page.locator('.game-canvas canvas')).toBeVisible()
+  await expect(page.getByTestId('monthly-overview-panel')).toBeVisible()
+  await expect(page.locator('#detalhes-do-mes')).toHaveJSProperty('open', false)
+  const primaryActions = page.getByRole('navigation', { name: 'Acoes principais' })
+  await expect(primaryActions.getByRole('link', { name: 'Registrar movimento', exact: true })).toBeVisible()
+  await expect(primaryActions.getByRole('link', { name: 'Ver historico', exact: true })).toBeVisible()
+  await expect(page.locator('.dashboard-shortcuts a')).toHaveCount(5)
+
+  const registerBounds = await primaryActions.getByRole('link', { name: 'Registrar movimento', exact: true }).boundingBox()
+  expect(registerBounds?.y).toBeLessThan(844)
+  const mobileWidth = await page.evaluate(() => document.documentElement.scrollWidth)
+  expect(mobileWidth).toBeLessThanOrEqual(390)
 
   const productNavigation = page.locator('#product-navigation')
   await expect(productNavigation).not.toBeVisible()
@@ -135,10 +146,17 @@ test('keeps key data areas reachable on a mobile viewport', async ({ page }) => 
   await page.getByRole('button', { name: 'Menu' }).click()
   await expect(productNavigation).toBeVisible()
 
-  await page.getByRole('link', { name: 'Dados' }).click()
+  await page.getByRole('navigation', { name: 'Navegacao principal' }).getByRole('link', { name: 'Historico', exact: true }).click()
+  await expect(page).toHaveURL(/#historico$/)
+  await expect(page.locator('#historico')).toBeInViewport()
+
+  await page.getByRole('button', { name: 'Menu' }).click()
+
+  await page.getByRole('navigation', { name: 'Navegacao principal' }).getByRole('link', { name: 'Dados', exact: true }).click()
   await expect(page).toHaveURL(/#backup$/)
   await expect(productNavigation).not.toBeVisible()
   await expect(page.getByTestId('local-data-panel')).toBeVisible()
+  await expect(page.getByTestId('sync-panel')).toBeVisible()
   await expect(page.getByTestId('import-local-file-panel')).toBeVisible()
   await expect(page.getByTestId('backup-panel')).toBeVisible()
 

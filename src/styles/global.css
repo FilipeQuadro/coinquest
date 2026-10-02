@@ -227,6 +227,7 @@ a { color: inherit; text-decoration: none; }
 }
 .section-anchor,
 #registrar,
+#inicio,
 #orcamento,
 #missoes,
 #simulador,
@@ -235,7 +236,8 @@ a { color: inherit; text-decoration: none; }
 #projecao,
 #backup,
 #sync,
-#historico {
+#historico,
+#mundo {
   scroll-margin-top: 84px;
 }
 .world-intro {
@@ -294,6 +296,13 @@ a { color: inherit; text-decoration: none; }
   font-size: clamp(15px, 1.6vw, 18px);
   line-height: 1.35;
 }
+.world-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.world-intro-actions .button.compact { min-height: 44px; }
 .world-chip {
   white-space: nowrap;
   color: #07110c;
@@ -364,23 +373,74 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 0;
   text-transform: capitalize;
 }
-.monthly-overview-chip {
-  flex: 0 0 auto;
-  color: #07110c;
-  background: linear-gradient(180deg, #8df0ff, #5abed0);
-  border: 2px solid #2d7a8a;
-  border-radius: var(--radius-control);
-  box-shadow: inset 0 -3px #2d7a8a55;
-  padding: 7px 10px;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
 .monthly-overview-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: var(--space-3);
 }
+.dashboard-overview-grid { align-items: stretch; }
+.dashboard-overview-grid .monthly-overview-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dashboard-attention {
+  grid-column: auto;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+.dashboard-attention .monthly-overview-card-title { margin-bottom: 0; }
+.dashboard-attention .monthly-overview-card-title h3 { font-size: 18px; }
+.dashboard-budget {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.dashboard-budget-copy {
+  display: grid;
+  gap: 6px;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+.dashboard-budget-copy strong { color: #f8fbff; }
+.dashboard-budget-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  color: var(--color-muted);
+}
+.dashboard-budget-empty .inline-link { min-height: 44px; display: inline-flex; align-items: center; }
+.dashboard-record-count {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-muted) !important;
+  font-size: 13px !important;
+}
+.dashboard-record-count span { color: #f8fbff !important; font-weight: 700; }
+.monthly-overview-secondary-count { grid-column: 1 / -1; }
+.monthly-overview-details {
+  margin-top: var(--space-3);
+  border-top: 1px solid #31446d;
+}
+.monthly-overview-details > summary {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 8px 2px;
+  color: #dce7ff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.monthly-overview-details > summary:focus-visible {
+  outline: none;
+  border-radius: var(--radius-control);
+  box-shadow: var(--focus-ring);
+}
+.monthly-overview-details[open] > summary { margin-bottom: var(--space-3); }
+.monthly-overview-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.monthly-overview-details-grid > * { min-width: 0; }
 .monthly-overview-hero,
 .monthly-overview-metrics,
 .monthly-overview-budget,
@@ -968,6 +1028,31 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
   gap: var(--space-4);
   margin-top: var(--space-4);
 }
+.dashboard-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+}
+.dashboard-shortcuts a {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 12px;
+  color: #dce7ff;
+  text-align: center;
+  background: #10182a;
+  border: 1px solid #35486e;
+  border-radius: var(--radius-control);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.dashboard-shortcuts a:hover,
+.dashboard-shortcuts a:focus-visible {
+  border-color: var(--color-cyan);
+  background: #15233a;
+}
+.dashboard-shortcuts a:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 .quick-slot,
 .manual-slot,
 .category-slot,
@@ -978,8 +1063,7 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
 .recurring-slot,
 .cards-slot,
 .projection-slot,
-.backup-slot,
-.sync-slot { min-width: 0; }
+.backup-slot { min-width: 0; }
 .category-slot { grid-column: 1 / -1; }
 .stats-slot { grid-column: 1 / -1; }
 .budget-slot { grid-column: 1 / -1; }
@@ -989,19 +1073,11 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
 .cards-slot { grid-column: 1 / -1; }
 .projection-slot { grid-column: 1 / -1; }
 .backup-slot { grid-column: 1 / -1; }
-.sync-slot { grid-column: 1 / -1; }
 .data-area-intro {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: var(--space-4);
-  align-items: stretch;
+  display: block;
   margin-bottom: var(--space-4);
-  padding: var(--space-5);
-  background:
-    linear-gradient(135deg, #17233b 0%, #10182a 58%, #0b1222 100%);
-  border: 2px solid #405d91;
-  border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-panel);
+  padding: 0 0 var(--space-3);
+  border-bottom: 1px solid #35486e;
 }
 .data-area-intro h2 {
   margin-bottom: 6px;
@@ -1011,32 +1087,6 @@ h2 { margin: 5px 0 8px; font-size: 25px; font-weight: 800; color: #f8fbff; }
   margin: 0;
   color: var(--color-muted);
   line-height: 1.45;
-}
-.data-area-intro-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-.data-area-intro-card {
-  display: grid;
-  align-content: start;
-  gap: 5px;
-  min-width: 0;
-  padding: var(--space-3);
-  background: #0b1222;
-  border: 1px solid #2b3b60;
-  border-top: 3px solid #285c7c;
-  border-radius: var(--radius-control);
-}
-.data-area-intro-card strong {
-  display: block;
-  color: #f8fbff;
-}
-.data-area-intro-card span {
-  display: block;
-  color: var(--color-muted);
-  font-size: 14px;
-  line-height: 1.35;
 }
 .quick-panel, .manual-panel { padding: var(--space-5); }
 .quick-panel {
@@ -3567,8 +3617,9 @@ footer {
     border-color: #223154;
     background: #0d1424;
   }
-  .month-nav { grid-template-columns: auto 1fr auto; }
-  .month-nav .button { grid-column: 1 / -1; }
+  .dashboard-shortcuts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .month-nav { grid-template-columns: 44px minmax(0, 1fr) 44px auto; gap: var(--space-2); }
+  .month-nav .button { grid-column: auto; min-height: 44px; padding-inline: 12px; }
   .world-intro { align-items: start; }
   .world-chip { display: none; }
   .history-toolbar {
@@ -3582,6 +3633,7 @@ footer {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .monthly-overview-grid { grid-template-columns: 1fr; }
+  .monthly-overview-details-grid { grid-template-columns: 1fr; }
   .monthly-insight-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .monthly-decision-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .monthly-actions-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -3599,8 +3651,7 @@ footer {
   .simulator-slot { order: 8; }
   .cards-slot { order: 9; }
   .goals-slot { order: 10; }
-  .sync-slot { order: 11; }
-  .backup-slot { order: 12; }
+  .backup-slot { order: 11; }
   .category-slot { grid-column: auto; }
   .stats-slot { grid-column: auto; }
   .budget-slot { grid-column: auto; }
@@ -3610,10 +3661,6 @@ footer {
   .cards-slot { grid-column: auto; }
   .projection-slot { grid-column: auto; }
   .backup-slot { grid-column: auto; }
-  .sync-slot { grid-column: auto; }
-  .data-area-intro {
-    grid-template-columns: 1fr;
-  }
   .game-canvas { height: clamp(390px, 62vw, 560px); }
 }
 
@@ -3624,6 +3671,7 @@ footer {
   .brand-copy > span { display: none; }
   .product-nav { grid-template-columns: 1fr; }
   .product-nav a { justify-content: start; padding-inline: 12px; place-items: center start; }
+  .month-nav strong { font-size: 18px; }
   .app-shell { width: min(100% - 14px, 1380px); padding-top: 10px; }
   .app-shell::before {
     top: 8px;
@@ -3668,10 +3716,6 @@ footer {
     flex-direction: column;
     margin-bottom: var(--space-3);
   }
-  .monthly-overview-chip {
-    align-self: flex-start;
-    white-space: normal;
-  }
   .monthly-overview-hero,
   .monthly-overview-budget,
   .monthly-overview-outlook,
@@ -3708,8 +3752,9 @@ footer {
   .commitment-status {
     justify-self: start;
   }
-  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .local-data-panel, .import-panel, .backup-panel, .sync-panel, .data-area-intro { padding: var(--space-3); }
+  .game-shell, .quick-panel, .manual-panel, .category-settings-panel, .history-panel, .goals-panel, .purchase-simulator-panel, .recurring-panel, .card-panel, .projection-panel, .local-data-panel, .import-panel, .backup-panel, .sync-panel { padding: var(--space-3); }
   .empty-state { padding: 22px var(--space-3); }
+  .dashboard-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .game-canvas { height: clamp(310px, 82vw, 370px); }
   .game-hud { grid-template-columns: 1fr; }
   .game-hud > div { padding: 8px 10px; }
@@ -4018,9 +4063,6 @@ footer {
   .import-created-record > strong {
     justify-self: start;
     white-space: normal;
-  }
-  .data-area-intro-grid {
-    grid-template-columns: 1fr;
   }
   .local-data-counts {
     grid-template-columns: 1fr;

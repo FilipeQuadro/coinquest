@@ -1,9 +1,11 @@
 export type ProductSectionId =
+  | 'inicio'
   | 'mundo'
   | 'registrar'
   | 'planejamento'
   | 'cartoes'
   | 'missoes'
+  | 'historico'
   | 'sync'
   | 'backup'
 
@@ -13,24 +15,30 @@ export interface ProductNavItem {
 }
 
 export const productNavItems: ProductNavItem[] = [
-  { id: 'mundo', label: 'Inicio' },
+  { id: 'inicio', label: 'Inicio' },
   { id: 'registrar', label: 'Registrar' },
   { id: 'planejamento', label: 'Planejamento' },
   { id: 'cartoes', label: 'Cartoes' },
   { id: 'missoes', label: 'Metas' },
-  { id: 'sync', label: 'Nuvem' },
+  { id: 'historico', label: 'Historico' },
   { id: 'backup', label: 'Dados' },
 ]
 
-const productSectionIds = new Set(productNavItems.map((item) => item.id))
+const productSectionIds = new Set<ProductSectionId>([
+  ...productNavItems.map((item) => item.id),
+  'mundo',
+  'sync',
+])
 
 const productSectionAliases: Record<string, ProductSectionId> = {
-  home: 'mundo',
-  inicio: 'mundo',
+  home: 'inicio',
+  inicio: 'inicio',
+  mundo: 'mundo',
   register: 'registrar',
   planning: 'planejamento',
   cards: 'cartoes',
   goals: 'missoes',
+  history: 'historico',
   cloud: 'sync',
   data: 'backup',
   dados: 'backup',
