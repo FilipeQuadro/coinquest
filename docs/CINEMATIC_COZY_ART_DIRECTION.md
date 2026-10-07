@@ -533,6 +533,8 @@ Escopo sugerido:
 - status visual + texto;
 - links claros para areas financeiras.
 
+Status (v1.18.0): "Mesa de revisao" abaixo do mundo em `GameWorld.tsx`, com nivel da base (marcadores + titulo + proximo passo) e atalhos para Registro, Orcamento, Recorrencias, Faturas e Metas rotulados como real, planejado, previsto, compromisso e alocacao. Todos os valores vem das engines React; o Phaser nao participa.
+
 ## 19. Criterios de aceite para futuras implementacoes
 
 Uma implementacao futura deve ser aceita somente se:

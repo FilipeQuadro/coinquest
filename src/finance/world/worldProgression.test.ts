@@ -60,7 +60,7 @@ describe('deriveWorldProgression', () => {
 
     expect(result).toMatchObject({
       tier: 'thriving',
-      title: 'Base prospera',
+      title: 'Base próspera',
     })
     expect(result.reasons).toContain('Saúde financeira excelente no mês.')
     expect(result.reasons).toContain('Missão concluída fortalece o mundo.')

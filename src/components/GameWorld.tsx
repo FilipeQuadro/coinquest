@@ -27,8 +27,8 @@ const healthCopy: Record<FinancialHealth['level'], { icon: string; label: string
   },
   healthy: {
     icon: '+',
-    label: 'Saudavel',
-    hint: 'Mês positivo ou com gastos confortaveis na regra V1.',
+    label: 'Saudável',
+    hint: 'Mês positivo ou com gastos confortáveis na regra V1.',
   },
   attention: {
     icon: '!',
@@ -45,6 +45,12 @@ const healthCopy: Record<FinancialHealth['level'], { icon: string; label: string
     label: 'Crítico',
     hint: 'Despesas acima das receitas ou sem receita registrada.',
   },
+}
+
+const worldTiers = ['starter', 'stable', 'focused', 'thriving'] as const
+
+function countLabel(count: number, singular: string, plural: string) {
+  return `${count} ${count === 1 ? singular : plural}`
 }
 
 interface GameWorldProps {
@@ -94,6 +100,43 @@ export function GameWorld({ selectedMonth, active = true }: GameWorldProps) {
   })
   const healthInfo = healthCopy[health.level]
   const monthLabel = formatMonthName(selectedMonth)
+  const tierLevel = worldTiers.indexOf(worldProgression.tier) + 1
+  const openCommitments = monthlyOutlook.pendingCount + monthlyOutlook.overdueCount
+  const activeGoals = goals.filter((goal) => goal.status === 'active').length
+  const deskLinks = [
+    {
+      href: '#registrar',
+      kind: 'Real',
+      title: 'Registros do mês',
+      value: countLabel(summary.count, 'movimento', 'movimentos'),
+    },
+    {
+      href: '#orcamento',
+      kind: 'Planejado',
+      title: 'Limite do mês',
+      value: budgetProgress.hasBudget && budgetProgress.percentageUsed !== null
+        ? `${Math.round(budgetProgress.percentageUsed * 100)}% usado`
+        : 'Sem limite definido',
+    },
+    {
+      href: '#previsoes',
+      kind: 'Previsto',
+      title: 'Recorrências',
+      value: openCommitments > 0 ? countLabel(openCommitments, 'em aberto', 'em aberto') : 'Nada em aberto',
+    },
+    {
+      href: '#cartoes',
+      kind: 'Compromisso',
+      title: 'Faturas',
+      value: monthlyOutlook.committedCardExpense > 0 ? formatBRL(monthlyOutlook.committedCardExpense) : 'Sem compromisso',
+    },
+    {
+      href: '#missoes',
+      kind: 'Alocação',
+      title: 'Metas',
+      value: activeGoals > 0 ? countLabel(activeGoals, 'meta ativa', 'metas ativas') : 'Nenhuma ativa',
+    },
+  ]
 
   useEffect(() => {
     if (!containerRef.current || gameRef.current) return
@@ -191,6 +234,36 @@ export function GameWorld({ selectedMonth, active = true }: GameWorldProps) {
           <span>{healthInfo.hint}</span>
         </div>
       </div>
+
+      <section className="world-desk" aria-labelledby="world-desk-title">
+        <div className="world-desk-head">
+          <div>
+            <span className="eyebrow">MESA DE REVIS&Atilde;O</span>
+            <h3 id="world-desk-title">Da base para as finan&ccedil;as</h3>
+          </div>
+          <div className={`world-tier tier-${worldProgression.tier}`} data-testid="world-tier">
+            <span className="world-tier-pips" role="img" aria-label={`Nível ${tierLevel} de ${worldTiers.length}`}>
+              {worldTiers.map((tier, index) => (
+                <span key={tier} className={index < tierLevel ? 'filled' : undefined} />
+              ))}
+            </span>
+            <div>
+              <strong>{worldProgression.title}</strong>
+              <span>{worldProgression.nextHint}</span>
+            </div>
+          </div>
+        </div>
+
+        <nav className="world-desk-grid" aria-label="Áreas a partir do mundo">
+          {deskLinks.map((link) => (
+            <a key={link.href} className="world-desk-link" href={link.href}>
+              <span className="world-desk-kind">{link.kind}</span>
+              <strong>{link.title}</strong>
+              <span className="world-desk-value">{link.value}</span>
+            </a>
+          ))}
+        </nav>
+      </section>
     </section>
   )
 }

@@ -39,7 +39,7 @@ const tierCopy: Record<WorldProgressionTier, Pick<WorldProgressionState, 'title'
     description: 'Orçamento, registros e missões indicam um mês acompanhado.',
   },
   thriving: {
-    title: 'Base prospera',
+    title: 'Base próspera',
     description: 'O mundo reflete um mês forte, com bons sinais financeiros e progresso de missão.',
   },
 }
