@@ -12,8 +12,8 @@ interface UpdateEnvironment {
 }
 
 /**
- * Installed PWAs resumed from the background never navigate, so the browser never checks for a new
- * service worker. Check when the app becomes visible again and hourly while it stays open.
+ * Installed PWAs often reopen without the browser checking for a new service worker, and resumed
+ * ones never navigate. Check once on start, whenever the app becomes visible again and hourly.
  */
 export function watchServiceWorkerUpdates(
   registration: UpdatableRegistration,
@@ -28,6 +28,7 @@ export function watchServiceWorkerUpdates(
     if (env.document.visibilityState === 'visible') check()
   }
 
+  check()
   env.document.addEventListener('visibilitychange', onVisibilityChange)
   const timer = env.setInterval(check, intervalMs)
 
