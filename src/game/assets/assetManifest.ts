@@ -29,6 +29,10 @@ export const spriteKeys = {
   floor: 'cq-environment-floor',
   softGlow: 'cq-effect-soft-glow',
   programmerBadge: 'cq-ui-world-programmer-badge',
+  plantPot: 'cq-furniture-plant-pot',
+  ledgerShelf: 'cq-furniture-ledger-shelf',
+  deskMug: 'cq-furniture-desk-mug',
+  monthBoard: 'cq-tech-month-board',
 } as const
 
 export const fallbackSpriteKeys = {
@@ -48,6 +52,10 @@ export const fallbackSpriteKeys = {
   floor: 'cq-fallback-environment-floor',
   softGlow: 'cq-fallback-effect-soft-glow',
   programmerBadge: 'cq-fallback-ui-world-programmer-badge',
+  plantPot: 'cq-fallback-furniture-plant-pot',
+  ledgerShelf: 'cq-fallback-furniture-ledger-shelf',
+  deskMug: 'cq-fallback-furniture-desk-mug',
+  monthBoard: 'cq-fallback-tech-month-board',
 } as const
 
 export type SpriteId = keyof typeof spriteKeys
@@ -192,6 +200,38 @@ export const coinQuestAssets = {
     category: 'environment',
     kind: 'image',
     src: `${assetFolders.environment}/floor.png`,
+  },
+  plantPot: {
+    id: 'plantPot',
+    key: spriteKeys.plantPot,
+    fallbackKey: fallbackSpriteKeys.plantPot,
+    category: 'furniture',
+    kind: 'image',
+    src: `${assetFolders.furniture}/plant-pot.png`,
+  },
+  ledgerShelf: {
+    id: 'ledgerShelf',
+    key: spriteKeys.ledgerShelf,
+    fallbackKey: fallbackSpriteKeys.ledgerShelf,
+    category: 'furniture',
+    kind: 'image',
+    src: `${assetFolders.furniture}/ledger-shelf.png`,
+  },
+  deskMug: {
+    id: 'deskMug',
+    key: spriteKeys.deskMug,
+    fallbackKey: fallbackSpriteKeys.deskMug,
+    category: 'furniture',
+    kind: 'image',
+    src: `${assetFolders.furniture}/desk-mug.png`,
+  },
+  monthBoard: {
+    id: 'monthBoard',
+    key: spriteKeys.monthBoard,
+    fallbackKey: fallbackSpriteKeys.monthBoard,
+    category: 'tech',
+    kind: 'image',
+    src: `${assetFolders.tech}/month-board.png`,
   },
   softGlow: {
     id: 'softGlow',

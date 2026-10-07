@@ -244,4 +244,35 @@ export function ensureCoinQuestFallbackTextures(scene: Phaser.Scene) {
     [112, 8, 116, 92, '#35d8ff', 0.08],
     [114, 102, 128, 4, '#42d9f4', 0.2],
   ])
+
+  createPixelTexture(scene, fallbackSpriteKeys.plantPot, 32, 44, [
+    [4, 4, 24, 20, '#3a8c5c'],
+    [10, 0, 10, 8, '#69c47f'],
+    [8, 26, 16, 17, '#b9623f'],
+    [6, 24, 20, 4, '#d98a5e'],
+  ])
+
+  createPixelTexture(scene, fallbackSpriteKeys.ledgerShelf, 96, 52, [
+    [0, 40, 96, 7, '#6b4a2f'],
+    [4, 14, 10, 26, '#4f5fa8'],
+    [15, 10, 9, 30, '#8a4f6b'],
+    [25, 16, 10, 24, '#3f7d6a'],
+    [36, 12, 8, 28, '#b08a3e'],
+    [72, 20, 16, 20, '#9ee7f2', 0.5],
+    [74, 30, 12, 8, '#f3cf64'],
+  ])
+
+  createPixelTexture(scene, fallbackSpriteKeys.deskMug, 14, 16, [
+    [1, 4, 10, 11, '#e6dcc6'],
+    [2, 5, 8, 2, '#7a4a2a'],
+    [10, 6, 3, 6, '#e6dcc6'],
+  ])
+
+  createPixelTexture(scene, fallbackSpriteKeys.monthBoard, 64, 48, [
+    [0, 0, 64, 48, '#b98b5a'],
+    [5, 6, 30, 24, '#efe6cf'],
+    [6, 7, 28, 4, '#2b7a80'],
+    [39, 8, 18, 15, '#f7e08a'],
+    [40, 27, 18, 15, '#bfe7da'],
+  ])
 }
