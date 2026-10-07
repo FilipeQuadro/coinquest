@@ -251,7 +251,7 @@ export function App() {
         </section>
 
         <footer>
-          CoinQuest - local-first - offline-first - sincronização opcional entre dispositivos.
+          CoinQuest <span data-testid="app-version">v{__APP_VERSION__}</span> - local-first - offline-first - sincronização opcional entre dispositivos.
         </footer>
       </main>
       <PwaStatus />
