@@ -69,10 +69,10 @@ describe('RecurringRule validation and storage', () => {
 
   it('validates recurring rule drafts', () => {
     expect(validateRecurringRuleDraft(baseDraft)).toBeNull()
-    expect(validateRecurringRuleDraft({ ...baseDraft, amount: 0 })).toBe('Informe um valor valido.')
+    expect(validateRecurringRuleDraft({ ...baseDraft, amount: 0 })).toBe('Informe um valor válido.')
     expect(validateRecurringRuleDraft({ ...baseDraft, dayOfMonth: 32 })).toBe('Informe um dia entre 1 e 31.')
-    expect(validateRecurringRuleDraft({ ...baseDraft, endYear: 2026 })).toBe('Informe mes e ano final juntos.')
-    expect(validateRecurringRuleDraft({ ...baseDraft, endYear: 2026, endMonth: 7 })).toBe('Fim da recorrencia nao pode ser antes do inicio.')
+    expect(validateRecurringRuleDraft({ ...baseDraft, endYear: 2026 })).toBe('Informe mês e ano final juntos.')
+    expect(validateRecurringRuleDraft({ ...baseDraft, endYear: 2026, endMonth: 7 })).toBe('Fim da recorrência não pode ser antes do início.')
   })
 
   it('saves, updates, pauses and deletes a recurring rule without transactions', async () => {

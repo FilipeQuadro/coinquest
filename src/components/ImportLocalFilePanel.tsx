@@ -17,13 +17,13 @@ const csvExampleText = [
 ].join('\n')
 
 function delimiterLabel(delimiter: ImportPreview['delimiter']) {
-  if (delimiter === null) return 'Nao detectado'
+  if (delimiter === null) return 'Não detectado'
   if (delimiter === '\t') return 'Tab'
   return delimiter
 }
 
 function typeLabel(type: ImportCandidate['type']) {
-  return type === 'income' ? 'Entrada' : 'Saida'
+  return type === 'income' ? 'Entrada' : 'Saída'
 }
 
 function categoryDatalistId(type: ImportCandidate['type']) {
@@ -32,7 +32,7 @@ function categoryDatalistId(type: ImportCandidate['type']) {
 
 function formatCandidateDate(value: string) {
   const date = new Date(value)
-  if (!Number.isFinite(date.getTime())) return 'Data invalida'
+  if (!Number.isFinite(date.getTime())) return 'Data inválida'
   return date.toLocaleDateString('pt-BR')
 }
 
@@ -43,7 +43,7 @@ function isSupportedCsvFile(file: File) {
 
 function needsManualReview(candidate: ImportCandidate) {
   return Boolean(candidate.duplicateWarning) || candidate.warnings.some((warning) => (
-    warning.toLocaleLowerCase('pt-BR').includes('cartao/fatura')
+    warning.toLocaleLowerCase('pt-BR').includes('cartão/fatura')
   ))
 }
 
@@ -141,7 +141,7 @@ export function ImportLocalFilePanel() {
     setExampleFeedback('')
 
     if (!navigator.clipboard?.writeText) {
-      setExampleFeedback('Copia automatica indisponivel neste navegador.')
+      setExampleFeedback('Copia automática indisponivel neste navegador.')
       return
     }
 
@@ -149,7 +149,7 @@ export function ImportLocalFilePanel() {
       await navigator.clipboard.writeText(csvExampleText)
       setExampleFeedback('Exemplo copiado.')
     } catch {
-      setExampleFeedback('Nao foi possivel copiar o exemplo automaticamente.')
+      setExampleFeedback('Não foi possível copiar o exemplo automaticamente.')
     }
   }
 
@@ -184,7 +184,7 @@ export function ImportLocalFilePanel() {
     setSelectedFileName(file.name)
 
     if (!isSupportedCsvFile(file)) {
-      setError('Selecione um arquivo CSV ou texto simples para gerar a previa.')
+      setError('Selecione um arquivo CSV ou texto simples para gerar a prévia.')
       return
     }
 
@@ -200,7 +200,7 @@ export function ImportLocalFilePanel() {
       setPreview(nextPreview)
       selectSafeCandidates(nextPreview)
     } catch {
-      setError('Nao foi possivel ler o arquivo selecionado. Nenhuma movimentacao real foi criada.')
+      setError('Não foi possível ler o arquivo selecionado. Nenhuma movimentação real foi criada.')
     } finally {
       setIsReading(false)
     }
@@ -234,15 +234,15 @@ export function ImportLocalFilePanel() {
       }
 
       setCreatedTransactions(createdDuringImport)
-      setSuccessMessage(`${createdCount} ${createdCount === 1 ? 'movimentacao real criada' : 'movimentacoes reais criadas'}.`)
+      setSuccessMessage(`${createdCount} ${createdCount === 1 ? 'movimentação real criada' : 'movimentações reais criadas'}.`)
       setSelectedCandidateIds([])
       setConfirmOpen(false)
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : 'Nao foi possivel concluir a importacao selecionada.'
+      const message = caught instanceof Error ? caught.message : 'Não foi possível concluir a importação selecionada.'
       setCreatedTransactions(createdDuringImport)
       setError(createdCount > 0
-        ? `${createdCount} ${createdCount === 1 ? 'movimentacao real foi criada' : 'movimentacoes reais foram criadas'} antes do erro. ${message}`
-        : `${message} Nenhuma movimentacao real foi criada.`)
+        ? `${createdCount} ${createdCount === 1 ? 'movimentação real foi criada' : 'movimentações reais foram criadas'} antes do erro. ${message}`
+        : `${message} Nenhuma movimentação real foi criada.`)
     } finally {
       setIsImporting(false)
     }
@@ -267,21 +267,21 @@ export function ImportLocalFilePanel() {
     <section className="panel import-panel" data-testid="import-local-file-panel" aria-labelledby="import-local-file-title" aria-busy={isReading || isImporting}>
       <div className="panel-title-row">
         <div>
-          <span className="eyebrow">IMPORTACAO LOCAL</span>
+          <span className="eyebrow">IMPORTAÇÃO LOCAL</span>
           <h2 id="import-local-file-title">Importar extrato CSV</h2>
-          <p className="muted">Leia um arquivo CSV localmente e veja uma previa antes de criar qualquer movimentacao.</p>
+          <p className="muted">Leia um arquivo CSV localmente e veja uma prévia antes de criar qualquer movimentação.</p>
         </div>
       </div>
 
       <div className="import-local-note">
         <strong>Nenhum dado e enviado.</strong>
-        <span>O arquivo e lido apenas neste dispositivo. Movimentacoes reais so sao criadas depois da confirmacao manual.</span>
+        <span>O arquivo é lido apenas neste dispositivo. Movimentações reais só são criadas depois da confirmação manual.</span>
       </div>
 
       <div className="import-example-card" aria-labelledby="import-example-title">
         <div>
-          <strong id="import-example-title">Exemplo basico</strong>
-          <p>Use como referencia para montar um CSV simples. O arquivo real pode variar conforme o banco; a previa vai mostrar candidatos, avisos e linhas ignoradas antes de qualquer confirmacao.</p>
+          <strong id="import-example-title">Exemplo básico</strong>
+          <p>Use como referência para montar um CSV simples. O arquivo real pode variar conforme o banco; a prévia vai mostrar candidatos, avisos e linhas ignoradas antes de qualquer confirmação.</p>
         </div>
         <pre aria-label="Exemplo de CSV aceito"><code>{csvExampleText}</code></pre>
         <div className="import-example-actions">
@@ -310,7 +310,7 @@ export function ImportLocalFilePanel() {
         {selectedFileName ? <span className="import-selected-file">Arquivo: {selectedFileName}</span> : <span className="import-selected-file">Nenhum arquivo selecionado.</span>}
         {(selectedFileName || preview || error) && (
           <button className="button compact ghost" type="button" onClick={resetPreview} disabled={isReading || isImporting}>
-            Limpar previa
+            Limpar prévia
           </button>
         )}
       </div>
@@ -320,17 +320,17 @@ export function ImportLocalFilePanel() {
       {successMessage && <p className="success-text" data-testid="import-csv-success">{successMessage}</p>}
 
       {!preview && !error && !isReading && (
-        <p className="import-empty-state">Escolha um CSV de extrato bancario para ver candidatos, avisos e linhas ignoradas na previa.</p>
+        <p className="import-empty-state">Escolha um CSV de extrato bancário para ver candidatos, avisos e linhas ignoradas na prévia.</p>
       )}
 
       {preview && (
         <div className="import-preview" data-testid="import-csv-preview">
-          <div className="import-preview-summary" aria-label="Resumo da previa de importacao CSV">
+          <div className="import-preview-summary" aria-label="Resumo da prévia de importação CSV">
             <span>Delimitador <strong>{delimiterLabel(preview.delimiter)}</strong></span>
             <span>Linhas lidas <strong>{preview.totalRows}</strong></span>
             <span>Candidatos <strong>{preview.candidateCount}</strong></span>
             <span>Ignoradas <strong>{preview.rejectedCount}</strong></span>
-            <span>Possiveis duplicatas <strong>{preview.duplicateWarningCount}</strong></span>
+            <span>Possíveis duplicatas <strong>{preview.duplicateWarningCount}</strong></span>
           </div>
 
           {preview.warnings.length > 0 && (
@@ -342,18 +342,18 @@ export function ImportLocalFilePanel() {
           {visibleCandidates.length > 0 ? (
             <div className="import-candidate-section">
               <div className="section-heading">
-                <strong>Candidatos na previa</strong>
+                <strong>Candidatos na prévia</strong>
                 <span>{preview.candidateCount}</span>
               </div>
               <div className="import-selection-summary" data-testid="import-selection-summary">
-                <strong>{selectedCount} {selectedCount === 1 ? 'selecionado' : 'selecionados'} para confirmacao</strong>
+                <strong>{selectedCount} {selectedCount === 1 ? 'selecionado' : 'selecionados'} para confirmação</strong>
                 <div className="import-selection-totals" aria-label="Totais separados dos candidatos selecionados">
                   <span>Entradas selecionadas <strong className="income">{formatBRL(selectedIncomeAmount)}</strong></span>
-                  <span>Saidas selecionadas <strong className="expense">{formatBRL(selectedExpenseAmount)}</strong></span>
+                  <span>Saídas selecionadas <strong className="expense">{formatBRL(selectedExpenseAmount)}</strong></span>
                 </div>
-                <span>Arquivos CSV de extrato nao informam forma de pagamento com seguranca. Movimentacoes criadas aqui serao registradas como Outro e podem ser revisadas depois no Historico.</span>
-                <span>Revise as categorias antes de confirmar; as categorias escolhidas aqui serao usadas nas movimentacoes reais criadas.</span>
-                <span>Possiveis duplicatas e cartao/fatura ficam desmarcados por padrao.</span>
+                <span>Arquivos CSV de extrato não informam forma de pagamento com segurança. Movimentações criadas aqui serão registradas como Outro e podem ser revisadas depois no Histórico.</span>
+                <span>Revise as categorias antes de confirmar; as categorias escolhidas aqui serão usadas nas movimentações reais criadas.</span>
+                <span>Possíveis duplicatas e cartão/fatura ficam desmarcados por padrão.</span>
                 <div>
                   <button className="button compact ghost" type="button" onClick={() => selectSafeCandidates(preview)} disabled={isImporting}>
                     Selecionar candidatos sem aviso
@@ -378,7 +378,7 @@ export function ImportLocalFilePanel() {
                         onChange={() => toggleCandidate(candidate.id)}
                         disabled={isImporting}
                       />
-                      <span>{selectedCandidateIds.includes(candidate.id) ? 'Selecionado' : 'Nao selecionado'}</span>
+                      <span>{selectedCandidateIds.includes(candidate.id) ? 'Selecionado' : 'Não selecionado'}</span>
                     </label>
                     <div className="import-candidate-main">
                       <span>Linha {candidate.rowNumber} - {formatCandidateDate(candidate.occurredAt)}</span>
@@ -426,28 +426,28 @@ export function ImportLocalFilePanel() {
                   onClick={() => setConfirmOpen(true)}
                   disabled={selectedCount === 0 || isImporting}
                 >
-                  Revisar confirmacao selecionada
+                  Revisar confirmação selecionada
                 </button>
               </div>
             </div>
           ) : (
-            <p className="import-empty-state">Nenhum candidato valido foi encontrado neste arquivo.</p>
+            <p className="import-empty-state">Nenhum candidato válido foi encontrado neste arquivo.</p>
           )}
 
           {confirmOpen && preview && selectedCount > 0 && (
             <div className="import-confirm-box" data-testid="import-confirm-box">
-              <strong>Confirmacao manual de importacao</strong>
-              <p>Somente {selectedCount} {selectedCount === 1 ? 'candidato selecionado sera criado' : 'candidatos selecionados serao criados'} como movimentacoes reais no Historico.</p>
-              <p>Candidatos desmarcados e linhas ignoradas nao serao importados.</p>
-              <p>A forma de pagamento sera registrada como Outro porque o CSV de extrato nao informa esse campo com seguranca.</p>
-              <p>As categorias revisadas na previa serao usadas nas movimentacoes reais criadas.</p>
-              <p>Revise possiveis duplicatas e descricoes de cartao/fatura antes de confirmar.</p>
+              <strong>Confirmação manual de importação</strong>
+              <p>Somente {selectedCount} {selectedCount === 1 ? 'candidato selecionado será criado' : 'candidatos selecionados serão criados'} como movimentações reais no Histórico.</p>
+              <p>Candidatos desmarcados e linhas ignoradas não serão importados.</p>
+              <p>A forma de pagamento será registrada como Outro porque o CSV de extrato não informa esse campo com segurança.</p>
+              <p>As categorias revisadas na prévia serão usadas nas movimentações reais criadas.</p>
+              <p>Revise possíveis duplicatas e descrições de cartão/fatura antes de confirmar.</p>
               <div className="goal-form-actions">
                 <button className="button ghost" type="button" onClick={() => setConfirmOpen(false)} disabled={isImporting}>
-                  Voltar para previa
+                  Voltar para prévia
                 </button>
                 <button className="button primary" type="button" data-testid="import-confirm-selected" onClick={confirmSelectedImport} disabled={isImporting}>
-                  {isImporting ? 'Criando...' : 'Confirmar importacao selecionada'}
+                  {isImporting ? 'Criando...' : 'Confirmar importação selecionada'}
                 </button>
               </div>
             </div>
@@ -457,11 +457,11 @@ export function ImportLocalFilePanel() {
             <section className="import-created-records" data-testid="import-created-records" aria-labelledby="import-created-records-title">
               <div className="import-created-records-header">
                 <div>
-                  <strong id="import-created-records-title">Movimentacoes criadas</strong>
-                  <p>As movimentacoes abaixo ja foram criadas como registros reais. Revise no Historico para ajustar descricao, categoria, forma de pagamento, data, tipo ou valor.</p>
-                  <p>Se alguma data estiver em outro mes, ajuste o mes no topo do app para localizar o registro no Historico.</p>
+                  <strong id="import-created-records-title">Movimentações criadas</strong>
+                  <p>As movimentações abaixo já foram criadas como registros reais. Revise no Histórico para ajustar descrição, categoria, forma de pagamento, data, tipo ou valor.</p>
+                  <p>Se alguma data estiver em outro mês, ajuste o mês no topo do app para localizar o registro no Histórico.</p>
                 </div>
-                <a className="button primary compact" data-testid="import-review-history" href="#historico">Revisar no Historico</a>
+                <a className="button primary compact" data-testid="import-review-history" href="#historico">Revisar no Histórico</a>
               </div>
               <div className="import-created-list">
                 {createdTransactions.map((transaction) => (
@@ -483,10 +483,10 @@ export function ImportLocalFilePanel() {
           {visibleRejectedRows.length > 0 && (
             <div className="import-rejected-section">
               <div className="section-heading">
-                <strong>Linhas ignoradas na previa</strong>
+                <strong>Linhas ignoradas na prévia</strong>
                 <span>{preview.rejectedCount}</span>
               </div>
-              <p>Essas linhas nao serao consideradas sem correcao do arquivo.</p>
+              <p>Essas linhas não serão consideradas sem correção do arquivo.</p>
               <div className="import-rejected-list">
                 {visibleRejectedRows.map((row) => (
                   <article className="import-rejected-row" key={`${row.rowNumber}-${row.reason}`}>
@@ -499,7 +499,7 @@ export function ImportLocalFilePanel() {
             </div>
           )}
 
-          <p className="import-next-step">Apenas candidatos selecionados e confirmados viram movimentacoes reais. Linhas ignoradas nao sao importadas.</p>
+          <p className="import-next-step">Apenas candidatos selecionados e confirmados viram movimentações reais. Linhas ignoradas não são importadas.</p>
           <datalist id="import-category-options-income">
             {incomeCategoryOptions.map((category) => <option key={category} value={category} />)}
           </datalist>

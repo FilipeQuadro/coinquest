@@ -11,15 +11,15 @@ export function MonthNavigator({ selectedMonth, onChange }: MonthNavigatorProps)
   const isCurrentMonth = isSameMonth(selectedMonth, currentMonth)
 
   return (
-    <section className="month-nav panel" aria-label="Navegacao mensal">
+    <section className="month-nav panel" aria-label="Navegação mensal">
       <button
         className="icon-button"
         type="button"
         data-testid="month-prev"
-        aria-label="Mes anterior"
+        aria-label="Mês anterior"
         onClick={() => onChange(previousMonth(selectedMonth))}
       >
-        &lt;
+        &#8249;
       </button>
       <div>
         <span className="eyebrow">M&Ecirc;S EM AN&Aacute;LISE</span>
@@ -29,17 +29,17 @@ export function MonthNavigator({ selectedMonth, onChange }: MonthNavigatorProps)
         className="icon-button"
         type="button"
         data-testid="month-next"
-        aria-label="Proximo mes"
+        aria-label="Próximo mês"
         onClick={() => onChange(nextMonth(selectedMonth))}
       >
-        &gt;
+        &#8250;
       </button>
       <button
         className="button ghost"
         type="button"
         data-testid="month-today"
         disabled={isCurrentMonth}
-        aria-label="Voltar ao mes atual"
+        aria-label="Voltar ao mês atual"
         onClick={() => onChange(currentMonth)}
       >
         Hoje

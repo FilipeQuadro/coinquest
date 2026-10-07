@@ -15,11 +15,11 @@ export function monthFromDate(date = new Date()): SelectedMonth {
 
 export function validateSelectedMonth(month: SelectedMonth): string | null {
   if (!Number.isInteger(month.year) || month.year < MIN_YEAR || month.year > MAX_YEAR) {
-    return 'Ano invalido.'
+    return 'Ano inválido.'
   }
 
   if (!Number.isInteger(month.month) || month.month < 0 || month.month > 11) {
-    return 'Mes invalido.'
+    return 'Mês inválido.'
   }
 
   return null

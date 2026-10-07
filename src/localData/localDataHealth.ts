@@ -140,8 +140,8 @@ function buildReferenceWarnings(input: LocalDataHealthInput): LocalDataHealthWar
     id: 'orphan-reference:goal-contributions:goal',
     kind: 'orphan-reference',
     severity: 'attention',
-    title: 'Contribuicoes de meta sem meta local',
-    message: 'Algumas contribuicoes apontam para uma meta local que nao foi encontrada.',
+    title: 'Contribuições de meta sem meta local',
+    message: 'Algumas contribuições apontam para uma meta local que não foi encontrada.',
     count: input.goalContributions.filter((contribution) => !goalIds.has(contribution.goalId)).length,
     table: 'goalContributions',
   })
@@ -150,8 +150,8 @@ function buildReferenceWarnings(input: LocalDataHealthInput): LocalDataHealthWar
     id: 'orphan-reference:recurring-overrides:rule',
     kind: 'orphan-reference',
     severity: 'attention',
-    title: 'Ajustes de recorrencia sem regra local',
-    message: 'Alguns ajustes apontam para uma recorrencia local que nao foi encontrada.',
+    title: 'Ajustes de recorrência sem regra local',
+    message: 'Alguns ajustes apontam para uma recorrência local que não foi encontrada.',
     count: input.recurringOccurrenceOverrides.filter((override) => !ruleIds.has(override.ruleId)).length,
     table: 'recurringOccurrenceOverrides',
   })
@@ -160,8 +160,8 @@ function buildReferenceWarnings(input: LocalDataHealthInput): LocalDataHealthWar
     id: 'orphan-reference:recurring-overrides:transaction',
     kind: 'orphan-reference',
     severity: 'attention',
-    title: 'Recorrencias realizadas sem transacao local',
-    message: 'Algumas recorrencias realizadas apontam para uma transacao local que nao foi encontrada.',
+    title: 'Recorrências realizadas sem transação local',
+    message: 'Algumas recorrências realizadas apontam para uma transação local que não foi encontrada.',
     count: input.recurringOccurrenceOverrides.filter((override) => (
       override.status === 'realized' &&
       Boolean(override.linkedTransactionId) &&
@@ -174,8 +174,8 @@ function buildReferenceWarnings(input: LocalDataHealthInput): LocalDataHealthWar
     id: 'orphan-reference:card-purchases:card',
     kind: 'orphan-reference',
     severity: 'attention',
-    title: 'Compras de cartao sem cartao local',
-    message: 'Algumas compras apontam para um cartao local que nao foi encontrado.',
+    title: 'Compras de cartão sem cartão local',
+    message: 'Algumas compras apontam para um cartão local que não foi encontrado.',
     count: input.cardPurchases.filter((purchase) => !cardIds.has(purchase.cardId)).length,
     table: 'cardPurchases',
   })
@@ -184,8 +184,8 @@ function buildReferenceWarnings(input: LocalDataHealthInput): LocalDataHealthWar
     id: 'orphan-reference:card-invoice-payments:card',
     kind: 'orphan-reference',
     severity: 'attention',
-    title: 'Pagamentos de fatura sem cartao local',
-    message: 'Alguns pagamentos de fatura apontam para um cartao local que nao foi encontrado.',
+    title: 'Pagamentos de fatura sem cartão local',
+    message: 'Alguns pagamentos de fatura apontam para um cartão local que não foi encontrado.',
     count: input.cardInvoicePayments.filter((payment) => !cardIds.has(payment.cardId)).length,
     table: 'cardInvoicePayments',
   })
@@ -194,8 +194,8 @@ function buildReferenceWarnings(input: LocalDataHealthInput): LocalDataHealthWar
     id: 'orphan-reference:card-invoice-payments:transaction',
     kind: 'orphan-reference',
     severity: 'attention',
-    title: 'Pagamentos de fatura sem transacao local',
-    message: 'Alguns pagamentos de fatura apontam para uma transacao local que nao foi encontrada.',
+    title: 'Pagamentos de fatura sem transação local',
+    message: 'Alguns pagamentos de fatura apontam para uma transação local que não foi encontrada.',
     count: input.cardInvoicePayments.filter((payment) => !transactionIds.has(payment.linkedTransactionId)).length,
     table: 'cardInvoicePayments',
   })
@@ -210,8 +210,8 @@ function buildValueWarnings(input: LocalDataHealthInput): LocalDataHealthWarning
     id: 'invalid-value:transactions:amount',
     kind: 'invalid-value',
     severity: 'attention',
-    title: 'Transacoes com valor invalido',
-    message: 'Algumas transacoes locais possuem valor fora do formato esperado.',
+    title: 'Transações com valor inválido',
+    message: 'Algumas transações locais possuem valor fora do formato esperado.',
     count: input.transactions.filter((transaction) => !isPositiveFinite(transaction.amount)).length,
     table: 'transactions',
   })
@@ -220,7 +220,7 @@ function buildValueWarnings(input: LocalDataHealthInput): LocalDataHealthWarning
     id: 'invalid-value:goals:target-amount',
     kind: 'invalid-value',
     severity: 'attention',
-    title: 'Metas com valor objetivo invalido',
+    title: 'Metas com valor objetivo inválido',
     message: 'Algumas metas locais possuem valor objetivo fora do formato esperado.',
     count: input.goals.filter((goal) => !isPositiveFinite(goal.targetAmount)).length,
     table: 'goals',
@@ -230,8 +230,8 @@ function buildValueWarnings(input: LocalDataHealthInput): LocalDataHealthWarning
     id: 'invalid-value:goal-contributions:amount',
     kind: 'invalid-value',
     severity: 'attention',
-    title: 'Contribuicoes de meta com valor invalido',
-    message: 'Algumas contribuicoes locais possuem valor fora do formato esperado.',
+    title: 'Contribuições de meta com valor inválido',
+    message: 'Algumas contribuições locais possuem valor fora do formato esperado.',
     count: input.goalContributions.filter((contribution) => !Number.isFinite(contribution.amount)).length,
     table: 'goalContributions',
   })
@@ -240,8 +240,8 @@ function buildValueWarnings(input: LocalDataHealthInput): LocalDataHealthWarning
     id: 'invalid-value:monthly-budgets:total-limit',
     kind: 'invalid-value',
     severity: 'attention',
-    title: 'Orcamentos mensais com limite invalido',
-    message: 'Alguns orcamentos locais possuem limite fora do formato esperado.',
+    title: 'Orçamentos mensais com limite inválido',
+    message: 'Alguns orçamentos locais possuem limite fora do formato esperado.',
     count: input.monthlyBudgets.filter((budget) => !isNonNegativeFinite(budget.totalLimit)).length,
     table: 'monthlyBudgets',
   })
@@ -250,8 +250,8 @@ function buildValueWarnings(input: LocalDataHealthInput): LocalDataHealthWarning
     id: 'invalid-value:category-budgets:limit',
     kind: 'invalid-value',
     severity: 'attention',
-    title: 'Orcamentos por categoria com limite invalido',
-    message: 'Alguns limites por categoria estao fora do formato esperado.',
+    title: 'Orçamentos por categoria com limite inválido',
+    message: 'Alguns limites por categoria estão fora do formato esperado.',
     count: input.categoryBudgets.filter((budget) => !isNonNegativeFinite(budget.limit)).length,
     table: 'categoryBudgets',
   })
@@ -260,8 +260,8 @@ function buildValueWarnings(input: LocalDataHealthInput): LocalDataHealthWarning
     id: 'invalid-value:recurring-rules:amount',
     kind: 'invalid-value',
     severity: 'attention',
-    title: 'Recorrencias com valor invalido',
-    message: 'Algumas recorrencias locais possuem valor fora do formato esperado.',
+    title: 'Recorrências com valor inválido',
+    message: 'Algumas recorrências locais possuem valor fora do formato esperado.',
     count: input.recurringRules.filter((rule) => !isPositiveFinite(rule.amount)).length,
     table: 'recurringRules',
   })
@@ -270,8 +270,8 @@ function buildValueWarnings(input: LocalDataHealthInput): LocalDataHealthWarning
     id: 'invalid-value:credit-cards:credit-limit',
     kind: 'invalid-value',
     severity: 'attention',
-    title: 'Cartoes com limite invalido',
-    message: 'Alguns cartoes locais possuem limite fora do formato esperado.',
+    title: 'Cartões com limite inválido',
+    message: 'Alguns cartões locais possuem limite fora do formato esperado.',
     count: input.creditCards.filter((card) => card.creditLimit !== undefined && !isNonNegativeFinite(card.creditLimit)).length,
     table: 'creditCards',
   })
@@ -280,8 +280,8 @@ function buildValueWarnings(input: LocalDataHealthInput): LocalDataHealthWarning
     id: 'invalid-value:card-purchases:total-amount',
     kind: 'invalid-value',
     severity: 'attention',
-    title: 'Compras de cartao com valor invalido',
-    message: 'Algumas compras de cartao possuem valor fora do formato esperado.',
+    title: 'Compras de cartão com valor inválido',
+    message: 'Algumas compras de cartão possuem valor fora do formato esperado.',
     count: input.cardPurchases.filter((purchase) => !isPositiveFinite(purchase.totalAmount)).length,
     table: 'cardPurchases',
   })
@@ -296,8 +296,8 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:transactions',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Transacoes com data invalida',
-    message: 'Algumas transacoes locais possuem data fora do formato esperado.',
+    title: 'Transações com data inválida',
+    message: 'Algumas transações locais possuem data fora do formato esperado.',
     count: countInvalidDates(input.transactions, ['occurredAt', 'createdAt']),
     table: 'transactions',
   })
@@ -306,7 +306,7 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:goals',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Metas com data invalida',
+    title: 'Metas com data inválida',
     message: 'Algumas metas locais possuem data fora do formato esperado.',
     count: countInvalidDates(input.goals, ['createdAt', 'updatedAt', 'targetDate']),
     table: 'goals',
@@ -316,8 +316,8 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:goal-contributions',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Contribuicoes de meta com data invalida',
-    message: 'Algumas contribuicoes locais possuem data fora do formato esperado.',
+    title: 'Contribuições de meta com data inválida',
+    message: 'Algumas contribuições locais possuem data fora do formato esperado.',
     count: countInvalidDates(input.goalContributions, ['date', 'createdAt']),
     table: 'goalContributions',
   })
@@ -326,8 +326,8 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:monthly-budgets',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Orcamentos mensais com data invalida',
-    message: 'Alguns orcamentos locais possuem data fora do formato esperado.',
+    title: 'Orçamentos mensais com data inválida',
+    message: 'Alguns orçamentos locais possuem data fora do formato esperado.',
     count: countInvalidDates(input.monthlyBudgets, ['createdAt', 'updatedAt']),
     table: 'monthlyBudgets',
   })
@@ -336,8 +336,8 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:category-budgets',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Orcamentos por categoria com data invalida',
-    message: 'Alguns orcamentos por categoria possuem data fora do formato esperado.',
+    title: 'Orçamentos por categoria com data inválida',
+    message: 'Alguns orçamentos por categoria possuem data fora do formato esperado.',
     count: countInvalidDates(input.categoryBudgets, ['createdAt', 'updatedAt']),
     table: 'categoryBudgets',
   })
@@ -346,8 +346,8 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:recurring-rules',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Recorrencias com data invalida',
-    message: 'Algumas recorrencias locais possuem data fora do formato esperado.',
+    title: 'Recorrências com data inválida',
+    message: 'Algumas recorrências locais possuem data fora do formato esperado.',
     count: countInvalidDates(input.recurringRules, ['createdAt', 'updatedAt']),
     table: 'recurringRules',
   })
@@ -356,8 +356,8 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:recurring-overrides',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Ajustes de recorrencia com data invalida',
-    message: 'Alguns ajustes de recorrencia possuem data fora do formato esperado.',
+    title: 'Ajustes de recorrência com data inválida',
+    message: 'Alguns ajustes de recorrência possuem data fora do formato esperado.',
     count: countInvalidDates(input.recurringOccurrenceOverrides, ['createdAt', 'updatedAt']),
     table: 'recurringOccurrenceOverrides',
   })
@@ -366,8 +366,8 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:credit-cards',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Cartoes com data invalida',
-    message: 'Alguns cartoes locais possuem data fora do formato esperado.',
+    title: 'Cartões com data inválida',
+    message: 'Alguns cartões locais possuem data fora do formato esperado.',
     count: countInvalidDates(input.creditCards, ['createdAt', 'updatedAt']),
     table: 'creditCards',
   })
@@ -376,8 +376,8 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:card-purchases',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Compras de cartao com data invalida',
-    message: 'Algumas compras de cartao possuem data fora do formato esperado.',
+    title: 'Compras de cartão com data inválida',
+    message: 'Algumas compras de cartão possuem data fora do formato esperado.',
     count: countInvalidDates(input.cardPurchases, ['purchaseDate', 'createdAt', 'updatedAt']),
     table: 'cardPurchases',
   })
@@ -386,7 +386,7 @@ function buildDateWarnings(input: LocalDataHealthInput): LocalDataHealthWarning[
     id: 'invalid-date:card-invoice-payments',
     kind: 'invalid-date',
     severity: 'attention',
-    title: 'Pagamentos de fatura com data invalida',
+    title: 'Pagamentos de fatura com data inválida',
     message: 'Alguns pagamentos de fatura possuem data fora do formato esperado.',
     count: countInvalidDates(input.cardInvoicePayments, ['paymentDate', 'paidAt', 'createdAt', 'updatedAt']),
     table: 'cardInvoicePayments',
@@ -403,8 +403,8 @@ function buildSyncConflictWarning(input: LocalDataHealthInput): LocalDataHealthW
     id: 'sync-conflict:pending',
     kind: 'sync-conflict',
     severity: 'info',
-    title: 'Conflitos de sincronizacao pendentes',
-    message: 'Ha conflitos de sincronizacao pendentes para revisar. O uso local continua disponivel.',
+    title: 'Conflitos de sincronização pendentes',
+    message: 'Há conflitos de sincronização pendentes para revisar. O uso local continua disponível.',
     count: pendingCount,
     table: 'syncConflicts',
   }]
@@ -429,7 +429,7 @@ function summaryMessage(status: LocalDataHealthStatus) {
     case 'empty':
       return 'Nenhum dado financeiro local registrado ainda.'
     case 'attention':
-      return 'Alguns dados locais precisam de atencao.'
+      return 'Alguns dados locais precisam de atenção.'
     case 'ok':
       return 'Dados locais encontrados.'
     default: {

@@ -219,7 +219,7 @@ describe('deriveMonthlyActions', () => {
     }))
 
     expect(text).toContain('limite planejado')
-    expect(text).not.toMatch(/saldo|dinheiro disponivel|cortar gastos|voce deve/i)
+    expect(text).not.toMatch(/saldo|dinheiro dispon[ií]vel|cortar gastos|voc[eê] deve/i)
   })
 
   it('mantem linguagem segura para cartao sem tratar compra como saida imediata', () => {
@@ -230,8 +230,8 @@ describe('deriveMonthlyActions', () => {
     }))
 
     expect(text).toContain('compromisso')
-    expect(text).toContain('pagamento de fatura e o movimento real')
-    expect(text).not.toMatch(/saida de caixa imediata|ja saiu do caixa|saldo/i)
+    expect(text).toContain('pagamento de fatura é o movimento real')
+    expect(text).not.toMatch(/sa[ií]da de caixa imediata|j[aá] saiu do caixa|saldo/i)
   })
 
   it('mantem linguagem segura para projecao sem tratar como saldo futuro garantido', () => {
@@ -239,8 +239,8 @@ describe('deriveMonthlyActions', () => {
       projection: { projectedNet: -100 },
     }))
 
-    expect(text).toContain('cenario estimado negativo')
-    expect(text).not.toMatch(/saldo futuro|garantido|sera negativo/i)
+    expect(text).toContain('cenário estimado negativo')
+    expect(text).not.toMatch(/saldo futuro|garantido|ser[aá] negativo/i)
   })
 
   it('mantem linguagem segura para meta sem tratar alocacao como transacao', () => {
@@ -248,8 +248,8 @@ describe('deriveMonthlyActions', () => {
       goal: { id: 'goal-1', active: true },
     }))
 
-    expect(text).toContain('alocacoes')
+    expect(text).toContain('alocações')
     expect(text).toContain('sem criar movimento real automaticamente')
-    expect(text).not.toMatch(/transacao|compra realizada|despesa/i)
+    expect(text).not.toMatch(/transa[cç][aã]o|compra realizada|despesa/i)
   })
 })

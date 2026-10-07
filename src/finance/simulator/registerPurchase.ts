@@ -14,12 +14,12 @@ function normalizeName(scenario: PurchaseScenario) {
 function validateBaseScenario(scenario: PurchaseScenario) {
   if (!normalizeName(scenario)) throw new Error('Informe o nome da compra.')
   if (!Number.isFinite(scenario.totalAmount) || scenario.totalAmount <= 0) {
-    throw new Error('Informe um valor de compra valido.')
+    throw new Error('Informe um valor de compra válido.')
   }
 
   const purchaseDate = new Date(scenario.purchaseDate)
   if (!Number.isFinite(purchaseDate.getTime())) {
-    throw new Error('Informe uma data de compra valida.')
+    throw new Error('Informe uma data de compra válida.')
   }
 }
 
@@ -41,7 +41,7 @@ export async function registerSimulatedPurchase(scenario: PurchaseScenario): Pro
   }
 
   if (scenario.mode === 'credit_card') {
-    if (!scenario.cardId) throw new Error('Escolha um cartao para registrar a compra.')
+    if (!scenario.cardId) throw new Error('Escolha um cartão para registrar a compra.')
 
     const purchase = await saveCardPurchase({
       cardId: scenario.cardId,
@@ -55,6 +55,6 @@ export async function registerSimulatedPurchase(scenario: PurchaseScenario): Pro
     return { kind: 'credit_card', purchase }
   }
 
-  throw new Error('Cenario de compra invalido.')
+  throw new Error('Cenário de compra inválido.')
 }
 

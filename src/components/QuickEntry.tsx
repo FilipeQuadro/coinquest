@@ -14,7 +14,7 @@ export function QuickEntry() {
     const parsed = parseQuickEntry(input)
     if (!parsed) {
       setPreview(null)
-      setError('Nao encontrei um valor. Ex.: "gastei 39,90 no mercado no pix".')
+      setError('Não encontrei um valor. Ex.: "gastei 39,90 no mercado no pix".')
       return
     }
     setError('')
@@ -32,7 +32,7 @@ export function QuickEntry() {
 
   return (
     <section className="panel quick-panel">
-      <span className="eyebrow">INPUT RAPIDO</span>
+      <span className="eyebrow">INPUT RÁPIDO</span>
       <h2>Conte o que aconteceu</h2>
       <p className="muted">Funciona localmente por regras, sem mandar seus gastos para uma IA.</p>
 
@@ -50,7 +50,7 @@ export function QuickEntry() {
             if (event.key === 'Enter') analyze()
           }}
           placeholder="Ex.: gastei 39,90 no mercado no pix"
-          aria-label="Descreva uma movimentacao financeira"
+          aria-label="Descreva uma movimentação financeira"
         />
         <button data-testid="quick-entry-analyze" className="button primary" onClick={analyze}>Analisar</button>
       </div>
@@ -60,7 +60,7 @@ export function QuickEntry() {
       {preview && (
         <div className="preview-card">
           <div>
-            <span className="eyebrow">PREVIA</span>
+            <span className="eyebrow">PRÉVIA</span>
             <strong>{preview.description}</strong>
             <span>{preview.category} - {preview.paymentMethod.toUpperCase()}</span>
           </div>

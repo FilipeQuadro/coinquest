@@ -27,7 +27,7 @@ export interface EncryptBackupOptions {
 
 function assertCryptoAvailable() {
   if (!globalThis.crypto?.subtle || !globalThis.crypto.getRandomValues) {
-    throw new Error('Web Crypto nao esta disponivel neste ambiente.')
+    throw new Error('Web Crypto não está disponível neste ambiente.')
   }
 }
 
@@ -87,24 +87,24 @@ function parseEnvelope(json: string): EncryptedBackupEnvelope {
   try {
     parsed = JSON.parse(json)
   } catch {
-    throw new Error('Arquivo JSON invalido.')
+    throw new Error('Arquivo JSON inválido.')
   }
 
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-    throw new Error('Envelope de backup protegido invalido.')
+    throw new Error('Envelope de backup protegido inválido.')
   }
 
   const envelope = parsed as EncryptedBackupEnvelope
-  if (envelope.format !== encryptedBackupFormat) throw new Error('Formato de backup protegido invalido.')
-  if (envelope.version !== encryptedBackupVersion) throw new Error('Versao de backup protegido nao suportada.')
+  if (envelope.format !== encryptedBackupFormat) throw new Error('Formato de backup protegido inválido.')
+  if (envelope.version !== encryptedBackupVersion) throw new Error('Versão de backup protegido não suportada.')
   if (envelope.encryption?.algorithm !== encryptedBackupAlgorithm || envelope.encryption.kdf !== encryptedBackupKdf) {
-    throw new Error('Criptografia do backup protegido nao suportada.')
+    throw new Error('Criptografia do backup protegido não suportada.')
   }
   if (!Number.isInteger(envelope.encryption.iterations) || envelope.encryption.iterations <= 0) {
-    throw new Error('Parametros de criptografia invalidos.')
+    throw new Error('Parametros de criptografia inválidos.')
   }
   if (typeof envelope.encryption.salt !== 'string' || typeof envelope.encryption.iv !== 'string' || typeof envelope.ciphertext !== 'string') {
-    throw new Error('Envelope de backup protegido invalido.')
+    throw new Error('Envelope de backup protegido inválido.')
   }
 
   return envelope
@@ -167,7 +167,7 @@ export async function decryptBackupPayload(envelopeJson: string, password: strin
 
     return new TextDecoder().decode(decrypted)
   } catch {
-    throw new Error('Nao foi possivel abrir o backup. Verifique a senha ou a integridade do arquivo.')
+    throw new Error('Não foi possível abrir o backup. Verifique a senha ou a integridade do arquivo.')
   }
 }
 

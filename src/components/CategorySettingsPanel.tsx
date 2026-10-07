@@ -58,7 +58,7 @@ export function CategorySettingsPanel() {
       setMessage(successMessage)
       return true
     } catch {
-      setError('Nao foi possivel salvar as categorias.')
+      setError('Não foi possível salvar as categorias.')
       return false
     } finally {
       setBusy(false)
@@ -73,7 +73,7 @@ export function CategorySettingsPanel() {
       if (await persist(nextPreferences, 'Categoria personalizada salva.')) setName('')
     } catch (caught) {
       setMessage('')
-      setError(caught instanceof Error ? caught.message : 'Nao foi possivel adicionar a categoria.')
+      setError(caught instanceof Error ? caught.message : 'Não foi possível adicionar a categoria.')
     }
   }
 
@@ -81,24 +81,24 @@ export function CategorySettingsPanel() {
     const nextPreferences = hideCategoryPreference(preferences, category)
     if (categoryContexts.some((context) => getCategoryOptions(context, nextPreferences).length === 0)) {
       setMessage('')
-      setError('Mantenha pelo menos uma categoria visivel em cada fluxo.')
+      setError('Mantenha pelo menos uma categoria visível em cada fluxo.')
       return
     }
-    await persist(nextPreferences, 'Categoria ocultada das novas selecoes.')
+    await persist(nextPreferences, 'Categoria ocultada das novas seleções.')
   }
 
   async function showCategory(category: string) {
-    await persist(showCategoryPreference(preferences, category), 'Categoria reexibida nas selecoes.')
+    await persist(showCategoryPreference(preferences, category), 'Categoria reexibida nas seleções.')
   }
 
   return (
     <section className="panel category-settings-panel" data-testid="category-settings-panel" aria-labelledby="category-settings-title">
       <div className="panel-title-row">
         <div>
-          <span className="eyebrow">PERSONALIZACAO</span>
+          <span className="eyebrow">PERSONALIZAÇÃO</span>
           <h2 id="category-settings-title">Categorias</h2>
           <p className="muted">
-            Ocultar uma categoria so remove ela das novas selecoes. Transacoes, orcamentos, cartoes e recorrencias antigas continuam preservados.
+            Ocultar uma categoria so remove ela das novas seleções. Transações, orçamentos, cartões e recorrências antigas continuam preservados.
           </p>
         </div>
       </div>
@@ -123,7 +123,7 @@ export function CategorySettingsPanel() {
       <div className="category-settings-grid">
         <div className="category-settings-box">
           <div className="section-heading">
-            <strong>Categorias padrao</strong>
+            <strong>Categorias padrão</strong>
             <span>{defaultCategories.length}</span>
           </div>
           <div className="category-chip-list">

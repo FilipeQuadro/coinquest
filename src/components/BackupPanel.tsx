@@ -10,7 +10,7 @@ import {
 import { buildBackupPreview, type BackupPreviewFileType } from '../backup/backupPreview'
 
 function formatBackupDate(value: string | null) {
-  if (!value) return 'Data nao informada'
+  if (!value) return 'Data não informada'
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'short',
     timeStyle: 'short',
@@ -52,7 +52,7 @@ export function BackupPanel() {
       URL.revokeObjectURL(url)
       setMessage('Backup exportado.')
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Nao foi possivel exportar o backup.')
+      setError(caught instanceof Error ? caught.message : 'Não foi possível exportar o backup.')
     } finally {
       setBusy(false)
     }
@@ -64,7 +64,7 @@ export function BackupPanel() {
       return
     }
     if (exportPassword !== exportPasswordConfirm) {
-      setError('As senhas nao conferem.')
+      setError('As senhas não conferem.')
       return
     }
 
@@ -89,7 +89,7 @@ export function BackupPanel() {
       setExportPasswordConfirm('')
       setPasswordExportOpen(false)
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Nao foi possivel exportar o backup protegido.')
+      setError(caught instanceof Error ? caught.message : 'Não foi possível exportar o backup protegido.')
     } finally {
       setBusy(false)
     }
@@ -129,14 +129,14 @@ export function BackupPanel() {
       setBackupFileType('plain')
 
       if (!nextInspection.valid) {
-        setError(`${nextInspection.error ?? 'Arquivo de backup invalido.'} Nenhum dado foi restaurado.`)
+        setError(`${nextInspection.error ?? 'Arquivo de backup inválido.'} Nenhum dado foi restaurado.`)
         return
       }
 
       setPendingImport(text)
       setImportOpen(true)
     } catch {
-      setError('Nao foi possivel ler o arquivo selecionado.')
+      setError('Não foi possível ler o arquivo selecionado.')
     }
   }
 
@@ -154,7 +154,7 @@ export function BackupPanel() {
       setBackupFileType('encrypted')
 
       if (!nextInspection.valid) {
-        setError(`${nextInspection.error ?? 'Arquivo de backup invalido.'} Nenhum dado foi restaurado.`)
+        setError(`${nextInspection.error ?? 'Arquivo de backup inválido.'} Nenhum dado foi restaurado.`)
         return
       }
 
@@ -164,7 +164,7 @@ export function BackupPanel() {
       setEncryptedImportOpen(false)
       setImportOpen(true)
     } catch {
-      setError('Nao foi possivel abrir o backup. Verifique a senha ou a integridade do arquivo. Nenhum dado foi restaurado.')
+      setError('Não foi possível abrir o backup. Verifique a senha ou a integridade do arquivo. Nenhum dado foi restaurado.')
     } finally {
       setBusy(false)
     }
@@ -190,7 +190,7 @@ export function BackupPanel() {
       setImportPassword('')
       if (fileInputRef.current) fileInputRef.current.value = ''
     } catch (caught) {
-      setError(`${caught instanceof Error ? caught.message : 'Nao foi possivel restaurar o backup.'} Nenhum dado foi restaurado.`)
+      setError(`${caught instanceof Error ? caught.message : 'Não foi possível restaurar o backup.'} Nenhum dado foi restaurado.`)
     } finally {
       setBusy(false)
     }
@@ -256,7 +256,7 @@ export function BackupPanel() {
       {passwordExportOpen && (
         <div className="backup-password-box" data-testid="backup-protected-export-box">
           <strong>Backup protegido por senha</strong>
-          <p>Essa senha sera necessaria para restaurar o backup. O CoinQuest nao consegue recupera-la se voce esquecer.</p>
+          <p>Essa senha será necessária para restaurar o backup. O CoinQuest não consegue recuperá-la se você esquecer.</p>
           <label>
             Senha
             <input
@@ -291,7 +291,7 @@ export function BackupPanel() {
       {encryptedImportOpen && (
         <div className="backup-password-box" data-testid="backup-encrypted-import-box">
           <strong>Backup protegido por senha</strong>
-          <p>Este backup e protegido por senha. Informe a senha para abrir o arquivo e validar o conteudo antes da restauracao.</p>
+          <p>Este backup e protegido por senha. Informe a senha para abrir o arquivo e validar o conteúdo antes da restauração.</p>
           <label>
             Senha
             <input
@@ -321,9 +321,9 @@ export function BackupPanel() {
             <div className="backup-preview" data-testid="backup-preview">
               <div className="backup-preview-summary">
                 <span>Tipo <strong>{backupPreview.fileTypeLabel}</strong></span>
-                <span>Versao <strong>{backupPreview.versionLabel}</strong></span>
+                <span>Versão <strong>{backupPreview.versionLabel}</strong></span>
                 <span>Exportado em <strong>{formatBackupDate(inspection?.exportedAt ?? null)}</strong></span>
-                <span>Validacao <strong>{backupPreview.validationLabel}</strong></span>
+                <span>Validação <strong>{backupPreview.validationLabel}</strong></span>
                 <span>Total <strong>{backupPreview.totalRecords}</strong></span>
               </div>
               {backupPreview.warnings.map((warning) => <small key={warning}>{warning}</small>)}
@@ -349,7 +349,7 @@ export function BackupPanel() {
               Cancelar
             </button>
             <button className="button primary" type="button" data-testid="backup-import-confirm" onClick={confirmImport} disabled={busy}>
-              {busy ? 'Restaurando...' : 'Confirmar restauracao'}
+              {busy ? 'Restaurando...' : 'Confirmar restauração'}
             </button>
           </div>
         </div>

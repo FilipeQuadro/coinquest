@@ -14,9 +14,9 @@ export function Stats({ selectedMonth }: StatsProps) {
   const summary = getMonthlySummary(transactions, referenceDateFromMonth(selectedMonth))
 
   return (
-    <section className="stats-grid" aria-label="Resumo financeiro do mes">
+    <section className="stats-grid" aria-label="Resumo financeiro do mês">
       <article className="stat-card panel">
-        <span>SALDO DO MES</span>
+        <span>SALDO DO MÊS</span>
         <strong data-testid="summary-balance" className={summary.balance >= 0 ? 'income' : 'expense'}>{formatBRL(summary.balance)}</strong>
       </article>
       <article className="stat-card panel">

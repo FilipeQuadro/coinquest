@@ -215,11 +215,11 @@ describe('local backup', () => {
     await seedRepresentativeData()
     const before = await readBackupData()
 
-    await expect(importBackup('{nope')).rejects.toThrow('Arquivo JSON invalido.')
-    await expect(importBackup(JSON.stringify({ format: 'other', version: 1, exportedAt: new Date().toISOString(), appData: {} }))).rejects.toThrow('Formato de backup invalido.')
-    await expect(importBackup(JSON.stringify({ format: backupFormat, exportedAt: new Date().toISOString(), appData: {} }))).rejects.toThrow('Versao de backup nao suportada.')
-    await expect(importBackup(JSON.stringify({ format: backupFormat, version: 99, exportedAt: new Date().toISOString(), appData: {} }))).rejects.toThrow('Versao de backup nao suportada.')
-    await expect(importBackup(JSON.stringify({ format: backupFormat, version: 1, exportedAt: new Date().toISOString(), appData: null }))).rejects.toThrow('Dados do backup invalidos.')
+    await expect(importBackup('{nope')).rejects.toThrow('Arquivo JSON inválido.')
+    await expect(importBackup(JSON.stringify({ format: 'other', version: 1, exportedAt: new Date().toISOString(), appData: {} }))).rejects.toThrow('Formato de backup inválido.')
+    await expect(importBackup(JSON.stringify({ format: backupFormat, exportedAt: new Date().toISOString(), appData: {} }))).rejects.toThrow('Versão de backup não suportada.')
+    await expect(importBackup(JSON.stringify({ format: backupFormat, version: 99, exportedAt: new Date().toISOString(), appData: {} }))).rejects.toThrow('Versão de backup não suportada.')
+    await expect(importBackup(JSON.stringify({ format: backupFormat, version: 1, exportedAt: new Date().toISOString(), appData: null }))).rejects.toThrow('Dados do backup inválidos.')
 
     expect(await readBackupData()).toEqual(before)
   })
@@ -240,7 +240,7 @@ describe('local backup', () => {
       formatVersion: 1,
       integrityStatus: 'missing',
     })
-    expect(inspection.warnings).toContain('Backup antigo sem verificacao de integridade.')
+    expect(inspection.warnings).toContain('Backup antigo sem verificação de integridade.')
 
     await db.transactions.clear()
     await importBackup(JSON.stringify(v1))
@@ -267,7 +267,7 @@ describe('local backup', () => {
     backup.manifest.counts.transactions = 99
     backup.integrity.checksum = await calculateBackupChecksum({ manifest: backup.manifest, appData: backup.appData })
 
-    await expect(importBackup(JSON.stringify(backup))).rejects.toThrow('Manifest do backup nao corresponde aos dados.')
+    await expect(importBackup(JSON.stringify(backup))).rejects.toThrow('Manifest do backup não corresponde aos dados.')
     expect(await readBackupData()).toEqual(before)
   })
 

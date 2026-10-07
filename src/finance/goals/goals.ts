@@ -67,12 +67,12 @@ function monthsUntil(date: Date, now: Date) {
 
 function validateIsoDate(isoDate: string | undefined, fieldName: string) {
   if (!isoDate) return null
-  return parseValidDate(isoDate) ? null : `${fieldName} invalida.`
+  return parseValidDate(isoDate) ? null : `${fieldName} inválida.`
 }
 
 function validateMonthlyPlan(monthlyPlan: number | undefined) {
   if (monthlyPlan === undefined) return null
-  if (!Number.isFinite(monthlyPlan) || monthlyPlan <= 0) return 'Plano mensal invalido.'
+  if (!Number.isFinite(monthlyPlan) || monthlyPlan <= 0) return 'Plano mensal inválido.'
   return null
 }
 
@@ -80,17 +80,17 @@ export function validateGoalDraft(draft: GoalDraft): string | null {
   const normalized = normalizeGoalDraft(draft)
 
   if (!normalized.name) return 'Informe um nome para a meta.'
-  if (!Number.isFinite(normalized.targetAmount) || normalized.targetAmount <= 0) return 'Informe um objetivo valido.'
-  if (normalized.priority && !['low', 'medium', 'high'].includes(normalized.priority)) return 'Prioridade invalida.'
+  if (!Number.isFinite(normalized.targetAmount) || normalized.targetAmount <= 0) return 'Informe um objetivo válido.'
+  if (normalized.priority && !['low', 'medium', 'high'].includes(normalized.priority)) return 'Prioridade inválida.'
 
   return validateIsoDate(normalized.targetDate, 'Data alvo')
     ?? validateMonthlyPlan(normalized.monthlyPlan)
 }
 
 export function validateGoalContributionDraft(draft: GoalContributionDraft): string | null {
-  if (!Number.isFinite(draft.amount) || draft.amount === 0) return 'Informe um ajuste valido.'
+  if (!Number.isFinite(draft.amount) || draft.amount === 0) return 'Informe um ajuste válido.'
   if (draft.note !== undefined && draft.note.trim().length > 180) return 'Nota muito longa.'
-  return validateIsoDate(draft.date, 'Data da contribuicao')
+  return validateIsoDate(draft.date, 'Data da contribuição')
 }
 
 export function getAllocatedAmount(contributions: GoalContribution[], goalId: string) {
@@ -173,7 +173,7 @@ export async function createGoal(draft: GoalDraft): Promise<Goal> {
 
 export async function updateGoal(id: string, draft: GoalDraft): Promise<Goal> {
   const existing = await db.goals.get(id)
-  if (!existing) throw new Error('Meta nao encontrada.')
+  if (!existing) throw new Error('Meta não encontrada.')
 
   const normalized = normalizeGoalDraft(draft)
   const error = validateGoalDraft(normalized)
@@ -199,7 +199,7 @@ export async function updateGoal(id: string, draft: GoalDraft): Promise<Goal> {
 
 export async function archiveGoal(id: string): Promise<Goal> {
   const goal = await db.goals.get(id)
-  if (!goal) throw new Error('Meta nao encontrada.')
+  if (!goal) throw new Error('Meta não encontrada.')
 
   const updated = { ...goal, status: 'archived' as const, updatedAt: new Date().toISOString() }
   await db.goals.put(updated)
@@ -208,7 +208,7 @@ export async function archiveGoal(id: string): Promise<Goal> {
 
 export async function restoreGoal(id: string): Promise<Goal> {
   const goal = await db.goals.get(id)
-  if (!goal) throw new Error('Meta nao encontrada.')
+  if (!goal) throw new Error('Meta não encontrada.')
 
   const contributions = await db.goalContributions.where('goalId').equals(id).toArray()
   const updated = { ...goal, status: deriveGoalStatus({ ...goal, status: 'active' }, contributions), updatedAt: new Date().toISOString() }
@@ -218,7 +218,7 @@ export async function restoreGoal(id: string): Promise<Goal> {
 
 export async function addGoalContribution(goalId: string, draft: GoalContributionDraft): Promise<GoalContribution> {
   const goal = await db.goals.get(goalId)
-  if (!goal) throw new Error('Meta nao encontrada.')
+  if (!goal) throw new Error('Meta não encontrada.')
 
   const error = validateGoalContributionDraft(draft)
   if (error) throw new Error(error)
@@ -252,7 +252,7 @@ export async function getGoalContributions(goalId: string) {
 
 export async function getGoalProgress(goalId: string, now = new Date()) {
   const goal = await db.goals.get(goalId)
-  if (!goal) throw new Error('Meta nao encontrada.')
+  if (!goal) throw new Error('Meta não encontrada.')
 
   const contributions = await getGoalContributions(goalId)
   return calculateGoalProgress(goal, contributions, now)

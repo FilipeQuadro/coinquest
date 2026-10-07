@@ -352,7 +352,7 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
       setConfirmationOpen(false)
       setLimitAcknowledged(false)
     } catch (caught) {
-      setRegisterError(caught instanceof Error ? caught.message : 'Nao foi possivel registrar a compra.')
+      setRegisterError(caught instanceof Error ? caught.message : 'Não foi possível registrar a compra.')
     } finally {
       registeringRef.current = false
       setRegistering(false)
@@ -371,11 +371,11 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
           Limpar simulação
         </button>
       </div>
-      <p className="guidance-note">A simulacao nao cria movimentacao real. Registro so acontece se voce confirmar uma opcao.</p>
+      <p className="guidance-note">A simulação não cria movimentação real. Registro só acontece se você confirmar uma opção.</p>
       <div className="guided-links" aria-label="Atalhos do simulador">
-        <span className="guided-links-label">Depois de comparar cenarios:</span>
+        <span className="guided-links-label">Depois de comparar cenários:</span>
         <div className="guided-links-row">
-          <a className="inline-link" href="#cartoes">Registrar compra no cartao</a>
+          <a className="inline-link" href="#cartoes">Registrar compra no cartão</a>
           <a className="inline-link" href="#registrar">Registrar movimento real</a>
         </div>
       </div>
@@ -472,7 +472,7 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
         <div className="sim-baseline" data-testid="sim-baseline">
           <article>
             <span>PERÍODO</span>
-            <strong>{formatShortMonth(selectedMonth)} -&gt; {formatShortMonth(periodEnd)}</strong>
+            <strong>{formatShortMonth(selectedMonth)} &rarr; {formatShortMonth(periodEnd)}</strong>
           </article>
           <article>
             <span>SEM A COMPRA</span>
@@ -596,7 +596,7 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
           {confirmationOpen && (
             <div className="sim-register-box" data-testid="sim-register-box">
               <div>
-                <span className="eyebrow">CONFIRMACAO</span>
+                <span className="eyebrow">CONFIRMAÇÃO</span>
                 <h4>Registrar compra real</h4>
               </div>
 
@@ -607,31 +607,31 @@ export function PurchaseSimulatorPanel({ selectedMonth }: PurchaseSimulatorPanel
                   <span>Data: <strong>{formatDate(selectedResult.scenario.purchaseDate)}</strong></span>
                   <span>Categoria: <strong>{selectedResult.scenario.category ?? 'Outros'}</strong></span>
                   <span>Meio de pagamento: <strong>{paymentMethods.find((method) => method.value === selectedResult.scenario.paymentMethod)?.label ?? 'PIX'}</strong></span>
-                  <small>Esta acao criara uma despesa real no seu historico.</small>
+                  <small>Esta ação criará uma despesa real no seu histórico.</small>
                 </div>
               ) : (
                 <div className="sim-register-summary" data-testid="sim-register-card-summary">
                   <span>Nome: <strong>{selectedResult.scenario.name}</strong></span>
-                  <span>Preco total: <strong>{formatBRL(selectedResult.scenario.totalAmount)}</strong></span>
-                  <span>Cartao: <strong>{registrationCard?.name ?? 'Cartao nao encontrado'}</strong></span>
+                  <span>Preço total: <strong>{formatBRL(selectedResult.scenario.totalAmount)}</strong></span>
+                  <span>Cartão: <strong>{registrationCard?.name ?? 'Cartão não encontrado'}</strong></span>
                   <span>Parcelas: <strong>{selectedResult.scenario.installmentCount ?? 1}x</strong></span>
                   <span>Data da compra: <strong>{formatDate(selectedResult.scenario.purchaseDate)}</strong></span>
                   {registrationInvoiceSummary && (
                     <>
                       <span>Primeira fatura: <strong>{formatShortMonth(registrationInvoiceSummary.firstInvoice)}</strong></span>
-                      <span>Ultima fatura: <strong>{formatShortMonth(registrationInvoiceSummary.lastInvoice)}</strong></span>
+                      <span>Última fatura: <strong>{formatShortMonth(registrationInvoiceSummary.lastInvoice)}</strong></span>
                       <span>Parcela aproximada: <strong>{formatBRL(registrationInvoiceSummary.approximateInstallment)}</strong></span>
                     </>
                   )}
-                  <small>Esta acao registrara a compra no cartao. O pagamento da fatura continuara separado.</small>
+                  <small>Esta ação registrará a compra no cartão. O pagamento da fatura continuará separado.</small>
                 </div>
               )}
 
               {selectedResult.goalContext && (
                 <div className="sim-goal-context" data-testid="sim-register-goal-context">
-                  <span>Missao: <strong>{selectedResult.goalContext.name}</strong></span>
+                  <span>Missão: <strong>{selectedResult.goalContext.name}</strong></span>
                   <span>Reservado: <strong>{formatBRL(selectedResult.goalContext.allocatedAmount)}</strong></span>
-                  <small>A missao e o valor reservado nao serao alterados automaticamente.</small>
+                  <small>A missão e o valor reservado não serão alterados automaticamente.</small>
                 </div>
               )}
 

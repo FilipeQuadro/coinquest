@@ -38,7 +38,7 @@ function isSyncEntityType(value: string): value is SyncEntityType {
 
 export function mapDbSyncRecord(record: DbSyncRecord): RemoteSyncRecord {
   if (!isSyncEntityType(record.entity_type)) {
-    throw new Error(`Tipo remoto de sync invalido: ${record.entity_type}.`)
+    throw new Error(`Tipo remoto de sync inválido: ${record.entity_type}.`)
   }
 
   return {
@@ -170,7 +170,7 @@ export function createRemoteSyncRepository(options: RemoteSyncRepositoryOptions 
     if (error) return remoteError(error)
 
     const result = parseRpcResult(data)
-    if (!result) return remoteError(new Error('Resposta invalida da RPC de sync.'))
+    if (!result) return remoteError(new Error('Resposta inválida da RPC de sync.'))
     if (result.status === 'not-found') return { ok: false, error: 'not-found' }
     if (result.status === 'revision-conflict') return { ok: false, error: 'revision-conflict' }
     if (result.status !== 'updated' || !result.record) return remoteError(new Error(`Status inesperado da RPC de sync: ${result.status}.`))

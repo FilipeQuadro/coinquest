@@ -286,7 +286,7 @@ function duplicateWarning(candidate: Pick<ImportCandidate, 'occurredAt' | 'amoun
     descriptionsAreSimilar(transaction.description, candidate.description)
   ))
 
-  return duplicate ? 'Possivel duplicata de movimentacao ja registrada.' : undefined
+  return duplicate ? 'Possível duplicata de movimentação já registrada.' : undefined
 }
 
 function reject(rowNumber: number, reason: string): ImportRejectedRow {
@@ -300,10 +300,10 @@ function parseCandidate(
   existingTransactions: Transaction[],
 ): ImportCandidate | ImportRejectedRow {
   const occurredAt = parseDate(valueAt(fields, headers.date))
-  if (!occurredAt) return reject(rowNumber, 'Data ausente ou invalida.')
+  if (!occurredAt) return reject(rowNumber, 'Data ausente ou inválida.')
 
   const description = valueAt(fields, headers.description)
-  if (!description) return reject(rowNumber, 'Descricao ausente.')
+  if (!description) return reject(rowNumber, 'Descrição ausente.')
 
   const typeValue = valueAt(fields, headers.type)
   const typeFromColumn = typeValue ? parseType(typeValue) : null
@@ -319,9 +319,9 @@ function parseCandidate(
     const debit = debitValue ? parseSignedMoney(debitValue) : null
     const credit = creditValue ? parseSignedMoney(creditValue) : null
 
-    if (debitValue && !debit) return reject(rowNumber, 'Valor de debito invalido.')
-    if (creditValue && !credit) return reject(rowNumber, 'Valor de credito invalido.')
-    if (debit && credit) return reject(rowNumber, 'Linha com debito e credito preenchidos.')
+    if (debitValue && !debit) return reject(rowNumber, 'Valor de débito inválido.')
+    if (creditValue && !credit) return reject(rowNumber, 'Valor de crédito inválido.')
+    if (debit && credit) return reject(rowNumber, 'Linha com débito e crédito preenchidos.')
 
     if (debit) {
       amount = debit
@@ -338,7 +338,7 @@ function parseCandidate(
 
   if (!amount) {
     amount = parseSignedMoney(valueAt(fields, headers.amount))
-    if (!amount) return reject(rowNumber, 'Valor ausente ou invalido.')
+    if (!amount) return reject(rowNumber, 'Valor ausente ou inválido.')
     type = amount.negative ? 'expense' : 'income'
 
     if (typeFromColumn && typeFromColumn !== type) {
@@ -351,7 +351,7 @@ function parseCandidate(
 
   const category = valueAt(fields, headers.category)
   if (looksLikeCardOrInvoice(description)) {
-    warnings.push('Descricao parece relacionada a cartao/fatura; revise antes de importar.')
+    warnings.push('Descrição parece relacionada a cartão/fatura; revise antes de importar.')
   }
 
   const candidate: ImportCandidate = {
@@ -387,7 +387,7 @@ export function deriveCsvImportPreview(input: CsvImportPreviewInput): ImportPrev
     return {
       ...emptyPreview(input.sourceKind),
       totalRows: 0,
-      warnings: ['Nao foi possivel detectar o delimitador do CSV.'],
+      warnings: ['Não foi possível detectar o delimitador do CSV.'],
     }
   }
 
@@ -411,7 +411,7 @@ export function deriveCsvImportPreview(input: CsvImportPreviewInput): ImportPrev
       duplicateWarningCount: 0,
       candidates: [],
       rejectedRows: [],
-      warnings: [`Cabecalho incompleto: ${missingHeaders.join(', ')}.`],
+      warnings: [`Cabeçalho incompleto: ${missingHeaders.join(', ')}.`],
     }
   }
 
@@ -424,7 +424,7 @@ export function deriveCsvImportPreview(input: CsvImportPreviewInput): ImportPrev
 
     const parsed = parseCsvLine(line, delimiter)
     if (!parsed.closed) {
-      rejectedRows.push(reject(rowNumber, 'Linha com aspas nao fechadas.'))
+      rejectedRows.push(reject(rowNumber, 'Linha com aspas não fechadas.'))
       return
     }
 
@@ -444,6 +444,6 @@ export function deriveCsvImportPreview(input: CsvImportPreviewInput): ImportPrev
     duplicateWarningCount,
     candidates,
     rejectedRows,
-    warnings: candidates.length === 0 && rejectedRows.length === 0 ? ['Nenhuma linha de movimentacao encontrada.'] : [],
+    warnings: candidates.length === 0 && rejectedRows.length === 0 ? ['Nenhuma linha de movimentação encontrada.'] : [],
   }
 }

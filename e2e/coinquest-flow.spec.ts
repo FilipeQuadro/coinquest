@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 async function openArea(page: Page, target: 'inicio' | 'registrar' | 'historico' | 'planejamento' | 'cartoes' | 'missoes' | 'backup' | 'mundo') {
   const area = target === 'historico' ? 'registrar' : target
-  const navigation = page.getByRole('navigation', { name: 'Navegacao principal' })
+  const navigation = page.getByRole('navigation', { name: 'Navegação principal' })
   if (!await navigation.isVisible()) await page.getByRole('button', { name: 'Menu', exact: true }).click()
   await navigation.locator(`a[href="#${area}"]`).click()
   await expect(page.locator(`[data-area="${area}"]`)).toBeVisible()
@@ -147,10 +147,10 @@ test('keeps key data areas reachable on a mobile viewport', async ({ page }) => 
   await expect(page.getByTestId('monthly-overview-panel')).toBeVisible()
   await expect(page.locator('#detalhes-do-mes')).toHaveJSProperty('open', false)
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-  const primaryActions = page.getByRole('navigation', { name: 'Acoes principais' })
+  const primaryActions = page.getByRole('navigation', { name: 'Ações principais' })
   await expect(primaryActions.getByRole('link', { name: 'Registrar movimento', exact: true })).toBeVisible()
   await expect(primaryActions.getByRole('link', { name: 'Ver histórico', exact: true })).toBeVisible()
-  const homeAreas = page.getByRole('navigation', { name: 'Areas principais' })
+  const homeAreas = page.getByRole('navigation', { name: 'Áreas principais' })
   await expect(homeAreas.locator('.home-area-card')).toHaveCount(6)
   await expect(homeAreas.locator('a[href="#historico"]')).toHaveCount(1)
   await expect(homeAreas.locator('a[href="#backup"]')).toHaveCount(1)
@@ -193,14 +193,14 @@ test('keeps key data areas reachable on a mobile viewport', async ({ page }) => 
   await page.getByRole('button', { name: 'Menu' }).click()
   await expect(productNavigation).toBeVisible()
 
-  await page.getByRole('navigation', { name: 'Navegacao principal' }).getByRole('link', { name: 'Registro e hist\u00f3rico', exact: true }).click()
+  await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('link', { name: 'Registro e hist\u00f3rico', exact: true }).click()
   await page.getByRole('navigation', { name: 'Registro e hist\u00f3rico', exact: true }).getByRole('link', { name: 'Ver hist\u00f3rico' }).click()
   await expect(page).toHaveURL(/#historico$/)
   await expect(page.locator('#historico')).toBeInViewport()
 
   await page.getByRole('button', { name: 'Menu' }).click()
 
-  await page.getByRole('navigation', { name: 'Navegacao principal' }).getByRole('link', { name: 'Dados', exact: true }).click()
+  await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('link', { name: 'Dados', exact: true }).click()
   await expect(page).toHaveURL(/#backup$/)
   await expect(productNavigation).not.toBeVisible()
   await expect(page.getByTestId('local-data-panel')).toBeVisible()
@@ -321,7 +321,7 @@ test('configures and recalculates a monthly budget', async ({ page }) => {
 
   await openArea(page, 'planejamento')
   await page.getByTestId('budget-remove').click()
-  await expect(page.getByTestId('budget-percentage')).toContainText('Sem orcamento')
+  await expect(page.getByTestId('budget-percentage')).toContainText('Sem orçamento')
 
   await deleteFirstTransaction(page)
   await expect(page.getByTestId('history-item')).toHaveCount(0)
@@ -502,7 +502,7 @@ test('creates card purchases, invoices and a persisted invoice payment', async (
   await openArea(page, 'historico')
   await expect(page.getByTestId('history-item').filter({ hasText: 'Fatura Nubank' })).toBeVisible()
   await page.getByTestId('edit-transaction').first().click()
-  await expect(page.getByTestId('linked-invoice-transaction-warning')).toContainText('area do cartao')
+  await expect(page.getByTestId('linked-invoice-transaction-warning')).toContainText('área do cartão')
 
   await reloadApp(page)
   await expect(page.getByTestId('selected-month-label')).toContainText(monthName(next))
@@ -780,7 +780,7 @@ test('registers a simulated cash purchase as a real transaction', async ({ page 
 
   await expect(page.getByTestId('sim-detail')).toContainText('À vista')
   await page.getByTestId('sim-register-open').click()
-  await expect(page.getByTestId('sim-register-cash-summary')).toContainText('Esta acao criara uma despesa real')
+  await expect(page.getByTestId('sim-register-cash-summary')).toContainText('Esta ação criará uma despesa real')
   await page.getByTestId('sim-register-confirm').dblclick()
 
   await expect(page.getByTestId('sim-register-success')).toContainText('Compra registrada.')
@@ -826,7 +826,7 @@ test('registers a simulated installment card purchase without immediate cash tra
 
   await expect(page.getByTestId('sim-detail')).toContainText('6x no cartão')
   await page.getByTestId('sim-register-open').click()
-  await expect(page.getByTestId('sim-register-card-summary')).toContainText('O pagamento da fatura continuara separado')
+  await expect(page.getByTestId('sim-register-card-summary')).toContainText('O pagamento da fatura continuará separado')
   await page.getByTestId('sim-register-confirm').click()
 
   await expect(page.getByTestId('sim-register-success')).toContainText('Compra registrada.')
@@ -863,21 +863,21 @@ test('previews and manually confirms a local CSV import', async ({ page }, testI
   await expect(page.getByTestId('import-selection-summary')).toContainText('1 selecionado')
   await expect(page.getByTestId('import-candidate-checkbox').nth(0)).toBeChecked()
   await expect(page.getByTestId('import-candidate-checkbox').nth(1)).not.toBeChecked()
-  await expect(page.getByTestId('import-csv-preview')).toContainText('cartao/fatura')
+  await expect(page.getByTestId('import-csv-preview')).toContainText('cartão/fatura')
   await expect(page.getByTestId('import-candidate-category-input').nth(0)).toHaveValue('Alimentacao')
   await page.getByTestId('import-candidate-category-input').nth(0).fill('Padaria importada')
   await expect(page.getByTestId('import-candidate-category-input').nth(0)).toHaveValue('Padaria importada')
 
   await page.getByTestId('import-review-confirmation').click()
-  await expect(page.getByTestId('import-confirm-box')).toContainText('movimentacoes reais no Historico')
+  await expect(page.getByTestId('import-confirm-box')).toContainText('movimentações reais no Histórico')
   await page.getByTestId('import-confirm-selected').click()
 
-  await expect(page.getByTestId('import-csv-success')).toContainText('1 movimentacao real criada')
-  await expect(page.getByTestId('import-created-records')).toContainText('Movimentacoes criadas')
+  await expect(page.getByTestId('import-csv-success')).toContainText('1 movimentação real criada')
+  await expect(page.getByTestId('import-created-records')).toContainText('Movimentações criadas')
   await expect(page.getByTestId('import-created-record')).toContainText('Importacao padaria')
   await expect(page.getByTestId('import-created-record')).toContainText('Padaria importada')
   await expect(page.getByTestId('import-created-record')).toContainText('Outro')
-  await expect(page.getByTestId('import-created-records')).toContainText('ajuste o mes no topo')
+  await expect(page.getByTestId('import-created-records')).toContainText('ajuste o mês no topo')
   await expect(page.getByTestId('import-review-history')).toHaveAttribute('href', '#historico')
   await page.getByTestId('import-review-history').click()
   await expect(page).toHaveURL(/#historico$/)
@@ -888,11 +888,11 @@ test('previews and manually confirms a local CSV import', async ({ page }, testI
   await expect(page.getByTestId('history-item').filter({ hasText: 'Fatura Nubank' })).toHaveCount(0)
 
   await openArea(page, 'backup')
-  await page.getByRole('button', { name: 'Limpar previa' }).click()
+  await page.getByRole('button', { name: 'Limpar prévia' }).click()
   await expect(page.getByTestId('import-created-records')).toHaveCount(0)
   await openArea(page, 'backup')
   await page.getByTestId('import-csv-input').setInputFiles(csvPath)
-  await expect(page.getByTestId('import-csv-preview')).toContainText('Possivel duplicata')
+  await expect(page.getByTestId('import-csv-preview')).toContainText('Possível duplicata')
   await expect(page.getByTestId('import-candidate-checkbox').nth(0)).not.toBeChecked()
 
   expect(pageErrors).toEqual([])
@@ -925,14 +925,14 @@ test('exports and restores a local backup', async ({ page }, testInfo) => {
   await openArea(page, 'planejamento')
   await page.getByTestId('budget-remove').click()
   await expect(page.getByTestId('history-item')).toHaveCount(0)
-  await expect(page.getByTestId('budget-percentage')).toContainText('Sem orcamento')
+  await expect(page.getByTestId('budget-percentage')).toContainText('Sem orçamento')
 
   await openArea(page, 'backup')
   await page.getByTestId('backup-file-input').setInputFiles(backupPath)
-  await expect(page.getByTestId('backup-confirm')).toContainText('A restauracao substitui os dados locais atuais pelos dados deste arquivo.')
+  await expect(page.getByTestId('backup-confirm')).toContainText('A restauração substitui os dados locais atuais pelos dados deste arquivo.')
   await expect(page.getByTestId('backup-preview')).toContainText('Backup simples')
-  await expect(page.getByTestId('backup-preview')).toContainText('Arquivo validado antes da restauracao.')
-  await expect(page.getByTestId('backup-preview')).toContainText('Movimentacoes reais')
+  await expect(page.getByTestId('backup-preview')).toContainText('Arquivo validado antes da restauração.')
+  await expect(page.getByTestId('backup-preview')).toContainText('Movimentações reais')
   await page.getByTestId('backup-import-confirm').click()
 
   await expect(page.getByTestId('backup-success')).toContainText('Backup restaurado com sucesso.')
@@ -942,7 +942,7 @@ test('exports and restores a local backup', async ({ page }, testInfo) => {
 
   await openArea(page, 'backup')
   await page.getByTestId('backup-protected-toggle').click()
-  await expect(page.getByTestId('backup-protected-export-box')).toContainText('O CoinQuest nao consegue recupera-la')
+  await expect(page.getByTestId('backup-protected-export-box')).toContainText('O CoinQuest não consegue recuperá-la')
   await page.getByTestId('backup-export-password').fill('senha-forte-local')
   await page.getByTestId('backup-export-password-confirm').fill('senha-forte-local')
   const protectedDownloadPromise = page.waitForEvent('download')
@@ -956,7 +956,7 @@ test('exports and restores a local backup', async ({ page }, testInfo) => {
   await openArea(page, 'planejamento')
   await page.getByTestId('budget-remove').click()
   await expect(page.getByTestId('history-item')).toHaveCount(0)
-  await expect(page.getByTestId('budget-percentage')).toContainText('Sem orcamento')
+  await expect(page.getByTestId('budget-percentage')).toContainText('Sem orçamento')
 
   await openArea(page, 'backup')
   await page.getByTestId('backup-file-input').setInputFiles(protectedBackupPath)
@@ -964,7 +964,7 @@ test('exports and restores a local backup', async ({ page }, testInfo) => {
   await page.getByTestId('backup-import-password').fill('senha-forte-local')
   await page.getByTestId('backup-unlock-encrypted').click()
   await expect(page.getByTestId('backup-preview')).toContainText('Backup protegido')
-  await expect(page.getByTestId('backup-preview')).toContainText('Arquivo validado antes da restauracao.')
+  await expect(page.getByTestId('backup-preview')).toContainText('Arquivo validado antes da restauração.')
   await page.getByTestId('backup-import-confirm').click()
 
   await expect(page.getByTestId('backup-success')).toContainText('Backup restaurado com sucesso.')

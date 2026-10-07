@@ -104,7 +104,7 @@ export function App() {
         <nav
           id="product-navigation"
           className={isNavOpen ? 'product-nav is-open' : 'product-nav'}
-          aria-label="Navegacao principal"
+          aria-label="Navegação principal"
         >
           {productNavItems.map((item) => (
             <a
@@ -128,7 +128,7 @@ export function App() {
             <h1 id="home-title">Seu m&ecirc;s, em foco.</h1>
             <p>Acompanhe o m&ecirc;s e escolha seu pr&oacute;ximo passo.</p>
           </div>
-          <nav className="world-intro-actions" aria-label="Acoes principais">
+          <nav className="world-intro-actions" aria-label="Ações principais">
             <a className="button primary compact" href="#registrar">Registrar movimento</a>
             <a className="button ghost compact" href="#historico">Ver hist&oacute;rico</a>
           </nav>
@@ -169,7 +169,7 @@ export function App() {
             </div>
             <p>Atalhos para cada parte da sua vida financeira.</p>
           </div>
-          <nav className="home-area-grid" aria-label="Areas principais">
+          <nav className="home-area-grid" aria-label="Áreas principais">
             <article className="home-area-card home-area-records">
               <span className="home-area-kicker">MOVIMENTOS</span>
               <h3>Registro e hist&oacute;rico</h3>
@@ -251,7 +251,7 @@ export function App() {
         </section>
 
         <footer>
-          CoinQuest - local-first - offline-first - sincronizacao opcional entre dispositivos.
+          CoinQuest - local-first - offline-first - sincronização opcional entre dispositivos.
         </footer>
       </main>
       <PwaStatus />
