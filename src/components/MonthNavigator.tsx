@@ -22,7 +22,7 @@ export function MonthNavigator({ selectedMonth, onChange }: MonthNavigatorProps)
         &lt;
       </button>
       <div>
-        <span className="eyebrow">MES EM ANALISE</span>
+        <span className="eyebrow">M&Ecirc;S EM AN&Aacute;LISE</span>
         <strong data-testid="selected-month-label">{formatMonthYear(selectedMonth)}</strong>
       </div>
       <button

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeProductSectionHash, productNavItems } from './productNavigation'
+import { normalizeProductSectionHash, productAreaForSection, productNavItems } from './productNavigation'
 
 describe('product navigation', () => {
   it('keeps the main navigation compact', () => {
@@ -10,8 +10,8 @@ describe('product navigation', () => {
       'planejamento',
       'cartoes',
       'missoes',
-      'historico',
       'backup',
+      'mundo',
     ])
   })
 
@@ -33,5 +33,27 @@ describe('product navigation', () => {
 
   it('handles malformed encoded hashes without throwing', () => {
     expect(normalizeProductSectionHash('#%')).toBeNull()
+    expect(normalizeProductSectionHash('#constructor')).toBeNull()
+    expect(normalizeProductSectionHash('#__proto__')).toBeNull()
+  })
+
+  it.each([
+    ['#registrar', 'registrar', 'registrar'],
+    ['#historico', 'historico', 'registrar'],
+    ['#history', 'historico', 'registrar'],
+    ['#orcamento', 'orcamento', 'planejamento'],
+    ['#previsoes', 'previsoes', 'planejamento'],
+    ['#projecao', 'projecao', 'planejamento'],
+    ['#simulador', 'simulador', 'planejamento'],
+    ['#sync', 'sync', 'backup'],
+    ['#cloud', 'sync', 'backup'],
+    ['#backup', 'backup', 'backup'],
+    ['#dados', 'backup', 'backup'],
+    ['#mundo', 'mundo', 'mundo'],
+    ['#%70rojecao', 'projecao', 'planejamento'],
+  ])('opens %s in its focused area without losing the target', (hash, target, area) => {
+    const section = normalizeProductSectionHash(hash)
+    expect(section).toBe(target)
+    expect(section && productAreaForSection(section)).toBe(area)
   })
 })

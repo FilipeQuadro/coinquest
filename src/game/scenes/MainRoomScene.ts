@@ -230,15 +230,15 @@ export class MainRoomScene extends Phaser.Scene {
       color: '#fff5c7',
       stroke: '#080a14',
       strokeThickness: 6,
-    })
+    }).setDepth(13)
 
-    this.statusText = this.add.text(30, 62, 'Sistema financeiro estavel.', {
+    this.statusText = this.add.text(30, 62, 'Bem-vindo a sua base.', {
       fontFamily: 'monospace',
       fontSize: '15px',
       color: '#ffffff',
       backgroundColor: '#00000066',
       padding: { x: 10, y: 7 },
-    })
+    }).setDepth(13)
   }
 
   private bindFinanceEvents() {
@@ -353,7 +353,7 @@ export class MainRoomScene extends Phaser.Scene {
       return
     }
 
-    const preferredZoom = Math.max(Math.min(viewportWidth / SCENE_WIDTH, viewportHeight / SCENE_HEIGHT) * 1.02, coverZoom)
+    const preferredZoom = Math.max(Math.min(viewportWidth / SCENE_WIDTH, viewportHeight / SCENE_HEIGHT), coverZoom)
     const zoom = Phaser.Math.Clamp(preferredZoom, 1, Math.max(1.52, coverZoom))
     camera.setZoom(zoom)
     this.centerCameraWithinWorld(SCENE_WIDTH / 2, SCENE_HEIGHT / 2)
