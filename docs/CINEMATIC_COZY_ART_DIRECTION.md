@@ -508,6 +508,8 @@ Escopo sugerido:
 - melhor clima dia/noite;
 - sem Phaser virar fonte da verdade.
 
+Status (v1.17.0): implementado em `src/game/systems/atmosphere.ts` com quatro fases (`dawn`, `day`, `dusk`, `night`, forcaveis via `?timeOfDay=`), faixa de luz da janela, sombra ambiente, poca de luz do monitor, particulas limitadas e parallax que acompanha o ponteiro. Com `prefers-reduced-motion`, parallax, particulas e loops decorativos ficam desligados; reacoes financeiras continuam.
+
 ### V2.2D — Character/world concept assets
 
 Objetivo: criar ou substituir assets originais de personagem e objetos principais.
