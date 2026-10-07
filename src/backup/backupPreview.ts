@@ -25,9 +25,9 @@ export interface BackupPreview {
   warnings: string[]
 }
 
-const replacementMessage = 'A restauracao substitui os dados locais atuais pelos dados deste arquivo.'
-const localOnlyMessage = 'Backup local nao precisa de sincronizacao em nuvem.'
-const invalidValidationLabel = 'Arquivo nao validado para restauracao.'
+const replacementMessage = 'A restauração substitui os dados locais atuais pelos dados deste arquivo.'
+const localOnlyMessage = 'Backup local não precisa de sincronização em nuvem.'
+const invalidValidationLabel = 'Arquivo não validado para restauração.'
 
 function count(value: number | undefined) {
   return Number.isFinite(value) && value && value > 0 ? value : 0
@@ -38,16 +38,16 @@ function fileTypeLabel(fileType: BackupPreviewFileType | undefined) {
 }
 
 function versionLabel(version: number | null) {
-  return version === null ? 'Versao nao informada' : `Versao ${version}`
+  return version === null ? 'Versão não informada' : `Versão ${version}`
 }
 
 function exportedAtLabel(exportedAt: string | null) {
-  return exportedAt || 'Data de exportacao nao informada'
+  return exportedAt || 'Data de exportação não informada'
 }
 
 function validationLabel(inspection: BackupInspection) {
   if (!inspection.valid) return invalidValidationLabel
-  if (inspection.integrityStatus === 'verified') return 'Arquivo validado antes da restauracao.'
+  if (inspection.integrityStatus === 'verified') return 'Arquivo validado antes da restauração.'
   if (inspection.integrityStatus === 'missing') return 'Backup antigo sem checksum.'
   return invalidValidationLabel
 }
@@ -58,45 +58,45 @@ function countGroups(inspection: BackupInspection): BackupPreviewCountGroup[] {
   return [
     {
       id: 'transactions',
-      label: 'Movimentacoes reais',
+      label: 'Movimentações reais',
       value: count(counts.transactions),
-      description: 'Transacoes registradas como movimentacao real.',
+      description: 'Transações registradas como movimentação real.',
     },
     {
       id: 'goals',
-      label: 'Metas e alocacoes',
+      label: 'Metas e alocações',
       value: count(counts.goals) + count(counts.goalContributions),
-      description: 'Missoes financeiras e contribuicoes registradas.',
+      description: 'Missões financeiras e contribuições registradas.',
     },
     {
       id: 'budgets',
-      label: 'Planos de orcamento',
+      label: 'Planos de orçamento',
       value: count(counts.monthlyBudgets) + count(counts.categoryBudgets),
       description: 'Limites de planejamento mensal e por categoria.',
     },
     {
       id: 'recurring',
-      label: 'Recorrencias',
+      label: 'Recorrências',
       value: count(counts.recurringRules) + count(counts.recurringOccurrenceOverrides),
       description: 'Regras recorrentes e ajustes mensais.',
     },
     {
       id: 'cards',
-      label: 'Cartoes e faturas',
+      label: 'Cartões e faturas',
       value: count(counts.creditCards) + count(counts.cardInvoicePayments),
-      description: 'Cartoes cadastrados e pagamentos de fatura.',
+      description: 'Cartões cadastrados e pagamentos de fatura.',
     },
     {
       id: 'card-purchases',
-      label: 'Compras no cartao',
+      label: 'Compras no cartão',
       value: count(counts.cardPurchases),
-      description: 'Compras parceladas ou assumidas em cartao.',
+      description: 'Compras parceladas ou assumidas em cartão.',
     },
     {
       id: 'settings',
-      label: 'Preferencias',
+      label: 'Preferências',
       value: count(counts.settings),
-      description: 'Configuracoes locais incluidas no arquivo.',
+      description: 'Configurações locais incluidas no arquivo.',
     },
   ]
 }

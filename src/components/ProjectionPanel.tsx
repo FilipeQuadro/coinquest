@@ -121,12 +121,12 @@ export function ProjectionPanel({ selectedMonth }: ProjectionPanelProps) {
           </select>
         </label>
       </div>
-      <p className="guidance-note">Use a projecao como leitura de planejamento; ela nao substitui seu extrato real.</p>
-      <div className="guided-links" aria-label="Atalhos da projecao">
-        <span className="guided-links-label">A projecao usa compromissos cadastrados:</span>
+      <p className="guidance-note">Use a projeção como leitura de planejamento; ela não substitui seu extrato real.</p>
+      <div className="guided-links" aria-label="Atalhos da projeção">
+        <span className="guided-links-label">A projeção usa compromissos cadastrados:</span>
         <div className="guided-links-row">
-          <a className="inline-link" href="#previsoes">Ajustar recorrencias</a>
-          <a className="inline-link" href="#cartoes">Revisar cartoes</a>
+          <a className="inline-link" href="#previsoes">Ajustar recorrências</a>
+          <a className="inline-link" href="#cartoes">Revisar cartões</a>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ export function ProjectionPanel({ selectedMonth }: ProjectionPanelProps) {
           <div className="projection-summary">
             <article>
               <span>{'PER\u00cdODO'}</span>
-              <strong data-testid="projection-period">{formatShortMonth(selectedMonth)} {'->'} {formatShortMonth(periodEnd)}</strong>
+              <strong data-testid="projection-period">{formatShortMonth(selectedMonth)} &rarr; {formatShortMonth(periodEnd)}</strong>
             </article>
             <article>
               <span>{'RESULTADO ACUMULADO DO PER\u00cdODO'}</span>

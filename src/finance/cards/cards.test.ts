@@ -245,7 +245,7 @@ describe('credit card persistence and payments', () => {
     const invoice = buildCreditCardInvoices([card()], [purchase()], [], september)[0]
     const payment = await payCreditCardInvoice(invoice, { paymentDate: '2026-10-02T12:00:00.000Z' })
 
-    await expect(deleteCardPurchase('purchase-1')).rejects.toThrow('Compra com fatura paga nao pode ser excluida na V1.')
+    await expect(deleteCardPurchase('purchase-1')).rejects.toThrow('Compra com fatura paga não pode ser excluída na V1.')
     await deleteTransaction(payment.id)
     await expect(deleteCardPurchase('purchase-1')).resolves.toBeUndefined()
     await expect(db.cardPurchases.get('purchase-1')).resolves.toBeUndefined()
@@ -340,7 +340,7 @@ describe('credit card persistence and payments', () => {
       totalAmount: 100,
       purchaseDate: '2026-09-21T12:00:00.000Z',
       installmentCount: 1,
-    })).rejects.toThrow('Cartao inativo nao aceita novas compras.')
+    })).rejects.toThrow('Cartão inativo não aceita novas compras.')
 
     const invoices = buildCreditCardInvoices([disabled], await db.cardPurchases.toArray(), [], september)
     expect(invoices[0]).toMatchObject({ total: 300 })
@@ -379,7 +379,7 @@ describe('credit card persistence and payments', () => {
       closingDay: 20,
       dueDay: 2,
       active: true,
-    }, 'card-1')).rejects.toThrow('O ciclo nao pode ser alterado depois que o cartao possui compras cadastradas.')
+    }, 'card-1')).rejects.toThrow('O ciclo não pode ser alterado depois que o cartão possui compras cadastradas.')
   })
 
   it('deletes only cards without purchase or payment history', async () => {
@@ -395,7 +395,7 @@ describe('credit card persistence and payments', () => {
 
     await db.creditCards.add(card())
     await db.cardPurchases.add(purchase())
-    await expect(deleteCreditCard('card-1')).rejects.toThrow('Cartao com historico nao pode ser excluido na V1.')
+    await expect(deleteCreditCard('card-1')).rejects.toThrow('Cartão com histórico não pode ser excluído na V1.')
   })
 })
 

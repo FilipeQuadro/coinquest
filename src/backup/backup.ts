@@ -97,31 +97,31 @@ function countBackupData(appData: CoinQuestBackupData): BackupCounts {
 }
 
 function assertBackupDataShape(value: unknown): asserts value is CoinQuestBackupData {
-  if (!isRecord(value)) throw new Error('Dados do backup invalidos.')
+  if (!isRecord(value)) throw new Error('Dados do backup inválidos.')
 
   for (const tableName of backupTableNames) {
     if (!Array.isArray(value[tableName])) {
-      throw new Error(`Tabela ausente ou invalida no backup: ${tableName}.`)
+      throw new Error(`Tabela ausente ou inválida no backup: ${tableName}.`)
     }
   }
 }
 
 function assertBackupShape(value: unknown): asserts value is CoinQuestBackup {
-  if (!isRecord(value)) throw new Error('Arquivo de backup invalido.')
-  if (value.format !== backupFormat) throw new Error('Formato de backup invalido.')
-  if (value.version !== 1 && value.version !== 2) throw new Error('Versao de backup nao suportada.')
+  if (!isRecord(value)) throw new Error('Arquivo de backup inválido.')
+  if (value.format !== backupFormat) throw new Error('Formato de backup inválido.')
+  if (value.version !== 1 && value.version !== 2) throw new Error('Versão de backup não suportada.')
   if (typeof value.exportedAt !== 'string' || !Number.isFinite(new Date(value.exportedAt).getTime())) {
-    throw new Error('Data de exportacao do backup invalida.')
+    throw new Error('Data de exportação do backup inválida.')
   }
 
   assertBackupDataShape(value.appData)
 
   if (value.version === 2) {
     if (!isRecord(value.manifest) || !isRecord(value.manifest.counts)) {
-      throw new Error('Manifest do backup invalido.')
+      throw new Error('Manifest do backup inválido.')
     }
     if (!isRecord(value.integrity) || value.integrity.algorithm !== backupIntegrityAlgorithm || typeof value.integrity.checksum !== 'string') {
-      throw new Error('Integridade do backup invalida.')
+      throw new Error('Integridade do backup inválida.')
     }
   }
 }
@@ -229,7 +229,7 @@ function assertManifestCounts(backup: CoinQuestBackupV2) {
 
   for (const tableName of backupTableNames) {
     if (backup.manifest.counts[tableName] !== actualCounts[tableName]) {
-      throw new Error('Manifest do backup nao corresponde aos dados.')
+      throw new Error('Manifest do backup não corresponde aos dados.')
     }
   }
 }
@@ -313,7 +313,7 @@ export function parseBackup(json: string): CoinQuestBackup {
   try {
     parsed = JSON.parse(json)
   } catch {
-    throw new Error('Arquivo JSON invalido.')
+    throw new Error('Arquivo JSON inválido.')
   }
 
   assertBackupShape(parsed)
@@ -331,7 +331,7 @@ export async function inspectBackup(json: string): Promise<BackupInspection> {
       exportedAt: backup.exportedAt,
       counts: backup.version === 2 ? backup.manifest.counts : countBackupData(backup.appData),
       integrityStatus: backup.version === 2 ? 'verified' : 'missing',
-      warnings: backup.version === 1 ? ['Backup antigo sem verificacao de integridade.'] : [],
+      warnings: backup.version === 1 ? ['Backup antigo sem verificação de integridade.'] : [],
     }
   } catch (caught) {
     let formatVersion: number | null = null
@@ -364,7 +364,7 @@ export async function inspectBackup(json: string): Promise<BackupInspection> {
       counts,
       integrityStatus,
       warnings: [],
-      error: caught instanceof Error ? caught.message : 'Arquivo de backup invalido.',
+      error: caught instanceof Error ? caught.message : 'Arquivo de backup inválido.',
     }
   }
 }

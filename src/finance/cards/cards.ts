@@ -126,9 +126,9 @@ function normalizePurchaseDraft(draft: CardPurchaseDraft): CardPurchaseDraft {
 export function validateCreditCardDraft(draft: CreditCardDraft): string | null {
   const normalized = normalizeCardDraft(draft)
 
-  if (!normalized.name) return 'Informe o nome do cartao.'
+  if (!normalized.name) return 'Informe o nome do cartão.'
   if (normalized.creditLimit !== undefined && (!Number.isFinite(normalized.creditLimit) || normalized.creditLimit < 0)) {
-    return 'Informe um limite valido.'
+    return 'Informe um limite válido.'
   }
   if (!Number.isInteger(normalized.closingDay) || normalized.closingDay < 1 || normalized.closingDay > 31) {
     return 'Informe um fechamento entre 1 e 31.'
@@ -143,14 +143,14 @@ export function validateCreditCardDraft(draft: CreditCardDraft): string | null {
 export function validateCardPurchaseDraft(draft: CardPurchaseDraft): string | null {
   const normalized = normalizePurchaseDraft(draft)
 
-  if (!normalized.cardId.trim()) return 'Escolha um cartao.'
-  if (!normalized.description) return 'Informe uma descricao.'
-  if (!Number.isFinite(normalized.totalAmount) || normalized.totalAmount <= 0) return 'Informe um valor valido.'
+  if (!normalized.cardId.trim()) return 'Escolha um cartão.'
+  if (!normalized.description) return 'Informe uma descrição.'
+  if (!Number.isFinite(normalized.totalAmount) || normalized.totalAmount <= 0) return 'Informe um valor válido.'
   if (!Number.isInteger(normalized.installmentCount) || normalized.installmentCount < 1 || normalized.installmentCount > 60) {
     return 'Informe parcelas entre 1 e 60.'
   }
   const date = new Date(normalized.purchaseDate)
-  if (!Number.isFinite(date.getTime())) return 'Informe uma data valida.'
+  if (!Number.isFinite(date.getTime())) return 'Informe uma data válida.'
 
   return null
 }
@@ -159,14 +159,14 @@ export function validateInvoicePaymentInput(input: InvoicePaymentInput): string 
   const paymentDate = input.paymentDate ?? new Date().toISOString()
   const date = new Date(paymentDate)
 
-  if (!Number.isFinite(date.getTime())) return 'Informe uma data de pagamento valida.'
+  if (!Number.isFinite(date.getTime())) return 'Informe uma data de pagamento válida.'
 
   return null
 }
 
 export function getInvoiceCycle(card: Pick<CreditCard, 'closingDay' | 'dueDay'>, purchaseDateIso: string): InvoiceCycle {
   const purchaseDate = new Date(purchaseDateIso)
-  if (!Number.isFinite(purchaseDate.getTime())) throw new Error('Data da compra invalida.')
+  if (!Number.isFinite(purchaseDate.getTime())) throw new Error('Data da compra inválida.')
 
   const purchaseMonth = monthFromDate(purchaseDate)
   const purchaseDay = purchaseDate.getDate()
@@ -186,8 +186,8 @@ export function getInvoiceCycle(card: Pick<CreditCard, 'closingDay' | 'dueDay'>,
 }
 
 export function splitInstallments(totalAmount: number, installmentCount: number) {
-  if (!Number.isFinite(totalAmount) || totalAmount <= 0) throw new Error('Valor total invalido.')
-  if (!Number.isInteger(installmentCount) || installmentCount < 1) throw new Error('Numero de parcelas invalido.')
+  if (!Number.isFinite(totalAmount) || totalAmount <= 0) throw new Error('Valor total inválido.')
+  if (!Number.isInteger(installmentCount) || installmentCount < 1) throw new Error('Número de parcelas inválido.')
 
   const total = cents(totalAmount)
   const base = Math.floor(total / installmentCount)
@@ -334,11 +334,11 @@ export async function saveCreditCard(draft: CreditCardDraft, id?: string) {
   if (error) throw new Error(error)
 
   const existing = id ? await db.creditCards.get(id) : undefined
-  if (id && !existing) throw new Error('Cartao nao encontrado.')
+  if (id && !existing) throw new Error('Cartão não encontrado.')
   if (existing && (existing.closingDay !== normalized.closingDay || existing.dueDay !== normalized.dueDay)) {
     const purchaseCount = await db.cardPurchases.where('cardId').equals(existing.id).count()
     if (purchaseCount > 0) {
-      throw new Error('O ciclo nao pode ser alterado depois que o cartao possui compras cadastradas.')
+      throw new Error('O ciclo não pode ser alterado depois que o cartão possui compras cadastradas.')
     }
   }
 
@@ -361,7 +361,7 @@ export async function deleteCreditCard(id: string) {
   ])
 
   if (purchaseCount > 0 || paymentCount > 0) {
-    throw new Error('Cartao com historico nao pode ser excluido na V1. Desative para preservar os dados.')
+    throw new Error('Cartão com histórico não pode ser excluído na V1. Desative para preservar os dados.')
   }
 
   await db.creditCards.delete(id)
@@ -373,12 +373,12 @@ export async function saveCardPurchase(draft: CardPurchaseDraft, id?: string) {
   if (error) throw new Error(error)
 
   const card = await db.creditCards.get(normalized.cardId)
-  if (!card) throw new Error('Cartao nao encontrado.')
+  if (!card) throw new Error('Cartão não encontrado.')
 
   const existing = id ? await db.cardPurchases.get(id) : undefined
-  if (id && !existing) throw new Error('Compra nao encontrada.')
+  if (id && !existing) throw new Error('Compra não encontrada.')
   if (!card.active && (!existing || existing.cardId !== card.id)) {
-    throw new Error('Cartao inativo nao aceita novas compras.')
+    throw new Error('Cartão inativo não aceita novas compras.')
   }
 
   const [payments, transactions] = await Promise.all([db.cardInvoicePayments.toArray(), db.transactions.toArray()])
@@ -386,7 +386,7 @@ export async function saveCardPurchase(draft: CardPurchaseDraft, id?: string) {
     ? buildInstallmentOccurrences(card, existing, payments, transactions)
     : []
   if (relatedInvoices.some((invoice) => invoice.status === 'paid')) {
-    throw new Error('Compra com fatura paga nao pode ser alterada na V1.')
+    throw new Error('Compra com fatura paga não pode ser alterada na V1.')
   }
 
   const now = new Date().toISOString()
@@ -406,12 +406,12 @@ export async function deleteCardPurchase(id: string) {
   if (!purchase) return
 
   const card = await db.creditCards.get(purchase.cardId)
-  if (!card) throw new Error('Cartao nao encontrado.')
+  if (!card) throw new Error('Cartão não encontrado.')
 
   const [payments, transactions] = await Promise.all([db.cardInvoicePayments.toArray(), db.transactions.toArray()])
   const relatedInvoices = buildInstallmentOccurrences(card, purchase, payments, transactions)
   if (relatedInvoices.some((invoice) => invoice.status === 'paid')) {
-    throw new Error('Compra com fatura paga nao pode ser excluida na V1.')
+    throw new Error('Compra com fatura paga não pode ser excluída na V1.')
   }
 
   await db.cardPurchases.delete(id)
@@ -472,12 +472,12 @@ export async function correctCreditCardInvoicePayment(invoice: CreditCardInvoice
     .where('[cardId+invoiceYear+invoiceMonth]')
     .equals([invoice.cardId, invoice.year, invoice.month])
     .first()
-  if (!payment) throw new Error('Pagamento da fatura nao encontrado.')
+  if (!payment) throw new Error('Pagamento da fatura não encontrado.')
 
   const transaction = await db.transactions.get(payment.linkedTransactionId)
   if (!transaction) {
     await db.cardInvoicePayments.delete(payment.id)
-    throw new Error('Transacao de pagamento nao encontrada. A fatura foi reaberta.')
+    throw new Error('Transação de pagamento não encontrada. A fatura foi reaberta.')
   }
 
   const paymentDate = input.paymentDate ?? payment.paymentDate ?? transaction.occurredAt

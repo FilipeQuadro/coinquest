@@ -28,19 +28,19 @@ export interface WorldProgressionState {
 const tierCopy: Record<WorldProgressionTier, Pick<WorldProgressionState, 'title' | 'description'>> = {
   starter: {
     title: 'Base inicial',
-    description: 'O mundo ainda precisa de mais sinais do mes para evoluir.',
+    description: 'O mundo ainda precisa de mais sinais do mês para evoluir.',
   },
   stable: {
-    title: 'Base estavel',
-    description: 'O mes ja tem organizacao suficiente para o mundo responder melhor.',
+    title: 'Base estável',
+    description: 'O mês já tem organização suficiente para o mundo responder melhor.',
   },
   focused: {
     title: 'Base focada',
-    description: 'Orcamento, registros e missoes indicam um mes acompanhado.',
+    description: 'Orçamento, registros e missões indicam um mês acompanhado.',
   },
   thriving: {
     title: 'Base prospera',
-    description: 'O mundo reflete um mes forte, com bons sinais financeiros e progresso de missao.',
+    description: 'O mundo reflete um mês forte, com bons sinais financeiros e progresso de missão.',
   },
 }
 
@@ -74,13 +74,13 @@ function nextHint(input: {
   hasMissionProgress: boolean
   positiveHealth: boolean
 }) {
-  if (!input.hasEnoughRecords) return 'Registre algumas movimentacoes reais do mes para dar leitura ao mundo.'
-  if (!input.hasBudget) return 'Defina um orcamento mensal para estabilizar a base.'
-  if (!input.budgetRespected) return 'Acompanhe o orcamento para manter a base sob controle.'
-  if (!input.hasActiveGoal) return 'Crie uma missao financeira para dar um objetivo ao mundo.'
-  if (!input.hasMissionProgress) return 'Reserve ou ajuste uma missao quando fizer sentido para mostrar progresso.'
-  if (!input.positiveHealth) return 'Melhorar a saude financeira mensal fortalece a progressao visual.'
-  return 'Mantenha os registros, o orcamento e as missoes em dia.'
+  if (!input.hasEnoughRecords) return 'Registre algumas movimentações reais do mês para dar leitura ao mundo.'
+  if (!input.hasBudget) return 'Defina um orçamento mensal para estabilizar a base.'
+  if (!input.budgetRespected) return 'Acompanhe o orçamento para manter a base sob controle.'
+  if (!input.hasActiveGoal) return 'Crie uma missão financeira para dar um objetivo ao mundo.'
+  if (!input.hasMissionProgress) return 'Reserve ou ajuste uma missão quando fizer sentido para mostrar progresso.'
+  if (!input.positiveHealth) return 'Melhorar a saúde financeira mensal fortalece a progressao visual.'
+  return 'Mantenha os registros, o orçamento e as missões em dia.'
 }
 
 function tierFromScore(score: number, hasOrganizedMonth: boolean, positiveHealth: boolean, hasCompletedGoal: boolean): WorldProgressionTier {
@@ -110,41 +110,41 @@ export function deriveWorldProgression(input: WorldProgressionInput): WorldProgr
 
   if (hasEnoughRecords) {
     score += 1
-    reasons.push('Mes com registros suficientes para leitura.')
+    reasons.push('Mês com registros suficientes para leitura.')
   }
 
   if (hasBudget) {
     score += 1
-    reasons.push('Orcamento mensal configurado.')
+    reasons.push('Orçamento mensal configurado.')
   }
 
   if (budgetRespected) {
     score += 2
-    reasons.push('Orcamento dentro do limite.')
+    reasons.push('Orçamento dentro do limite.')
   }
 
   if (hasActiveGoal) {
     score += 1
-    reasons.push('Missao ativa em andamento.')
+    reasons.push('Missão ativa em andamento.')
   }
 
   if (hasMissionProgress) {
     score += 1
-    reasons.push('Missao recebeu progresso neste mes.')
+    reasons.push('Missão recebeu progresso neste mês.')
   }
 
   if (positiveHealth) {
     score += strongHealth ? 2 : 1
-    reasons.push(strongHealth ? 'Saude financeira excelente no mes.' : 'Saude financeira positiva no mes.')
+    reasons.push(strongHealth ? 'Saúde financeira excelente no mês.' : 'Saúde financeira positiva no mês.')
   }
 
   if (hasCompletedGoal) {
     score += 2
-    reasons.push('Missao concluida fortalece o mundo.')
+    reasons.push('Missão concluída fortalece o mundo.')
   }
 
   if (reasons.length === 0) {
-    reasons.push('Ainda ha poucos sinais financeiros para evoluir o mundo.')
+    reasons.push('Ainda há poucos sinais financeiros para evoluir o mundo.')
   }
 
   const tier = tierFromScore(score, hasOrganizedMonth, positiveHealth, hasCompletedGoal)

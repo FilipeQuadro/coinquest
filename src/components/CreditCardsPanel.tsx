@@ -31,7 +31,7 @@ import { formatBRL, parseMoney } from '../lib/money'
 
 const invoicePaymentMethods: Array<{ value: PaymentMethod; label: string }> = [
   { value: 'pix', label: 'PIX' },
-  { value: 'debit', label: 'Debito' },
+  { value: 'debit', label: 'Débito' },
   { value: 'transfer', label: 'Transferencia' },
   { value: 'cash', label: 'Dinheiro' },
   { value: 'other', label: 'Outro' },
@@ -120,7 +120,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
     const parsedLimit = creditLimit.trim() ? parseMoney(creditLimit) : undefined
 
     if (parsedLimit === null) {
-      setError('Informe um limite valido ou deixe vazio.')
+      setError('Informe um limite válido ou deixe vazio.')
       return
     }
 
@@ -136,7 +136,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
       resetCardForm()
       setError('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nao foi possivel salvar o cartao.')
+      setError(err instanceof Error ? err.message : 'Não foi possível salvar o cartão.')
     }
   }
 
@@ -164,7 +164,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
       resetPurchaseForm()
       setError('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nao foi possivel salvar a compra.')
+      setError(err instanceof Error ? err.message : 'Não foi possível salvar a compra.')
     }
   }
 
@@ -172,7 +172,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
     if (!selectedInvoice) return
     const paymentDate = localDateTimeToIso(invoicePaymentDate, currentTimeInputValue())
     if (!paymentDate) {
-      setError('Informe uma data de pagamento valida.')
+      setError('Informe uma data de pagamento válida.')
       return
     }
 
@@ -186,7 +186,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
       setError('')
       return transaction
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nao foi possivel pagar a fatura.')
+      setError(err instanceof Error ? err.message : 'Não foi possível pagar a fatura.')
     }
   }
 
@@ -194,7 +194,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
     if (!selectedInvoice) return
     const paymentDate = localDateTimeToIso(invoicePaymentDate, currentTimeInputValue())
     if (!paymentDate) {
-      setError('Informe uma data de pagamento valida.')
+      setError('Informe uma data de pagamento válida.')
       return
     }
 
@@ -206,7 +206,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
       setCorrectingInvoiceKey(null)
       setError('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nao foi possivel corrigir o pagamento.')
+      setError(err instanceof Error ? err.message : 'Não foi possível corrigir o pagamento.')
     }
   }
 
@@ -222,7 +222,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
       setSelectedCardId(updated.id)
       setError('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nao foi possivel atualizar o cartao.')
+      setError(err instanceof Error ? err.message : 'Não foi possível atualizar o cartão.')
     }
   }
 
@@ -233,7 +233,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
       if (selectedCardId === id) setSelectedCardId('')
       setError('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nao foi possivel excluir o cartao.')
+      setError(err instanceof Error ? err.message : 'Não foi possível excluir o cartão.')
     }
   }
 
@@ -243,7 +243,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
       setPendingDeletePurchaseId(null)
       setError('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nao foi possivel excluir a compra.')
+      setError(err instanceof Error ? err.message : 'Não foi possível excluir a compra.')
     }
   }
 
@@ -310,15 +310,15 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
     <section className="panel card-panel" data-testid="credit-card-panel">
       <div className="panel-title-row">
         <div>
-          <span className="eyebrow">CARTOES</span>
-          <h2>Cartoes e faturas</h2>
-          <p className="muted">Compra no cartao e compromisso. Pagamento da fatura e transacao real.</p>
+          <span className="eyebrow">CARTÕES</span>
+          <h2>Cartões e faturas</h2>
+          <p className="muted">Compra no cartão é compromisso. Pagamento da fatura é transação real.</p>
         </div>
         <button className="button secondary" data-testid="toggle-card-form" type="button" onClick={() => cardFormOpen ? resetCardForm() : setCardFormOpen(true)}>
-          {cardFormOpen ? 'Fechar' : 'Adicionar cartao'}
+          {cardFormOpen ? 'Fechar' : 'Adicionar cartão'}
         </button>
       </div>
-      <div className="guided-links" aria-label="Atalhos de cartoes">
+      <div className="guided-links" aria-label="Atalhos de cartões">
         <span className="guided-links-label">Antes de registrar uma compra maior:</span>
         <div className="guided-links-row">
           <a className="inline-link" href="#simulador">Simular antes de registrar</a>
@@ -350,15 +350,15 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
               checked={cardActive}
               onChange={(event) => setCardActive(event.target.checked)}
             />
-            Cartao ativo
+            Cartão ativo
           </label>
           {editingCard && (
             <div className="message info span-2">
-              Nome, limite e status podem mudar. Ciclo fecha/vence fica bloqueado quando ja existem compras.
+              Nome, limite e status podem mudar. Ciclo fecha/vence fica bloqueado quando já existem compras.
             </div>
           )}
           <button className="button primary span-2" data-testid="save-card" type="submit">
-            {editingCard ? 'Salvar cartao' : 'Salvar cartao'}
+            {editingCard ? 'Salvar cartão' : 'Salvar cartão'}
           </button>
         </form>
       )}
@@ -377,7 +377,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
               >
                 <strong>{card.name}</strong>
                 <span>{card.active ? 'Ativo' : 'Inativo'} - fecha {card.closingDay} / vence {card.dueDay}</span>
-                <small>{usage.hasLimit ? `${formatBRL(usage.availableLimit ?? 0)} disponivel` : `${formatBRL(usage.committedAmount)} comprometidos`}</small>
+                <small>{usage.hasLimit ? `${formatBRL(usage.availableLimit ?? 0)} disponível` : `${formatBRL(usage.committedAmount)} comprometidos`}</small>
               </button>
             )
           })}
@@ -388,17 +388,17 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
         <>
           <div className="card-actions-row">
             <div>
-              <span className="eyebrow">COMPRA NO CARTAO</span>
+              <span className="eyebrow">COMPRA NO CARTÃO</span>
               <strong>{selectedCard.name}</strong>
               {limitUsage && <small>{limitUsage.hasLimit ? `${formatBRL(limitUsage.committedAmount)} usados de ${formatBRL(limitUsage.creditLimit ?? 0)}` : 'Sem limite cadastrado'}</small>}
             </div>
             <div className="card-button-group">
-              <button className="button ghost compact" data-testid="edit-card" type="button" onClick={() => startEditingCard(selectedCard)}>Editar cartao</button>
+              <button className="button ghost compact" data-testid="edit-card" type="button" onClick={() => startEditingCard(selectedCard)}>Editar cartão</button>
               <button className="button ghost compact" data-testid="toggle-card-active" type="button" onClick={() => toggleCardActive(selectedCard)}>
                 {selectedCard.active ? 'Desativar' : 'Reativar'}
               </button>
               {pendingDeleteCardId === selectedCard.id ? (
-                <button className="button ghost danger compact" data-testid="confirm-delete-card" type="button" onClick={() => removeCard(selectedCard.id)}>Confirmar exclusao</button>
+                <button className="button ghost danger compact" data-testid="confirm-delete-card" type="button" onClick={() => removeCard(selectedCard.id)}>Confirmar exclusão</button>
               ) : (
                 <button className="button ghost compact" data-testid="delete-card" type="button" onClick={() => setPendingDeleteCardId(selectedCard.id)}>Excluir</button>
               )}
@@ -415,13 +415,13 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
           </div>
 
           {!selectedCard.active && (
-            <div className="message info">Cartao inativo preserva faturas e pagamentos, mas nao aceita novas compras.</div>
+            <div className="message info">Cartão inativo preserva faturas e pagamentos, mas não aceita novas compras.</div>
           )}
 
           {purchaseFormOpen && (
             <form className="card-form purchase-form" data-testid="purchase-form" onSubmit={submitPurchase}>
               <label>
-                Cartao
+                Cartão
                 <select data-testid="purchase-card" value={cardId} onChange={(event) => setSelectedCardId(event.target.value)}>
                   {cards.map((card) => <option key={card.id} value={card.id}>{card.name}</option>)}
                 </select>
@@ -431,7 +431,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
                 <input data-testid="purchase-amount" value={purchaseAmount} onChange={(event) => setPurchaseAmount(event.target.value)} inputMode="decimal" placeholder="1200,00" autoComplete="off" />
               </label>
               <label className="span-2">
-                Descricao
+                Descrição
                 <input data-testid="purchase-description" value={purchaseDescription} onChange={(event) => setPurchaseDescription(event.target.value)} placeholder="Ex.: Notebook" autoComplete="off" />
               </label>
               <label>
@@ -451,17 +451,17 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
               {purchasePreview && (
                 <div className="purchase-preview span-2" data-testid="purchase-preview">
                   <strong>{purchasePreview.count}x de aproximadamente {formatBRL(purchasePreview.amounts[0] ?? 0)}</strong>
-                  <span>Primeira fatura: {invoiceLabel(purchasePreview.first.year, purchasePreview.first.month)} / Ultima: {invoiceLabel(purchasePreview.last.year, purchasePreview.last.month)}</span>
+                  <span>Primeira fatura: {invoiceLabel(purchasePreview.first.year, purchasePreview.first.month)} / Última: {invoiceLabel(purchasePreview.last.year, purchasePreview.last.month)}</span>
                   <span>Total preservado: {formatBRL(purchasePreview.total)}</span>
                 </div>
               )}
               {editingPurchase && (
                 <div className="message info span-2">
-                  Editando compra existente. Se alguma fatura relacionada ja estiver paga, a V1 bloqueia mudancas estruturais.
+                  Editando compra existente. Se alguma fatura relacionada já estiver paga, a V1 bloqueia mudanças estruturais.
                 </div>
               )}
               <button className="button primary span-2" data-testid="save-purchase" type="submit">
-                {editingPurchase ? 'Salvar edicao da compra' : 'Salvar compra'}
+                {editingPurchase ? 'Salvar edição da compra' : 'Salvar compra'}
               </button>
             </form>
           )}
@@ -494,7 +494,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
                 <div className="invoice-actions">
                   {confirmingInvoiceKey === `${selectedInvoice.cardId}-${selectedInvoice.year}-${selectedInvoice.month}` ? (
                     <div className="invoice-payment-box" data-testid="invoice-payment-box">
-                      <span>Cartao: {selectedCard.name}</span>
+                      <span>Cartão: {selectedCard.name}</span>
                       <span>Competencia: {invoiceLabel(selectedInvoice.year, selectedInvoice.month)}</span>
                       <span>Valor: {formatBRL(selectedInvoice.total)}</span>
                       <span>Vencimento: {new Date(selectedInvoice.dueDate).toLocaleDateString('pt-BR')}</span>
@@ -545,7 +545,7 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
                       </label>
                       <div className="invoice-actions">
                         <button className="button ghost compact" type="button" onClick={() => setCorrectingInvoiceKey(null)}>Cancelar</button>
-                        <button className="button primary compact" data-testid="save-invoice-payment-correction" type="button" onClick={correctPayment}>Salvar correcao</button>
+                        <button className="button primary compact" data-testid="save-invoice-payment-correction" type="button" onClick={correctPayment}>Salvar correção</button>
                       </div>
                     </div>
                   ) : (
@@ -558,11 +558,11 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
             </div>
           )}
 
-          <div className="purchase-list" aria-label="Compras no cartao">
+          <div className="purchase-list" aria-label="Compras no cartão">
             {selectedCardPurchases.length === 0 ? (
               <div className="empty-state empty-state-guide">
-                <strong>Nenhuma compra neste cartao.</strong>
-                <span>Use Nova compra para registrar compromissos de fatura. Isso nao cria saida de caixa imediata.</span>
+                <strong>Nenhuma compra neste cartão.</strong>
+                <span>Use Nova compra para registrar compromissos de fatura. Isso não cria saída de caixa imediata.</span>
               </div>
             ) : selectedCardPurchases.map((purchase) => {
               const installments = buildInstallmentOccurrences(selectedCard, purchase, payments, transactions)
@@ -589,8 +589,8 @@ export function CreditCardsPanel({ selectedMonth }: CreditCardsPanelProps) {
 
       {!selectedCard && (
         <div className="empty-state empty-state-guide">
-          <strong>Nenhum cartao cadastrado.</strong>
-          <span>Cadastre um cartao para acompanhar faturas. O pagamento da fatura continuara separado como movimentacao real.</span>
+          <strong>Nenhum cartão cadastrado.</strong>
+          <span>Cadastre um cartão para acompanhar faturas. O pagamento da fatura continuará separado como movimentação real.</span>
         </div>
       )}
       {error && <div className="message error">{error}</div>}

@@ -33,7 +33,7 @@ export function TransactionEditor({ transaction, onCancel, onSaved }: Transactio
     return (
       <div className="transaction-editor protected-transaction" data-testid="linked-invoice-transaction-warning">
         <div className="message info span-2">
-          Este lancamento pertence ao pagamento de uma fatura. Corrija data e forma de pagamento pela area do cartao para manter o vinculo sincronizado.
+          Este lançamento pertence ao pagamento de uma fatura. Corrija data e forma de pagamento pela área do cartão para manter o vínculo sincronizado.
         </div>
         <div className="transaction-editor-actions span-2">
           <button className="button ghost" type="button" onClick={onCancel}>Fechar</button>
@@ -54,7 +54,7 @@ export function TransactionEditor({ transaction, onCancel, onSaved }: Transactio
     const occurredAt = localDateTimeToIso(dateValue, timeValue)
 
     if (!occurredAt) {
-      setError('Informe uma data valida.')
+      setError('Informe uma data válida.')
       return
     }
 
@@ -98,7 +98,7 @@ export function TransactionEditor({ transaction, onCancel, onSaved }: Transactio
         />
       </label>
       <label className="span-2">
-        Descricao
+        Descrição
         <input
           data-testid="edit-transaction-description"
           value={description}
@@ -116,8 +116,8 @@ export function TransactionEditor({ transaction, onCancel, onSaved }: Transactio
         Pagamento
         <select data-testid="edit-transaction-payment" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value as PaymentMethod)}>
           <option value="pix">PIX</option>
-          <option value="debit">Debito</option>
-          <option value="credit">Credito</option>
+          <option value="debit">Débito</option>
+          <option value="credit">Crédito</option>
           <option value="cash">Dinheiro</option>
           <option value="transfer">Transferencia</option>
           <option value="other">Outro</option>
@@ -148,7 +148,7 @@ export function TransactionEditor({ transaction, onCancel, onSaved }: Transactio
 
       <div className="transaction-editor-actions span-2">
         <button className="button ghost" type="button" onClick={onCancel}>Cancelar</button>
-        <button className="button primary" data-testid="edit-transaction-save" type="submit">Salvar edicao</button>
+        <button className="button primary" data-testid="edit-transaction-save" type="submit">Salvar edição</button>
       </div>
     </form>
   )

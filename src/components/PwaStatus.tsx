@@ -9,8 +9,8 @@ export function PwaStatus() {
 
   if (!offlineReady && !needRefresh) return null
 
-  const title = offlineReady ? 'Modo offline preparado.' : 'Atualizacao disponivel.'
-  const description = offlineReady ? 'O nucleo do CoinQuest pode abrir sem internet.' : 'Existe uma nova versao do app.'
+  const title = offlineReady ? 'Modo offline preparado.' : 'Atualização disponível.'
+  const description = offlineReady ? 'O núcleo do CoinQuest pode abrir sem internet.' : 'Existe uma nova versão do app.'
 
   return (
     <div className="pwa-toast">
@@ -25,7 +25,7 @@ export function PwaStatus() {
         aria-label="Fechar aviso do PWA"
         onClick={() => { setOfflineReady(false); setNeedRefresh(false) }}
       >
-        x
+        &times;
       </button>
     </div>
   )

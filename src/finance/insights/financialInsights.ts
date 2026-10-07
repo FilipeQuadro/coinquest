@@ -72,8 +72,8 @@ function deriveHealthInsight(health: FinancialInsightsInput['financialHealth']):
       id: 'health:critical',
       kind: 'warning',
       source: 'health',
-      title: 'Mes em estado critico',
-      message: 'Os sinais financeiros do mes indicam uma situacao critica para acompanhar com atencao.',
+      title: 'Mês em estado crítico',
+      message: 'Os sinais financeiros do mês indicam uma situação crítica para acompanhar com atenção.',
       priority: 95,
     }
   }
@@ -83,8 +83,8 @@ function deriveHealthInsight(health: FinancialInsightsInput['financialHealth']):
       id: 'health:tight',
       kind: 'warning',
       source: 'health',
-      title: 'Mes apertado',
-      message: 'Os sinais financeiros do mes indicam pouca margem para acompanhar de perto.',
+      title: 'Mês apertado',
+      message: 'Os sinais financeiros do mês indicam pouca margem para acompanhar de perto.',
       priority: 90,
     }
   }
@@ -94,8 +94,8 @@ function deriveHealthInsight(health: FinancialInsightsInput['financialHealth']):
       id: 'health:attention',
       kind: 'attention',
       source: 'health',
-      title: 'Acompanhe o ritmo do mes',
-      message: 'Os sinais financeiros do mes pedem acompanhamento antes de novas decisoes.',
+      title: 'Acompanhe o ritmo do mês',
+      message: 'Os sinais financeiros do mês pedem acompanhamento antes de novas decisões.',
       priority: 75,
     }
   }
@@ -111,8 +111,8 @@ function deriveBudgetInsights(budget: FinancialInsightsInput['budget']): Financi
       id: 'budget:over-limit',
       kind: 'warning',
       source: 'budget',
-      title: 'Orcamento ultrapassado',
-      message: 'O limite de planejamento do mes foi ultrapassado.',
+      title: 'Orçamento ultrapassado',
+      message: 'O limite de planejamento do mês foi ultrapassado.',
       priority: 100,
       amount: budget.overLimitAmount,
     }]
@@ -123,8 +123,8 @@ function deriveBudgetInsights(budget: FinancialInsightsInput['budget']): Financi
       id: 'budget:near-limit',
       kind: 'attention',
       source: 'budget',
-      title: 'Orcamento perto do limite',
-      message: 'O uso do limite de planejamento esta perto de 100%.',
+      title: 'Orçamento perto do limite',
+      message: 'O uso do limite de planejamento está perto de 100%.',
       priority: 80,
       amount: budget.spent,
     }]
@@ -154,7 +154,7 @@ function deriveCategoryInsight(categories: CategoryInsightInput[] | null | undef
     id: `category:concentrated:${topCategory.category.toLocaleLowerCase('pt-BR')}`,
     kind: highConcentration ? 'attention' : 'info',
     source: 'category',
-    title: 'Categoria concentrada no mes',
+    title: 'Categoria concentrada no mês',
     message: 'Uma categoria concentra parte relevante das despesas consideradas.',
     priority: highConcentration ? 62 : 45,
     amount: topCategory.amount,
@@ -185,8 +185,8 @@ function deriveCommitmentInsight(commitments: FinancialInsightsInput['commitment
     source,
     title: overdue ? 'Compromisso atrasado' : 'Compromisso em aberto',
     message: source === 'card'
-      ? 'Ha uma fatura em aberto no planejamento do mes.'
-      : 'Ha uma recorrencia em aberto no planejamento do mes.',
+      ? 'Há uma fatura em aberto no planejamento do mês.'
+      : 'Há uma recorrência em aberto no planejamento do mês.',
     priority: overdue ? (source === 'card' ? 86 : 84) : 65,
     amount: commitment.amount,
   }
@@ -199,8 +199,8 @@ function deriveProjectionInsight(projection: FinancialInsightsInput['projection'
     id: 'projection:negative-month',
     kind: 'attention',
     source: 'projection',
-    title: 'Projecao mensal negativa',
-    message: 'A estimativa do mes fica negativa com os registros e compromissos atuais.',
+    title: 'Projeção mensal negativa',
+    message: 'A estimativa do mês fica negativa com os registros e compromissos atuais.',
     priority: 72,
     amount: Math.abs(projection.projectedNet),
   }
@@ -214,8 +214,8 @@ function deriveGoalInsight(goal: FinancialInsightsInput['goal']): FinancialInsig
       id: `goal:completed:${goal.id}`,
       kind: 'positive',
       source: 'goal',
-      title: 'Missao concluida',
-      message: 'A alocacao registrada atingiu o objetivo da missao; isso nao registra uma compra.',
+      title: 'Missão concluída',
+      message: 'A alocação registrada atingiu o objetivo da missão; isso não registra uma compra.',
       priority: 50,
       amount: goal.allocatedAmount,
     }
@@ -226,8 +226,8 @@ function deriveGoalInsight(goal: FinancialInsightsInput['goal']): FinancialInsig
       id: `goal:progress:${goal.id}`,
       kind: 'positive',
       source: 'goal',
-      title: 'Missao com progresso',
-      message: 'A missao tem alocacao registrada, sem criar transacao financeira.',
+      title: 'Missão com progresso',
+      message: 'A missão tem alocação registrada, sem criar transação financeira.',
       priority: 35,
       amount: goal.allocatedAmount,
     }
@@ -245,8 +245,8 @@ export function deriveFinancialInsights(input: FinancialInsightsInput): Financia
       id: 'data:low-signal',
       kind: 'info',
       source: 'data',
-      title: 'Poucos dados no mes',
-      message: 'Ainda ha poucos registros reais para uma leitura confiavel do mes.',
+      title: 'Poucos dados no mês',
+      message: 'Ainda há poucos registros reais para uma leitura confiável do mês.',
       priority: 10,
     })
   }

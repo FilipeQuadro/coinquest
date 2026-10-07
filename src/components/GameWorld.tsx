@@ -18,7 +18,7 @@ const healthCopy: Record<FinancialHealth['level'], { icon: string; label: string
   unknown: {
     icon: '?',
     label: 'Sem leitura',
-    hint: 'Ainda nao ha dados suficientes neste mes.',
+    hint: 'Ainda não há dados suficientes neste mês.',
   },
   excellent: {
     icon: '++',
@@ -28,11 +28,11 @@ const healthCopy: Record<FinancialHealth['level'], { icon: string; label: string
   healthy: {
     icon: '+',
     label: 'Saudavel',
-    hint: 'Mes positivo ou com gastos confortaveis na regra V1.',
+    hint: 'Mês positivo ou com gastos confortaveis na regra V1.',
   },
   attention: {
     icon: '!',
-    label: 'Atencao',
+    label: 'Atenção',
     hint: 'Despesas se aproximando das receitas na regra V1.',
   },
   tight: {
@@ -42,7 +42,7 @@ const healthCopy: Record<FinancialHealth['level'], { icon: string; label: string
   },
   critical: {
     icon: '!!',
-    label: 'Critico',
+    label: 'Crítico',
     hint: 'Despesas acima das receitas ou sem receita registrada.',
   },
 }
@@ -171,11 +171,11 @@ export function GameWorld({ selectedMonth, active = true }: GameWorldProps) {
 
       <div className="game-hud" aria-label="HUD financeiro do mundo">
         <div>
-          <span>RESULTADO DO MES</span>
+          <span>RESULTADO DO MÊS</span>
           <strong data-testid="game-hud-balance">{formatBRL(summary.balance)}</strong>
         </div>
         <div>
-          <span>MES</span>
+          <span>MÊS</span>
           <strong>{monthLabel}</strong>
         </div>
         <div>
@@ -187,7 +187,7 @@ export function GameWorld({ selectedMonth, active = true }: GameWorldProps) {
       <div className="health-card" data-testid="financial-health-card">
         <span className="health-icon" aria-hidden="true">{healthInfo.icon}</span>
         <div>
-          <strong>Estado do mes: {healthInfo.label}</strong>
+          <strong>Estado do mês: {healthInfo.label}</strong>
           <span>{healthInfo.hint}</span>
         </div>
       </div>

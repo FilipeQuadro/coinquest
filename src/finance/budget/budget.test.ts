@@ -96,9 +96,9 @@ describe('monthly budget storage', () => {
   })
 
   it('rejects invalid budget values but accepts explicit zero', () => {
-    expect(validateBudgetLimit(Number.NaN)).toBe('Informe um limite valido.')
-    expect(validateBudgetLimit(Number.POSITIVE_INFINITY)).toBe('Informe um limite valido.')
-    expect(validateBudgetLimit(-1)).toBe('Informe um limite valido.')
+    expect(validateBudgetLimit(Number.NaN)).toBe('Informe um limite válido.')
+    expect(validateBudgetLimit(Number.POSITIVE_INFINITY)).toBe('Informe um limite válido.')
+    expect(validateBudgetLimit(-1)).toBe('Informe um limite válido.')
     expect(validateBudgetLimit(0)).toBeNull()
   })
 

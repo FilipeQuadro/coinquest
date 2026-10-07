@@ -16,7 +16,7 @@ export class FinancialEffects {
   }
 
   showGoalCompleted(goalName: string, x: number, y: number) {
-    const title = this.scene.add.text(x, y, 'MISSAO CONCLUIDA', {
+    const title = this.scene.add.text(x, y, 'MISSÃO CONCLUÍDA', {
       fontFamily: 'monospace',
       fontSize: '18px',
       color: '#fff5c7',

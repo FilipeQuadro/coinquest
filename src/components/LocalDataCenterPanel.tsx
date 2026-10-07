@@ -27,29 +27,29 @@ function statusLabel(status: 'empty' | 'ok' | 'attention') {
 function mainCountCards(counts: LocalDataHealthCounts): CountCard[] {
   return [
     {
-      label: 'Movimentacoes',
+      label: 'Movimentações',
       value: counts.transactions,
-      detail: 'Transacoes reais registradas neste dispositivo.',
+      detail: 'Transações reais registradas neste dispositivo.',
     },
     {
       label: 'Planejamento',
       value: counts.monthlyBudgets + counts.categoryBudgets + counts.recurringRules,
-      detail: 'Orcamentos e recorrencias locais.',
+      detail: 'Orçamentos e recorrências locais.',
     },
     {
-      label: 'Cartoes',
+      label: 'Cartões',
       value: counts.creditCards + counts.cardPurchases + counts.cardInvoicePayments,
-      detail: 'Cartoes, compras e pagamentos de fatura.',
+      detail: 'Cartões, compras e pagamentos de fatura.',
     },
     {
       label: 'Metas',
       value: counts.goals + counts.goalContributions,
-      detail: 'Missoes e alocacoes registradas.',
+      detail: 'Missões e alocações registradas.',
     },
     {
-      label: 'Preferencias',
+      label: 'Preferências',
       value: counts.settings,
-      detail: 'Configuracoes locais do app.',
+      detail: 'Configurações locais do app.',
     },
     {
       label: 'Sync opcional',
@@ -114,7 +114,7 @@ export function LocalDataCenterPanel() {
         <div>
           <span className="eyebrow">DADOS LOCAIS</span>
           <h2 id="local-data-title">Central de Dados Locais</h2>
-          <p className="muted">Seus dados ficam neste dispositivo. Esta central apenas mostra sinais locais; ela nao corrige dados automaticamente.</p>
+          <p className="muted">Seus dados ficam neste dispositivo. Esta central apenas mostra sinais locais; ela não corrige dados automaticamente.</p>
         </div>
         {report && <span className={`local-data-status status-${report.status}`}>{statusLabel(report.status)}</span>}
       </div>
@@ -125,7 +125,7 @@ export function LocalDataCenterPanel() {
         <>
           <div className={`local-data-summary status-${report.status}`} data-testid="local-data-summary">
             <strong>{report.summaryMessage}</strong>
-            <span>O uso local continua disponivel.</span>
+            <span>O uso local continua disponível.</span>
           </div>
 
           <div className="local-data-counts" aria-label="Contagens locais principais">

@@ -38,7 +38,7 @@ describe('encrypted backup envelope', () => {
   it('rejects a wrong password without returning plaintext', async () => {
     const encrypted = await encryptBackupPayload(await exportBackup(), password, { iterations: testIterations })
 
-    await expect(decryptBackupPayload(encrypted, 'senha-errada-local')).rejects.toThrow('Nao foi possivel abrir')
+    await expect(decryptBackupPayload(encrypted, 'senha-errada-local')).rejects.toThrow('Não foi possível abrir')
   })
 
   it('rejects tampered ciphertext', async () => {
@@ -46,7 +46,7 @@ describe('encrypted backup envelope', () => {
     const envelope = JSON.parse(encrypted) as EncryptedBackupEnvelope
     envelope.ciphertext = `${envelope.ciphertext.slice(0, -4)}AAAA`
 
-    await expect(decryptBackupPayload(JSON.stringify(envelope), password)).rejects.toThrow('Nao foi possivel abrir')
+    await expect(decryptBackupPayload(JSON.stringify(envelope), password)).rejects.toThrow('Não foi possível abrir')
   })
 
   it('creates different ciphertext, salt and iv for the same payload and password', async () => {

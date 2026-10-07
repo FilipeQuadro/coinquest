@@ -151,7 +151,7 @@ describe('register simulated purchase', () => {
       cardId: 'card-1',
       category: 'Compras',
       installmentCount: 1,
-    })).rejects.toThrow('Cartao inativo nao aceita novas compras.')
+    })).rejects.toThrow('Cartão inativo não aceita novas compras.')
 
     await expect(db.cardPurchases.count()).resolves.toBe(0)
     await expect(db.transactions.count()).resolves.toBe(0)

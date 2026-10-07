@@ -168,9 +168,9 @@ describe('deriveCsvImportPreview', () => {
 
     expect(result.candidateCount).toBe(1)
     expect(result.rejectedRows).toEqual([
-      { rowNumber: 2, reason: 'Data ausente ou invalida.' },
-      { rowNumber: 3, reason: 'Descricao ausente.' },
-      { rowNumber: 4, reason: 'Valor ausente ou invalido.' },
+      { rowNumber: 2, reason: 'Data ausente ou inválida.' },
+      { rowNumber: 3, reason: 'Descrição ausente.' },
+      { rowNumber: 4, reason: 'Valor ausente ou inválido.' },
     ])
   })
 
@@ -187,7 +187,7 @@ describe('deriveCsvImportPreview', () => {
 
     expect(result.candidateCount).toBe(0)
     expect(result.rejectedCount).toBe(0)
-    expect(result.warnings).toEqual(['Cabecalho incompleto: descricao.'])
+    expect(result.warnings).toEqual(['Cabeçalho incompleto: descricao.'])
   })
 
   it('flags probable duplicates as a warning, not a certainty', () => {
@@ -204,14 +204,14 @@ describe('deriveCsvImportPreview', () => {
     const result = preview('data;descricao;valor\n10/09/2026;Mercado Central;-100,00', existing)
 
     expect(result.duplicateWarningCount).toBe(1)
-    expect(result.candidates[0].duplicateWarning).toBe('Possivel duplicata de movimentacao ja registrada.')
-    expect(result.candidates[0].warnings).toContain('Possivel duplicata de movimentacao ja registrada.')
+    expect(result.candidates[0].duplicateWarning).toBe('Possível duplicata de movimentação já registrada.')
+    expect(result.candidates[0].warnings).toContain('Possível duplicata de movimentação já registrada.')
   })
 
   it('flags descriptions related to card or invoice for manual review', () => {
     const result = preview('data;descricao;valor\n10/09/2026;Fatura Nubank;-450,00')
 
-    expect(result.candidates[0].warnings).toContain('Descricao parece relacionada a cartao/fatura; revise antes de importar.')
+    expect(result.candidates[0].warnings).toContain('Descrição parece relacionada a cartão/fatura; revise antes de importar.')
     expect(result.candidates[0]).toMatchObject({
       type: 'expense',
       amount: 450,

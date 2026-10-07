@@ -351,8 +351,8 @@ describe('multi-month projection engine', () => {
   })
 
   it('validates projection horizon', () => {
-    expect(() => project({}, september, 0)).toThrow('Horizonte de projecao')
-    expect(() => project({}, september, 121)).toThrow('Horizonte de projecao')
+    expect(() => project({}, september, 0)).toThrow('Horizonte de projeção')
+    expect(() => project({}, september, 121)).toThrow('Horizonte de projeção')
   })
 
   it('validates a combined multi-year scenario without duplicate sources', () => {

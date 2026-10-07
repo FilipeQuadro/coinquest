@@ -26,8 +26,8 @@ import { formatBRL, parseMoney } from '../lib/money'
 
 const paymentLabels: Record<PaymentMethod, string> = {
   pix: 'PIX',
-  debit: 'Debito',
-  credit: 'Credito',
+  debit: 'Débito',
+  credit: 'Crédito',
   cash: 'Dinheiro',
   transfer: 'Transferencia',
   other: 'Outro',
@@ -140,7 +140,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
     const end = endMonthText ? parseMonthInputValue(endMonthText) : null
 
     if (parsedAmount === null || !start || (endMonthText && !end)) {
-      setError('Revise valor e meses da recorrencia.')
+      setError('Revise valor e meses da recorrência.')
       return
     }
 
@@ -156,7 +156,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
       resetForm()
       setFormOpen(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nao foi possivel salvar a recorrencia.')
+      setError(err instanceof Error ? err.message : 'Não foi possível salvar a recorrência.')
     }
   }
 
@@ -186,9 +186,9 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
     <section className="panel recurring-panel" data-testid="recurring-panel">
       <div className="panel-title-row">
         <div>
-          <span className="eyebrow">PREVISOES DO MES</span>
+          <span className="eyebrow">PREVISÕES DO MÊS</span>
           <h2>Compromissos de {formatMonthYear(selectedMonth)}</h2>
-          <p className="muted">Planejado aparece separado do realizado. Nada vira transacao automaticamente.</p>
+          <p className="muted">Planejado aparece separado do realizado. Nada vira transação automaticamente.</p>
         </div>
         <button
           className="button secondary"
@@ -199,7 +199,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
             setFormOpen(!formOpen)
           }}
         >
-          {formOpen ? 'Fechar' : 'Adicionar recorrencia'}
+          {formOpen ? 'Fechar' : 'Adicionar recorrência'}
         </button>
       </div>
 
@@ -212,7 +212,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
         <article>
           <span>PREVISTO RESTANTE</span>
           <strong>{formatBRL(outlook.plannedIncome - outlook.plannedExpense)}</strong>
-          <small>{formatBRL(outlook.plannedIncome)} entradas / {formatBRL(outlook.plannedExpense)} saidas / {formatBRL(outlook.committedCardExpense)} cartao</small>
+          <small>{formatBRL(outlook.plannedIncome)} entradas / {formatBRL(outlook.plannedExpense)} saídas / {formatBRL(outlook.committedCardExpense)} cartão</small>
         </article>
         <article>
           <span>RESULTADO PROJETADO</span>
@@ -235,7 +235,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
             <input data-testid="recurring-amount" value={amountText} onChange={(event) => setAmountText(event.target.value)} inputMode="decimal" placeholder="120,00" autoComplete="off" />
           </label>
           <label className="span-2">
-            Descricao
+            Descrição
             <input data-testid="recurring-description" value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} placeholder="Ex.: Internet" autoComplete="off" />
           </label>
           <label>
@@ -248,8 +248,8 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
             Pagamento
             <select data-testid="recurring-payment" value={draft.paymentMethod} onChange={(event) => setDraft({ ...draft, paymentMethod: event.target.value as PaymentMethod })}>
               <option value="pix">PIX</option>
-              <option value="debit">Debito</option>
-              <option value="credit">Credito</option>
+              <option value="debit">Débito</option>
+              <option value="credit">Crédito</option>
               <option value="cash">Dinheiro</option>
               <option value="transfer">Transferencia</option>
               <option value="other">Outro</option>
@@ -274,14 +274,14 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
           {error && <div className="message error span-2">{error}</div>}
           <div className="transaction-editor-actions span-2">
             <button className="button ghost" type="button" onClick={() => { resetForm(); setFormOpen(false) }}>Cancelar</button>
-            <button className="button primary" data-testid="recurring-save" type="submit">{editingRule ? 'Salvar regra' : 'Criar recorrencia'}</button>
+            <button className="button primary" data-testid="recurring-save" type="submit">{editingRule ? 'Salvar regra' : 'Criar recorrência'}</button>
           </div>
         </form>
       )}
 
-      <div className="recurring-list" aria-label="Ocorrencias recorrentes do mes">
+      <div className="recurring-list" aria-label="Ocorrencias recorrentes do mês">
         {occurrences.length === 0 ? (
-          <div className="empty-state">Nenhum compromisso previsto para este mes.</div>
+          <div className="empty-state">Nenhum compromisso previsto para este mês.</div>
         ) : occurrences.map((occurrence) => (
           <article className={`recurring-item status-${occurrence.status}`} data-testid="recurring-occurrence" key={`${occurrence.ruleId}-${occurrence.year}-${occurrence.month}`}>
             <div className="recurring-date">{formatDay(occurrence.plannedDate)}</div>
@@ -343,7 +343,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
                 <button className="button ghost compact" type="button" onClick={() => startEdit(rule)}>Editar regra</button>
                 <button className="button ghost compact" type="button" onClick={() => toggleActive(rule)}>{rule.active ? 'Pausar' : 'Ativar'}</button>
                 {pendingDeleteId === rule.id ? (
-                  <button className="button ghost danger compact" type="button" onClick={() => deleteRecurringRule(rule.id)}>Confirmar exclusao</button>
+                  <button className="button ghost danger compact" type="button" onClick={() => deleteRecurringRule(rule.id)}>Confirmar exclusão</button>
                 ) : (
                   <button className="button ghost compact" type="button" onClick={() => setPendingDeleteId(rule.id)}>Excluir regra</button>
                 )}
@@ -361,7 +361,7 @@ export function RecurringPanel({ selectedMonth }: RecurringPanelProps) {
           </div>
           <div className="history-actions">
             <button className="button ghost compact" type="button" onClick={() => setConfirming(null)}>Cancelar</button>
-            <button className="button primary compact" data-testid="confirm-occurrence-actual" type="button" onClick={() => confirmAsActual(confirming)}>Criar transacao real</button>
+            <button className="button primary compact" data-testid="confirm-occurrence-actual" type="button" onClick={() => confirmAsActual(confirming)}>Criar transação real</button>
           </div>
         </div>
       )}

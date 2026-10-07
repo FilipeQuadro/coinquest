@@ -16,8 +16,8 @@ import { TransactionEditor } from './TransactionEditor'
 
 const paymentLabels: Record<string, string> = {
   pix: 'PIX',
-  debit: 'Debito',
-  credit: 'Credito',
+  debit: 'Débito',
+  credit: 'Crédito',
   cash: 'Dinheiro',
   transfer: 'Transferencia',
   other: 'Outro',
@@ -84,7 +84,7 @@ export function History({ selectedMonth }: HistoryProps) {
       <div className="panel-title-row">
         <div>
           <span className="eyebrow">LOG FINANCEIRO</span>
-          <h2>Historico do sistema</h2>
+          <h2>Histórico do sistema</h2>
           <p className="muted">Registros realizados em {formatMonthYear(selectedMonth)}.</p>
         </div>
         <div className="history-status-row">
@@ -107,19 +107,19 @@ export function History({ selectedMonth }: HistoryProps) {
         </div>
       </div>
 
-      <div className="history-toolbar" aria-label="Filtros do historico">
+      <div className="history-toolbar" aria-label="Filtros do histórico">
         <label className="history-search">
           <span>Buscar</span>
           <input
-            aria-label="Buscar por descricao ou categoria"
+            aria-label="Buscar por descrição ou categoria"
             data-testid="history-search"
             value={filters.query}
             onChange={(event) => updateFilters({ query: event.target.value })}
-            placeholder="Buscar por descricao ou categoria..."
+            placeholder="Buscar por descrição ou categoria..."
           />
         </label>
 
-        <div className="history-type-filter" aria-label="Tipo de movimentacao">
+        <div className="history-type-filter" aria-label="Tipo de movimentação">
           <button
             className={filters.type === 'all' ? 'active' : ''}
             type="button"
@@ -145,7 +145,7 @@ export function History({ selectedMonth }: HistoryProps) {
             data-testid="history-type-expense"
             onClick={() => updateFilters({ type: 'expense' })}
           >
-            Saidas
+            Saídas
           </button>
         </div>
 
@@ -184,7 +184,7 @@ export function History({ selectedMonth }: HistoryProps) {
             <div>
               <span className="eyebrow">RESUMO DOS FILTROS</span>
               <h3 id="history-summary-title">Movimentos reais exibidos</h3>
-              <p>Somente movimentacoes reais exibidas neste historico.</p>
+              <p>Somente movimentações reais exibidas neste histórico.</p>
             </div>
             <span className="history-summary-count" data-testid="history-summary-count">
               {historySummary.transactionCount} {historySummary.transactionCount === 1 ? 'movimento' : 'movimentos'}
@@ -198,14 +198,14 @@ export function History({ selectedMonth }: HistoryProps) {
               <small>{historySummary.incomeCount} {historySummary.incomeCount === 1 ? 'entrada' : 'entradas'}</small>
             </article>
             <article>
-              <span>Saidas</span>
+              <span>Saídas</span>
               <strong className="expense" data-testid="history-summary-expense">{formatBRL(historySummary.totalExpense)}</strong>
               <small>{historySummary.expenseCount} {historySummary.expenseCount === 1 ? 'saida' : 'saidas'}</small>
             </article>
             <article>
               <span>Resultado dos filtros</span>
               <strong className={resultClassName} data-testid="history-summary-net">{formatBRL(historySummary.netAmount)}</strong>
-              <small>Entradas menos saidas dos registros exibidos</small>
+              <small>Entradas menos saídas dos registros exibidos</small>
             </article>
           </div>
 
@@ -228,14 +228,14 @@ export function History({ selectedMonth }: HistoryProps) {
 
       {monthTransactions.length === 0 ? (
         <div className="empty-state empty-state-guide">
-          <strong>Nenhuma movimentacao real neste mes.</strong>
-          <span>Use Registrar para adicionar entradas ou saidas que ja aconteceram. Previsoes e simulacoes ficam separadas.</span>
+          <strong>Nenhuma movimentação real neste mês.</strong>
+          <span>Use Registrar para adicionar entradas ou saídas que já aconteceram. Previsões e simulações ficam separadas.</span>
           <a className="inline-link" href="#registrar">Ir para Registrar</a>
         </div>
       ) : transactions.length === 0 ? (
         <div className="empty-state empty-state-guide">
           <strong>Nenhum registro encontrado.</strong>
-          <span>Ajuste a busca ou limpe os filtros para ver outras movimentacoes reais do mes.</span>
+          <span>Ajuste a busca ou limpe os filtros para ver outras movimentações reais do mês.</span>
         </div>
       ) : (
         <div className="history-list">

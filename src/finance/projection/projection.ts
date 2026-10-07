@@ -78,7 +78,7 @@ function roundMoney(value: number) {
 
 function assertValidProjectionCount(count: number) {
   if (!Number.isInteger(count) || count < PROJECTION_LIMITS.minMonths || count > PROJECTION_LIMITS.maxMonths) {
-    throw new Error(`Horizonte de projecao deve estar entre ${PROJECTION_LIMITS.minMonths} e ${PROJECTION_LIMITS.maxMonths} meses.`)
+    throw new Error(`Horizonte de projeção deve estar entre ${PROJECTION_LIMITS.minMonths} e ${PROJECTION_LIMITS.maxMonths} meses.`)
   }
 }
 

@@ -16,8 +16,8 @@ describe('SyncConflictsPanel helpers', () => {
   it('formats tombstones as human conflict summaries', () => {
     const tombstone = createSyncTombstone('setting', 'setting:sound')
 
-    expect(formatConflictSnapshot(tombstone, 'local')).toBe('Excluido neste dispositivo')
-    expect(formatConflictSnapshot(tombstone, 'remote')).toBe('Excluido na nuvem')
+    expect(formatConflictSnapshot(tombstone, 'local')).toBe('Excluído neste dispositivo')
+    expect(formatConflictSnapshot(tombstone, 'remote')).toBe('Excluído na nuvem')
   })
 
   it('summarizes transactions without dumping raw JSON', () => {
@@ -39,17 +39,17 @@ describe('SyncConflictsPanel helpers', () => {
   })
 
   it('has friendly entity labels and fallback summaries', () => {
-    expect(conflictEntityLabel('goal')).toBe('Missao')
-    expect(formatConflictSnapshot(null, 'remote')).toBe('Sem registro nesta versao.')
+    expect(conflictEntityLabel('goal')).toBe('Missão')
+    expect(formatConflictSnapshot(null, 'remote')).toBe('Sem registro nesta versão.')
   })
 
   it('formats resolution feedback without exposing technical causes', () => {
     expect(resolutionFeedbackMessage({ ok: true, strategy: 'keep-local', entityKey: 'setting:sound' })).toBe(
-      'Conflito resolvido. A sincronizacao sera atualizada.',
+      'Conflito resolvido. A sincronização será atualizada.',
     )
-    expect(resolutionFeedbackMessage({ ok: false, error: 'not-found' })).toBe('Este conflito ja foi resolvido.')
+    expect(resolutionFeedbackMessage({ ok: false, error: 'not-found' })).toBe('Este conflito já foi resolvido.')
     expect(resolutionFeedbackMessage({ ok: false, error: 'apply-failed', cause: new Error('boom') })).toBe(
-      'Nao foi possivel resolver o conflito.',
+      'Não foi possível resolver o conflito.',
     )
   })
 })

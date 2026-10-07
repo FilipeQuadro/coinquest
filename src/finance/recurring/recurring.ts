@@ -84,30 +84,30 @@ function normalizeRuleDraft(draft: RecurringRuleDraft): RecurringRuleDraft {
 export function validateRecurringRuleDraft(draft: RecurringRuleDraft): string | null {
   const normalized = normalizeRuleDraft(draft)
 
-  if (!transactionTypes.has(normalized.type)) return 'Tipo de recorrencia invalido.'
-  if (!Number.isFinite(normalized.amount) || normalized.amount <= 0) return 'Informe um valor valido.'
-  if (!normalized.description) return 'Informe uma descricao.'
-  if (!paymentMethods.has(normalized.paymentMethod)) return 'Forma de pagamento invalida.'
+  if (!transactionTypes.has(normalized.type)) return 'Tipo de recorrência inválido.'
+  if (!Number.isFinite(normalized.amount) || normalized.amount <= 0) return 'Informe um valor válido.'
+  if (!normalized.description) return 'Informe uma descrição.'
+  if (!paymentMethods.has(normalized.paymentMethod)) return 'Forma de pagamento inválida.'
   if (!Number.isInteger(normalized.dayOfMonth) || normalized.dayOfMonth < 1 || normalized.dayOfMonth > 31) {
     return 'Informe um dia entre 1 e 31.'
   }
   if (!Number.isInteger(normalized.startYear) || normalized.startYear < 1970 || normalized.startYear > 9999) {
-    return 'Ano inicial invalido.'
+    return 'Ano inicial inválido.'
   }
   if (!Number.isInteger(normalized.startMonth) || normalized.startMonth < 0 || normalized.startMonth > 11) {
-    return 'Mes inicial invalido.'
+    return 'Mês inicial inválido.'
   }
 
   const hasEndYear = normalized.endYear !== undefined
   const hasEndMonth = normalized.endMonth !== undefined
-  if (hasEndYear !== hasEndMonth) return 'Informe mes e ano final juntos.'
+  if (hasEndYear !== hasEndMonth) return 'Informe mês e ano final juntos.'
 
   if (hasEndYear && hasEndMonth) {
     const end = { year: normalized.endYear ?? 0, month: normalized.endMonth ?? 0 }
-    if (!Number.isInteger(end.year) || end.year < 1970 || end.year > 9999) return 'Ano final invalido.'
-    if (!Number.isInteger(end.month) || end.month < 0 || end.month > 11) return 'Mes final invalido.'
+    if (!Number.isInteger(end.year) || end.year < 1970 || end.year > 9999) return 'Ano final inválido.'
+    if (!Number.isInteger(end.month) || end.month < 0 || end.month > 11) return 'Mês final inválido.'
     if (compareMonths(end, { year: normalized.startYear, month: normalized.startMonth }) < 0) {
-      return 'Fim da recorrencia nao pode ser antes do inicio.'
+      return 'Fim da recorrência não pode ser antes do início.'
     }
   }
 
@@ -225,7 +225,7 @@ export async function saveRecurringRule(draft: RecurringRuleDraft, id?: string) 
   if (error) throw new Error(error)
 
   const existing = id ? await db.recurringRules.get(id) : undefined
-  if (id && !existing) throw new Error('Recorrencia nao encontrada.')
+  if (id && !existing) throw new Error('Recorrência não encontrada.')
 
   const now = new Date().toISOString()
   const rule: RecurringRule = {

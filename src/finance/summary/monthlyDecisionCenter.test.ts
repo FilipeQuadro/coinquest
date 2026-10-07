@@ -107,8 +107,8 @@ describe('buildMonthlyDecisionReport', () => {
   it('retorna estado vazio quando nao ha dados relevantes', () => {
     expect(buildMonthlyDecisionReport({})).toEqual({
       status: 'empty',
-      headline: 'Sem dados suficientes para revisar o mes',
-      summaryMessage: 'Registre movimentacoes reais ou planos do mes para formar uma leitura local.',
+      headline: 'Sem dados suficientes para revisar o mês',
+      summaryMessage: 'Registre movimentações reais ou planos do mês para formar uma leitura local.',
       primaryItems: [],
       secondaryItems: [],
     })

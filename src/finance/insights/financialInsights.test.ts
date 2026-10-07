@@ -42,7 +42,7 @@ describe('deriveFinancialInsights', () => {
       source: 'health',
     }))
     expect(insights[0].message).toContain('sinais financeiros')
-    expect(insights[0].message).not.toMatch(/despesas reais estao acima|nao ha receita|saldo|garantido|culpa|fracasso|gastou mal/i)
+    expect(insights[0].message).not.toMatch(/despesas reais est[aã]o acima|n[aã]o h[aá] receita|saldo|garantido|culpa|fracasso|gastou mal/i)
   })
 
   it('gera alerta de mes apertado com linguagem neutra', () => {
@@ -57,7 +57,7 @@ describe('deriveFinancialInsights', () => {
     }))
     expect(insightText(baseInput({
       financialHealth: { level: 'tight', expenseRatio: 0.98, messageKey: 'tight_ratio' },
-    }))).not.toMatch(/despesas reais estao|receitas registradas|errado|culpa|fracasso|gastou mal/i)
+    }))).not.toMatch(/despesas reais est[aã]o|receitas registradas|errado|culpa|fracasso|gastou mal/i)
   })
 
   it('gera attention quando o orcamento esta perto do limite', () => {
@@ -79,7 +79,7 @@ describe('deriveFinancialInsights', () => {
     }))
     expect(insightText(baseInput({
       budget: { hasBudget: true, percentageUsed: 0.92, isOverLimit: false, overLimitAmount: 0, spent: 920 },
-    }))).not.toMatch(/dinheiro disponivel|saldo/i)
+    }))).not.toMatch(/dinheiro dispon[ií]vel|saldo/i)
   })
 
   it('gera warning quando o orcamento foi ultrapassado', () => {
@@ -166,7 +166,7 @@ describe('deriveFinancialInsights', () => {
         status: 'pending',
         dueDate: '2026-09-20T12:00:00.000Z',
       }],
-    }))).toContain('planejamento do mes')
+    }))).toContain('planejamento do mês')
   })
 
   it('mostra projecao negativa como estimativa, nao saldo garantido', () => {
@@ -207,7 +207,7 @@ describe('deriveFinancialInsights', () => {
       kind: 'positive',
       amount: 900,
     }))
-    expect(`${goalInsight?.title} ${goalInsight?.message}`).toContain('sem criar transacao')
+    expect(`${goalInsight?.title} ${goalInsight?.message}`).toContain('sem criar transação')
     expect(`${goalInsight?.title} ${goalInsight?.message}`).not.toMatch(/compra realizada|despesa/i)
   })
 
@@ -229,7 +229,7 @@ describe('deriveFinancialInsights', () => {
       id: 'goal:completed:goal-2',
       kind: 'positive',
     }))
-    expect(`${goalInsight?.title} ${goalInsight?.message}`).toContain('nao registra uma compra')
+    expect(`${goalInsight?.title} ${goalInsight?.message}`).toContain('não registra uma compra')
   })
 
   it('nao transforma GoalContribution em Transaction', () => {
@@ -256,7 +256,7 @@ describe('deriveFinancialInsights', () => {
         percentageDisplay: 20,
         contributionsThisMonth: 1,
       },
-    }))).toContain('sem criar transacao financeira')
+    }))).toContain('sem criar transação financeira')
   })
 
   it('nao conta pagamento de fatura duas vezes na concentracao por categoria', () => {
