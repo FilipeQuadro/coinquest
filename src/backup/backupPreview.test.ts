@@ -4,7 +4,7 @@ import type { BackupInspection } from './backup'
 import { buildBackupPreview } from './backupPreview'
 
 const safeTextBlock = (value: unknown) => JSON.stringify(value)
-const alarmistPattern = /erro grave|dados corrompidos|perda de dados|falha critica|obrigatorio sincronizar|backup garantido|saldo|dinheiro disponivel/i
+const alarmistPattern = /erro grave|dados corrompidos|perda de dados|falha cr[ií]tica|obrigat[oó]rio sincronizar|backup garantido|saldo|dinheiro dispon[ií]vel/i
 
 function inspection(overrides: Partial<BackupInspection> = {}): BackupInspection {
   return {
@@ -35,9 +35,9 @@ describe('backup preview helper', () => {
     const preview = buildBackupPreview(inspection(), { fileType: 'plain' })
 
     expect(preview.fileTypeLabel).toBe('Backup simples')
-    expect(preview.versionLabel).toBe('Versao 2')
+    expect(preview.versionLabel).toBe('Versão 2')
     expect(preview.exportedAtLabel).toBe('2026-09-17T12:00:00.000Z')
-    expect(preview.validationLabel).toBe('Arquivo validado antes da restauracao.')
+    expect(preview.validationLabel).toBe('Arquivo validado antes da restauração.')
     expect(preview.totalRecords).toBe(18)
   })
 
@@ -52,12 +52,12 @@ describe('backup preview helper', () => {
     const preview = buildBackupPreview(inspection({
       formatVersion: 1,
       integrityStatus: 'missing',
-      warnings: ['Backup antigo sem verificacao de integridade.'],
+      warnings: ['Backup antigo sem verificação de integridade.'],
     }))
 
-    expect(preview.versionLabel).toBe('Versao 1')
+    expect(preview.versionLabel).toBe('Versão 1')
     expect(preview.validationLabel).toBe('Backup antigo sem checksum.')
-    expect(preview.warnings).toEqual(['Backup antigo sem verificacao de integridade.'])
+    expect(preview.warnings).toEqual(['Backup antigo sem verificação de integridade.'])
   })
 
   it('usa grupos com labels seguros', () => {
@@ -65,13 +65,13 @@ describe('backup preview helper', () => {
     const labels = preview.countGroups.map((group) => group.label)
 
     expect(labels).toEqual([
-      'Movimentacoes reais',
-      'Metas e alocacoes',
-      'Planos de orcamento',
-      'Recorrencias',
-      'Cartoes e faturas',
-      'Compras no cartao',
-      'Preferencias',
+      'Movimentações reais',
+      'Metas e alocações',
+      'Planos de orçamento',
+      'Recorrências',
+      'Cartões e faturas',
+      'Compras no cartão',
+      'Preferências',
     ])
   })
 
@@ -79,7 +79,7 @@ describe('backup preview helper', () => {
     const preview = buildBackupPreview(inspection())
     const cardPurchaseGroup = preview.countGroups.find((group) => group.id === 'card-purchases')
 
-    expect(cardPurchaseGroup?.label).toBe('Compras no cartao')
+    expect(cardPurchaseGroup?.label).toBe('Compras no cartão')
     expect(cardPurchaseGroup?.label).not.toBe('Compras')
   })
 
@@ -87,8 +87,8 @@ describe('backup preview helper', () => {
     const preview = buildBackupPreview(inspection())
     const budgetGroup = preview.countGroups.find((group) => group.id === 'budgets')
 
-    expect(budgetGroup?.label).toBe('Planos de orcamento')
-    expect(`${budgetGroup?.label} ${budgetGroup?.description}`).not.toMatch(/saldo|dinheiro disponivel/i)
+    expect(budgetGroup?.label).toBe('Planos de orçamento')
+    expect(`${budgetGroup?.label} ${budgetGroup?.description}`).not.toMatch(/saldo|dinheiro dispon[ií]vel/i)
   })
 
   it('calcula totalRecords como soma dos grupos', () => {
@@ -115,14 +115,14 @@ describe('backup preview helper', () => {
   it('informa que restauracao substitui dados locais atuais', () => {
     const preview = buildBackupPreview(inspection())
 
-    expect(preview.replacementMessage).toBe('A restauracao substitui os dados locais atuais pelos dados deste arquivo.')
+    expect(preview.replacementMessage).toBe('A restauração substitui os dados locais atuais pelos dados deste arquivo.')
   })
 
   it('informa que backup local nao precisa de sync', () => {
     const preview = buildBackupPreview(inspection())
 
-    expect(preview.localOnlyMessage).toBe('Backup local nao precisa de sincronizacao em nuvem.')
-    expect(preview.localOnlyMessage).not.toMatch(/obrigatorio sincronizar/i)
+    expect(preview.localOnlyMessage).toBe('Backup local não precisa de sincronização em nuvem.')
+    expect(preview.localOnlyMessage).not.toMatch(/obrigat[oó]rio sincronizar/i)
   })
 
   it('evita termos alarmistas nas mensagens geradas', () => {
@@ -141,14 +141,14 @@ describe('backup preview helper', () => {
       error: 'Arquivo de backup invalido.',
     }))
 
-    expect(preview.versionLabel).toBe('Versao nao informada')
-    expect(preview.exportedAtLabel).toBe('Data de exportacao nao informada')
-    expect(preview.validationLabel).toBe('Arquivo nao validado para restauracao.')
+    expect(preview.versionLabel).toBe('Versão não informada')
+    expect(preview.exportedAtLabel).toBe('Data de exportação não informada')
+    expect(preview.validationLabel).toBe('Arquivo não validado para restauração.')
     expect(preview.totalRecords).toBe(0)
   })
 
   it('nao muta o BackupInspection recebido', () => {
-    const input = inspection({ warnings: ['Backup antigo sem verificacao de integridade.'] })
+    const input = inspection({ warnings: ['Backup antigo sem verificação de integridade.'] })
     const before = JSON.stringify(input)
 
     const preview = buildBackupPreview(input)

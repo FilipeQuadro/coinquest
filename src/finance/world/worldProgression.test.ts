@@ -31,10 +31,10 @@ describe('deriveWorldProgression', () => {
 
     expect(result).toMatchObject({
       tier: 'stable',
-      title: 'Base estavel',
+      title: 'Base estável',
     })
-    expect(result.reasons).toContain('Mes com registros suficientes para leitura.')
-    expect(result.reasons).toContain('Orcamento mensal configurado.')
+    expect(result.reasons).toContain('Mês com registros suficientes para leitura.')
+    expect(result.reasons).toContain('Orçamento mensal configurado.')
   })
 
   it('reaches focused with respected budget and mission progress', () => {
@@ -45,9 +45,9 @@ describe('deriveWorldProgression', () => {
     }))
 
     expect(result.tier).toBe('focused')
-    expect(result.reasons).toContain('Orcamento dentro do limite.')
-    expect(result.reasons).toContain('Missao ativa em andamento.')
-    expect(result.reasons).toContain('Missao recebeu progresso neste mes.')
+    expect(result.reasons).toContain('Orçamento dentro do limite.')
+    expect(result.reasons).toContain('Missão ativa em andamento.')
+    expect(result.reasons).toContain('Missão recebeu progresso neste mês.')
   })
 
   it('reaches thriving with strong health and a completed mission', () => {
@@ -62,8 +62,8 @@ describe('deriveWorldProgression', () => {
       tier: 'thriving',
       title: 'Base prospera',
     })
-    expect(result.reasons).toContain('Saude financeira excelente no mes.')
-    expect(result.reasons).toContain('Missao concluida fortalece o mundo.')
+    expect(result.reasons).toContain('Saúde financeira excelente no mês.')
+    expect(result.reasons).toContain('Missão concluída fortalece o mundo.')
   })
 
   it('does not improve progression just because there are more spending records', () => {
@@ -88,8 +88,8 @@ describe('deriveWorldProgression', () => {
     }))
 
     expect(result.tier).toBe('starter')
-    expect(result.nextHint).toBe('Registre algumas movimentacoes reais do mes para dar leitura ao mundo.')
-    expect(result.reasons).toContain('Missao recebeu progresso neste mes.')
+    expect(result.nextHint).toBe('Registre algumas movimentações reais do mês para dar leitura ao mundo.')
+    expect(result.reasons).toContain('Missão recebeu progresso neste mês.')
   })
 
   it('is deterministic for the same input', () => {

@@ -41,29 +41,29 @@ export function validateTransactionDraft(draft: TransactionDraft): string | null
   const normalized = normalizeDraft(draft)
 
   if (!transactionTypes.has(normalized.type)) {
-    return 'Tipo de movimentacao invalido.'
+    return 'Tipo de movimentação inválido.'
   }
 
   if (normalized.kind && !transactionKinds.has(normalized.kind)) {
-    return 'Tipo interno de movimentacao invalido.'
+    return 'Tipo interno de movimentação inválido.'
   }
 
   if (!Number.isFinite(normalized.amount) || normalized.amount <= 0) {
-    return 'Informe um valor valido.'
+    return 'Informe um valor válido.'
   }
 
   if (!normalized.description) {
-    return 'Informe uma descricao.'
+    return 'Informe uma descrição.'
   }
 
   if (!paymentMethods.has(normalized.paymentMethod)) {
-    return 'Forma de pagamento invalida.'
+    return 'Forma de pagamento inválida.'
   }
 
   if (normalized.occurredAt) {
     const date = new Date(normalized.occurredAt)
     if (!Number.isFinite(date.getTime())) {
-      return 'Informe uma data valida.'
+      return 'Informe uma data válida.'
     }
   }
 
@@ -95,7 +95,7 @@ export async function recordTransaction(draft: TransactionDraft): Promise<Transa
 export async function updateTransaction(id: string, draft: TransactionDraft): Promise<Transaction> {
   const existing = await db.transactions.get(id)
   if (!existing) {
-    throw new Error('Movimentacao nao encontrada.')
+    throw new Error('Movimentação não encontrada.')
   }
 
   const normalized = normalizeDraft(draft)

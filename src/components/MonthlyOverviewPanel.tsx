@@ -19,7 +19,7 @@ interface MonthlyOverviewPanelProps {
 }
 
 function formatPercent(value: number | null) {
-  if (value === null) return 'Sem orcamento'
+  if (value === null) return 'Sem orçamento'
   if (!Number.isFinite(value)) return 'Acima do limite'
   return `${new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(value * 100)}%`
 }
@@ -72,8 +72,8 @@ function categoryInsightInputFromTransactions(transactions: Transaction[], selec
 }
 
 function formatSecondaryDecisionCount(count: number) {
-  if (count === 1) return 'Mais 1 ponto para acompanhar no mes.'
-  return `Mais ${count} pontos para acompanhar no mes.`
+  if (count === 1) return 'Mais 1 ponto para acompanhar no mês.'
+  return `Mais ${count} pontos para acompanhar no mês.`
 }
 
 export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProps) {
@@ -245,7 +245,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
             <h2>Como est&aacute; o m&ecirc;s</h2>
           </div>
         </div>
-        <div className="monthly-overview-loading">Carregando resumo do mes...</div>
+        <div className="monthly-overview-loading">Carregando resumo do mês...</div>
       </section>
     )
   }
@@ -258,7 +258,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
   const nextCommitment = highlights.commitments[0]
   const tone = budgetTone(overview.budget.percentageUsed)
   const percentLabel = formatPercent(overview.budget.percentageUsed)
-  const budgetUsageLabel = `Uso do orcamento: ${percentLabel}`
+  const budgetUsageLabel = `Uso do orçamento: ${percentLabel}`
   const budgetAriaNow = overview.budget.percentageUsed === null
     ? undefined
     : Math.round(barWidth(overview.budget.percentageUsed))
@@ -295,7 +295,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
         <article className={`monthly-overview-budget dashboard-budget tone-${tone}`}>
           <div className="monthly-overview-card-title">
             <div>
-              <span className="eyebrow">ORCAMENTO</span>
+              <span className="eyebrow">ORÇAMENTO</span>
               <h3>Limite planejado</h3>
             </div>
             {overview.budget.hasBudget ? <strong>{percentLabel}</strong> : null}
@@ -339,12 +339,12 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
             <div>
               <span className="eyebrow">DESTAQUE DO M&Ecirc;S</span>
               <h3 id="monthly-decision-title">
-                {primaryDecisionItem?.title ?? (nextCommitment ? 'Proximo compromisso' : 'O que merece atencao')}
+                {primaryDecisionItem?.title ?? (nextCommitment ? 'Próximo compromisso' : 'O que merece atenção')}
               </h3>
               <p>
                 {primaryDecisionItem?.message ?? (nextCommitment
                   ? `${nextCommitment.label} · ${formatShortDate(nextCommitment.dueDate)} · ${formatBRL(nextCommitment.amount)}`
-                  : 'Nenhum destaque com os dados atuais deste mes.')}
+                  : 'Nenhum destaque com os dados atuais deste mês.')}
               </p>
             </div>
           </div>
@@ -382,7 +382,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
 
           <article className="monthly-overview-insights" data-testid="monthly-insights">
             <div className="monthly-overview-card-title">
-              <div><span className="eyebrow">INSIGHTS DO MES</span><h3>Leituras financeiras</h3></div>
+              <div><span className="eyebrow">INSIGHTS DO MÊS</span><h3>Leituras financeiras</h3></div>
             </div>
             {visibleInsights.length > 0 ? (
               <div className="monthly-insight-list">
@@ -402,16 +402,16 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
                   </div>
                 ))}
               </div>
-            ) : <p className="monthly-overview-empty-text">Sem alertas relevantes com os dados atuais do mes.</p>}
+            ) : <p className="monthly-overview-empty-text">Sem alertas relevantes com os dados atuais do mês.</p>}
           </article>
 
           {visibleActions.length > 0 && (
             <section className="monthly-overview-actions" aria-labelledby="monthly-actions-title" data-testid="monthly-actions">
               <div className="monthly-overview-card-title">
                 <div>
-                  <span className="eyebrow">ACOES DO MES</span>
+                  <span className="eyebrow">AÇÕES DO MÊS</span>
                   <h3 id="monthly-actions-title">Pontos para revisar</h3>
-                  <p>Atalhos baseados nos sinais deste mes.</p>
+                  <p>Atalhos baseados nos sinais deste mês.</p>
                 </div>
               </div>
               <div className="monthly-actions-list">
@@ -427,13 +427,13 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
 
           <article className="monthly-overview-outlook">
             <div className="monthly-overview-card-title">
-              <div><span className="eyebrow">PREVISAO</span><h3>Estimativa ate o fim do mes</h3></div>
+              <div><span className="eyebrow">PREVISÃO</span><h3>Estimativa até o fim do mês</h3></div>
             </div>
-            <p className="monthly-overview-empty-text">Estimativa, nao saldo bancario.</p>
+            <p className="monthly-overview-empty-text">Estimativa, não saldo bancário.</p>
             <div className="monthly-overview-outlook-grid">
               <div><span>Receitas previstas</span><strong className="income">{formatBRL(overview.outlook.plannedRecurringIncome)}</strong></div>
-              <div><span>Recorrencias previstas</span><strong className="expense">{formatBRL(overview.outlook.plannedRecurringExpense)}</strong></div>
-              <div><span>Cartao comprometido</span><strong className="expense">{formatBRL(overview.outlook.committedCardExpense)}</strong></div>
+              <div><span>Recorrências previstas</span><strong className="expense">{formatBRL(overview.outlook.plannedRecurringExpense)}</strong></div>
+              <div><span>Cartão comprometido</span><strong className="expense">{formatBRL(overview.outlook.committedCardExpense)}</strong></div>
               <div>
                 <span>Resultado projetado</span>
                 <strong className={`monthly-overview-projected tone-${valueTone(overview.outlook.projectedNet)}`} data-testid="monthly-overview-projected-net">
@@ -445,7 +445,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
 
           <article className="monthly-overview-commitments">
             <div className="monthly-overview-card-title">
-              <div><span className="eyebrow">PROXIMOS COMPROMISSOS</span><h3>Agenda financeira</h3></div>
+              <div><span className="eyebrow">PRÓXIMOS COMPROMISSOS</span><h3>Agenda financeira</h3></div>
             </div>
             {highlights.commitments.length > 0 ? (
               <div className="monthly-overview-commitment-list">
@@ -456,7 +456,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
                   </div>
                 ))}
               </div>
-            ) : <p className="monthly-overview-empty-text">Nenhum compromisso pendente neste mes.</p>}
+            ) : <p className="monthly-overview-empty-text">Nenhum compromisso pendente neste mês.</p>}
           </article>
 
           <article className="monthly-overview-featured-goal">

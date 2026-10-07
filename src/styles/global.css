@@ -4212,6 +4212,8 @@ footer {
   background: #171b26;
   border-color: #343a49;
   border-radius: 6px;
+  font-size: 22px;
+  line-height: 1;
 }
 .monthly-overview {
   overflow: visible;

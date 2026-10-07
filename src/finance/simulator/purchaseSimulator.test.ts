@@ -503,7 +503,7 @@ describe('purchase simulator engine', () => {
       purchaseDate: '2026-09-10T12:00:00.000Z',
       mode: 'credit_card',
       installmentCount: 1,
-    }, now)).toThrow('Escolha um cartao')
+    }, now)).toThrow('Escolha um cartão')
 
     expect(() => simulatePurchase(september, 1, input({ creditCards: [card()] }), {
       name: 'GPU',

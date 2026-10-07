@@ -103,31 +103,31 @@ function cents(value: number) {
 
 function assertValidSimulation(startMonth: SelectedMonth, horizonMonths: number, scenario: PurchaseScenario, input: PurchaseSimulationInput) {
   if (!Number.isInteger(startMonth.year) || !Number.isInteger(startMonth.month) || startMonth.month < 0 || startMonth.month > 11) {
-    throw new Error('Mes inicial invalido.')
+    throw new Error('Mês inicial inválido.')
   }
   if (!Number.isInteger(horizonMonths) || horizonMonths < 1) {
-    throw new Error('Horizonte da simulacao invalido.')
+    throw new Error('Horizonte da simulação inválido.')
   }
   if (!scenario.name.trim()) throw new Error('Informe o nome da compra simulada.')
-  if (!Number.isFinite(scenario.totalAmount) || scenario.totalAmount <= 0) throw new Error('Informe um valor de compra valido.')
+  if (!Number.isFinite(scenario.totalAmount) || scenario.totalAmount <= 0) throw new Error('Informe um valor de compra válido.')
 
   const purchaseDate = new Date(scenario.purchaseDate)
-  if (!Number.isFinite(purchaseDate.getTime())) throw new Error('Informe uma data de compra valida.')
+  if (!Number.isFinite(purchaseDate.getTime())) throw new Error('Informe uma data de compra válida.')
 
   if (scenario.mode === 'credit_card') {
-    if (!scenario.cardId) throw new Error('Escolha um cartao para simular compra no credito.')
+    if (!scenario.cardId) throw new Error('Escolha um cartão para simular compra no crédito.')
     const card = input.creditCards.find((item) => item.id === scenario.cardId)
-    if (!card) throw new Error('Cartao da simulacao nao encontrado.')
-    if (!card.active) throw new Error('Cartao inativo nao aceita nova compra simulada.')
+    if (!card) throw new Error('Cartão da simulação não encontrado.')
+    if (!card.active) throw new Error('Cartão inativo não aceita nova compra simulada.')
 
     const installmentCount = scenario.installmentCount ?? 1
     if (!Number.isInteger(installmentCount) || installmentCount < 1 || installmentCount > 12) {
-      throw new Error('Informe parcelas entre 1 e 12 para simulacao.')
+      throw new Error('Informe parcelas entre 1 e 12 para simulação.')
     }
   }
 
   if (scenario.mode === 'cash' && scenario.installmentCount && scenario.installmentCount !== 1) {
-    throw new Error('Compra a vista nao usa parcelas.')
+    throw new Error('Compra a vista não usa parcelas.')
   }
 }
 

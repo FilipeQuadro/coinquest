@@ -70,12 +70,12 @@ export function emptyCategoryPreferences(): CategoryPreferencesV1 {
 }
 
 export function validateCategoryPreferences(value: unknown): CategoryPreferencesV1 {
-  if (!value || typeof value !== 'object') throw new Error('Preferencias de categorias invalidas.')
+  if (!value || typeof value !== 'object') throw new Error('Preferências de categorias inválidas.')
   const input = value as Partial<CategoryPreferencesV1>
   if (input.version !== 1
     || !Array.isArray(input.customCategories) || !input.customCategories.every((item) => typeof item === 'string')
     || !Array.isArray(input.hiddenCategoryKeys) || !input.hiddenCategoryKeys.every((item) => typeof item === 'string')) {
-    throw new Error('Preferencias de categorias invalidas.')
+    throw new Error('Preferências de categorias inválidas.')
   }
   const defaults = new Set(Object.values(DEFAULT_CATEGORIES).map(categoryComparisonKey))
   return {
@@ -110,9 +110,9 @@ export function addCustomCategoryPreference(
 ): CategoryPreferencesV1 {
   const trimmed = name.trim()
   if (!categoryComparisonKey(trimmed)) throw new Error('Informe um nome de categoria.')
-  if (isDefaultCategory(trimmed)) throw new Error('Essa categoria ja existe nas categorias padrao.')
+  if (isDefaultCategory(trimmed)) throw new Error('Essa categoria já existe nas categorias padrão.')
   if (hasEquivalentCategory(preferences.customCategories, trimmed)) {
-    throw new Error('Essa categoria personalizada ja existe.')
+    throw new Error('Essa categoria personalizada já existe.')
   }
   return validateCategoryPreferences({
     ...preferences,

@@ -172,7 +172,7 @@ function GoalCard({
         <span>/</span>
         <strong data-testid="goal-target">{formatBRL(progress.targetAmount)}</strong>
       </div>
-      <div className="goal-progress" aria-label={`Progresso da missao: ${formatPercent(progress.percentageDisplay)}`}>
+      <div className="goal-progress" aria-label={`Progresso da missão: ${formatPercent(progress.percentageDisplay)}`}>
         <span style={{ width: `${barWidth}%` }} />
       </div>
       <div className="goal-meta-grid">
@@ -370,11 +370,11 @@ export function GoalsPanel() {
           Nova missão
         </button>
       </div>
-      <div className="guided-links" aria-label="Atalhos de missoes">
-        <span className="guided-links-label">Missoes ficam separadas das movimentacoes reais:</span>
+      <div className="guided-links" aria-label="Atalhos de missões">
+        <span className="guided-links-label">Missões ficam separadas das movimentações reais:</span>
         <div className="guided-links-row">
-          <a className="inline-link" href="#historico">Ver historico</a>
-          <a className="inline-link" href="#registrar">Registrar entrada ou saida</a>
+          <a className="inline-link" href="#historico">Ver histórico</a>
+          <a className="inline-link" href="#registrar">Registrar entrada ou saída</a>
         </div>
       </div>
 
@@ -459,8 +459,8 @@ export function GoalsPanel() {
       {!loaded && <p className="empty-state">Carregando missões...</p>}
       {loaded && allGoals.length === 0 && (
         <div className="empty-state empty-state-guide">
-          <strong>Nenhuma missao cadastrada ainda.</strong>
-          <span>Crie uma missao para acompanhar uma reserva ou objetivo. Alocacoes de meta nao viram transacao automaticamente.</span>
+          <strong>Nenhuma missão cadastrada ainda.</strong>
+          <span>Crie uma missão para acompanhar uma reserva ou objetivo. Alocações de meta não viram transação automaticamente.</span>
         </div>
       )}
 
@@ -543,7 +543,7 @@ export function GoalsPanel() {
       )}
 
       {selectedGoal && (
-        <aside className="goal-details" data-testid="mission-details" aria-label={`Detalhes da missao ${selectedGoal.name}`}>
+        <aside className="goal-details" data-testid="mission-details" aria-label={`Detalhes da missão ${selectedGoal.name}`}>
           <div className="panel-title-row">
             <div>
               <span className="eyebrow">HISTÓRICO DA MISSÃO</span>

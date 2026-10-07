@@ -55,9 +55,9 @@ describe('category options', () => {
     expect(preferences.customCategories).toEqual(['Pets'])
     expect(addCustomCategoryPreference(preferences, 'Viagens').customCategories).toEqual(['Pets', 'Viagens'])
     expect(() => addCustomCategoryPreference(preferences, ' ')).toThrow('Informe um nome de categoria.')
-    expect(() => addCustomCategoryPreference(preferences, 'pets')).toThrow('Essa categoria personalizada ja existe.')
-    expect(() => addCustomCategoryPreference(preferences, 'Sa\u00fade')).toThrow('Essa categoria ja existe nas categorias padrao.')
-    expect(() => addCustomCategoryPreference(preferences, ' ALIMENTACAO ')).toThrow('Essa categoria ja existe nas categorias padrao.')
+    expect(() => addCustomCategoryPreference(preferences, 'pets')).toThrow('Essa categoria personalizada já existe.')
+    expect(() => addCustomCategoryPreference(preferences, 'Sa\u00fade')).toThrow('Essa categoria já existe nas categorias padrão.')
+    expect(() => addCustomCategoryPreference(preferences, ' ALIMENTACAO ')).toThrow('Essa categoria já existe nas categorias padrão.')
   })
 
   it('hides and shows categories without removing custom categories', () => {

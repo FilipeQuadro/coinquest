@@ -83,7 +83,7 @@ describe('SelectedMonth helpers', () => {
 
   it('validates month bounds', () => {
     expect(validateSelectedMonth({ year: 2026, month: 0 })).toBeNull()
-    expect(validateSelectedMonth({ year: 2026, month: 12 })).toBe('Mes invalido.')
-    expect(validateSelectedMonth({ year: 1969, month: 0 })).toBe('Ano invalido.')
+    expect(validateSelectedMonth({ year: 2026, month: 12 })).toBe('Mês inválido.')
+    expect(validateSelectedMonth({ year: 1969, month: 0 })).toBe('Ano inválido.')
   })
 })

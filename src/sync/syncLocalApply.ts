@@ -189,16 +189,16 @@ export async function deleteLocalSnapshotFromDb(snapshot: SyncEntitySnapshot) {
 
 export function assertSnapshotIdentity(snapshot: SyncEntitySnapshot) {
   if (snapshot.deleted) {
-    if (snapshot.payload !== null) throw new Error(`Tombstone remoto invalido: ${snapshot.entityKey}.`)
+    if (snapshot.payload !== null) throw new Error(`Tombstone remoto inválido: ${snapshot.entityKey}.`)
     return
   }
 
   if (!snapshot.payload || typeof snapshot.payload !== 'object') {
-    throw new Error(`Payload remoto invalido: ${snapshot.entityKey}.`)
+    throw new Error(`Payload remoto inválido: ${snapshot.entityKey}.`)
   }
 
   const payloadKey = getSyncEntityKey(snapshot.entityType, snapshot.payload as never)
   if (payloadKey !== snapshot.entityKey) {
-    throw new Error(`Payload remoto nao corresponde a entityKey: ${snapshot.entityKey}.`)
+    throw new Error(`Payload remoto não corresponde a entityKey: ${snapshot.entityKey}.`)
   }
 }

@@ -70,20 +70,20 @@ describe('validateTransactionDraft', () => {
   })
 
   it('rejects zero amount', () => {
-    expect(validateTransactionDraft({ ...validDraft, amount: 0 })).toBe('Informe um valor valido.')
+    expect(validateTransactionDraft({ ...validDraft, amount: 0 })).toBe('Informe um valor válido.')
   })
 
   it('rejects negative amount', () => {
-    expect(validateTransactionDraft({ ...validDraft, amount: -10 })).toBe('Informe um valor valido.')
+    expect(validateTransactionDraft({ ...validDraft, amount: -10 })).toBe('Informe um valor válido.')
   })
 
   it('rejects NaN and Infinity', () => {
-    expect(validateTransactionDraft({ ...validDraft, amount: Number.NaN })).toBe('Informe um valor valido.')
-    expect(validateTransactionDraft({ ...validDraft, amount: Number.POSITIVE_INFINITY })).toBe('Informe um valor valido.')
+    expect(validateTransactionDraft({ ...validDraft, amount: Number.NaN })).toBe('Informe um valor válido.')
+    expect(validateTransactionDraft({ ...validDraft, amount: Number.POSITIVE_INFINITY })).toBe('Informe um valor válido.')
   })
 
   it('rejects empty description', () => {
-    expect(validateTransactionDraft({ ...validDraft, description: '   ' })).toBe('Informe uma descricao.')
+    expect(validateTransactionDraft({ ...validDraft, description: '   ' })).toBe('Informe uma descrição.')
   })
 
   it('accepts income and expense types', () => {
@@ -92,10 +92,10 @@ describe('validateTransactionDraft', () => {
   })
 
   it('rejects invalid type, payment and date values', () => {
-    expect(validateTransactionDraft({ ...validDraft, type: 'refund' as TransactionType })).toBe('Tipo de movimentacao invalido.')
-    expect(validateTransactionDraft({ ...validDraft, paymentMethod: 'card' as PaymentMethod })).toBe('Forma de pagamento invalida.')
-    expect(validateTransactionDraft({ ...validDraft, occurredAt: 'invalid-date' })).toBe('Informe uma data valida.')
-    expect(validateTransactionDraft({ ...validDraft, kind: 'card_purchase' as never })).toBe('Tipo interno de movimentacao invalido.')
+    expect(validateTransactionDraft({ ...validDraft, type: 'refund' as TransactionType })).toBe('Tipo de movimentação inválido.')
+    expect(validateTransactionDraft({ ...validDraft, paymentMethod: 'card' as PaymentMethod })).toBe('Forma de pagamento inválida.')
+    expect(validateTransactionDraft({ ...validDraft, occurredAt: 'invalid-date' })).toBe('Informe uma data válida.')
+    expect(validateTransactionDraft({ ...validDraft, kind: 'card_purchase' as never })).toBe('Tipo interno de movimentação inválido.')
   })
 })
 
@@ -190,7 +190,7 @@ describe('transaction storage', () => {
       category: 'Alimentacao',
       paymentMethod: 'pix',
       occurredAt: '2026-08-20T10:00:00.000Z',
-    })).rejects.toThrow('Movimentacao nao encontrada.')
+    })).rejects.toThrow('Movimentação não encontrada.')
 
     const item = transaction({ id: 'invalid-update', type: 'expense', amount: 180, occurredAt: '2026-08-20T10:00:00.000Z' })
     await db.transactions.add(item)
@@ -202,7 +202,7 @@ describe('transaction storage', () => {
       category: 'Alimentacao',
       paymentMethod: 'pix',
       occurredAt: item.occurredAt,
-    })).rejects.toThrow('Informe um valor valido.')
+    })).rejects.toThrow('Informe um valor válido.')
   })
 
   it('separates created and updated transaction events', async () => {

@@ -280,7 +280,7 @@ export class MainRoomScene extends Phaser.Scene {
     const programmer = this.programmer
     const vault = this.vault
     const effects = this.effects
-    this.updateStatus(income ? 'Credito recebido. Cofre sincronizado.' : 'Despesa registrada. Sistema ajustado.')
+    this.updateStatus(income ? 'Crédito recebido. Cofre sincronizado.' : 'Despesa registrada. Sistema ajustado.')
 
     const canvas = this.game.canvas
     canvas.dataset.financeReaction = transaction.type
@@ -306,7 +306,7 @@ export class MainRoomScene extends Phaser.Scene {
     if (!this.canRenderReaction()) return
     if (!this.vault || !this.programmer || !this.effects || !this.financeMonitor) return
 
-    this.updateStatus(`Missao concluida: ${goal.name}`)
+    this.updateStatus(`Missão concluída: ${goal.name}`)
     const canvas = this.game.canvas
     canvas.dataset.goalReaction = goal.goalId
     canvas.dataset.goalReactionName = goal.name

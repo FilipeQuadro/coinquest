@@ -41,7 +41,7 @@ export function ManualTransaction({ selectedMonth }: ManualTransactionProps) {
     const occurredAt = localDateTimeToIso(dateValue, timeValue)
 
     if (!occurredAt) {
-      setError('Informe uma data valida.')
+      setError('Informe uma data válida.')
       return
     }
 
@@ -76,7 +76,7 @@ export function ManualTransaction({ selectedMonth }: ManualTransactionProps) {
       <h2>Adicionar manualmente</h2>
       {!viewingCurrentMonth && (
         <div className="message info" data-testid="manual-month-context">
-          Voce esta visualizando {formatMonthYear(selectedMonth)}. Este formulario usa a data indicada abaixo.
+          Você esta visualizando {formatMonthYear(selectedMonth)}. Este formulario usa a data indicada abaixo.
         </div>
       )}
       <form className="form-grid" onSubmit={submit}>
@@ -92,7 +92,7 @@ export function ManualTransaction({ selectedMonth }: ManualTransactionProps) {
           <input data-testid="manual-amount-input" value={amount} onChange={(event) => setAmount(event.target.value)} inputMode="decimal" placeholder="39,90" autoComplete="off" />
         </label>
         <label className="span-2">
-          Descricao
+          Descrição
           <input data-testid="manual-description-input" value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Ex.: Mercado" autoComplete="off" />
         </label>
         <label>
@@ -105,8 +105,8 @@ export function ManualTransaction({ selectedMonth }: ManualTransactionProps) {
           Pagamento
           <select data-testid="manual-payment-select" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value as PaymentMethod)}>
             <option value="pix">PIX</option>
-            <option value="debit">Debito</option>
-            <option value="credit">Credito</option>
+            <option value="debit">Débito</option>
+            <option value="credit">Crédito</option>
             <option value="cash">Dinheiro</option>
             <option value="transfer">Transferencia</option>
             <option value="other">Outro</option>

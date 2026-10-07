@@ -49,11 +49,11 @@ export function categoryBudgetId(month: BudgetMonth, category: string) {
 
 export function validateBudgetMonth(month: BudgetMonth): string | null {
   if (!Number.isInteger(month.year) || month.year < 1970 || month.year > 9999) {
-    return 'Ano do orcamento invalido.'
+    return 'Ano do orçamento inválido.'
   }
 
   if (!Number.isInteger(month.month) || month.month < 0 || month.month > 11) {
-    return 'Mes do orcamento invalido.'
+    return 'Mês do orçamento inválido.'
   }
 
   return null
@@ -61,7 +61,7 @@ export function validateBudgetMonth(month: BudgetMonth): string | null {
 
 export function validateBudgetLimit(limit: number): string | null {
   if (!Number.isFinite(limit) || limit < 0) {
-    return 'Informe um limite valido.'
+    return 'Informe um limite válido.'
   }
 
   return null

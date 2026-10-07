@@ -18,7 +18,7 @@ import { formatMonthYear } from '../finance/month'
 import { formatBRL } from '../lib/money'
 
 function formatPercent(value: number | null) {
-  if (value === null) return 'Sem orcamento'
+  if (value === null) return 'Sem orçamento'
   if (!Number.isFinite(value)) return 'Acima do limite'
   return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(value * 100) + '%'
 }
@@ -72,7 +72,7 @@ export function BudgetPlanner({ selectedMonth }: BudgetPlannerProps) {
     const parsed = parseBudgetLimit(totalLimit)
 
     if (parsed === null) {
-      setError('Informe um orcamento valido, como R$ 1000,00.')
+      setError('Informe um orçamento válido, como R$ 1000,00.')
       return
     }
 
@@ -86,7 +86,7 @@ export function BudgetPlanner({ selectedMonth }: BudgetPlannerProps) {
     const parsed = parseBudgetLimit(categoryLimit)
 
     if (parsed === null) {
-      setError('Informe um limite de categoria valido.')
+      setError('Informe um limite de categoria válido.')
       return
     }
 
@@ -105,7 +105,7 @@ export function BudgetPlanner({ selectedMonth }: BudgetPlannerProps) {
       <div className="panel-title-row">
         <div>
           <span className="eyebrow">PLANEJAMENTO</span>
-          <h2>Orcamento de {formatMonthYear(selectedMonth)}</h2>
+          <h2>Orçamento de {formatMonthYear(selectedMonth)}</h2>
         </div>
         {progress.hasBudget && (
           <button className="button ghost danger" type="button" data-testid="budget-remove" onClick={removePlan}>
@@ -116,10 +116,10 @@ export function BudgetPlanner({ selectedMonth }: BudgetPlannerProps) {
 
       <div className={`budget-summary tone-${tone}`} data-testid="budget-card">
         <div>
-          <span>USO DO ORCAMENTO</span>
+          <span>USO DO ORÇAMENTO</span>
           <strong data-testid="budget-spent">{formatBRL(progress.spent)} / {progress.hasBudget ? formatBRL(progress.limit) : 'sem limite'}</strong>
         </div>
-        <div className="budget-progress" aria-label={`Uso do orcamento: ${formatPercent(progress.percentageUsed)}`}>
+        <div className="budget-progress" aria-label={`Uso do orçamento: ${formatPercent(progress.percentageUsed)}`}>
           <span style={{ width: `${barWidth}%` }} />
         </div>
         <div className="budget-meta">
@@ -128,15 +128,15 @@ export function BudgetPlanner({ selectedMonth }: BudgetPlannerProps) {
             {progress.hasBudget
               ? progress.isOverLimit
                 ? `Limite ultrapassado em ${formatBRL(progress.overLimitAmount)}`
-                : `${formatBRL(progress.remaining)} disponiveis`
-              : 'Defina um limite para acompanhar o mes'}
+                : `${formatBRL(progress.remaining)} disponíveis`
+              : 'Defina um limite para acompanhar o mês'}
           </span>
         </div>
       </div>
 
       <form className="budget-form" onSubmit={saveTotal}>
         <label>
-          Orcamento total
+          Orçamento total
           <input
             data-testid="budget-total-input"
             value={totalLimit}

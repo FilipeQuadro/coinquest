@@ -222,7 +222,7 @@ describe('deriveLocalDataHealth', () => {
     expect(report.hasAnyFinancialData).toBe(false)
     expect(report.warnings).toEqual([])
     expect(report.summaryMessage).toBe('Nenhum dado financeiro local registrado ainda.')
-    expect(report.summaryMessage).not.toMatch(/erro grave|dados corrompidos|perda de dados|falha critica|obrigatorio sincronizar|backup garantido/i)
+    expect(report.summaryMessage).not.toMatch(/erro grave|dados corrompidos|perda de dados|falha cr[ií]tica|obrigat[oó]rio sincronizar|backup garantido/i)
   })
 
   it('retorna contagens corretas por tabela', () => {
@@ -391,8 +391,8 @@ describe('deriveLocalDataHealth', () => {
       count: 1,
       table: 'syncConflicts',
     }))
-    expect(report.warnings[0].message).toContain('O uso local continua disponivel')
-    expect(report.warnings[0].message).not.toMatch(/obrigatorio sincronizar/i)
+    expect(report.warnings[0].message).toContain('O uso local continua disponível')
+    expect(report.warnings[0].message).not.toMatch(/obrigat[oó]rio sincronizar/i)
   })
 
   it('ordena warnings de forma deterministica por severidade e id', () => {

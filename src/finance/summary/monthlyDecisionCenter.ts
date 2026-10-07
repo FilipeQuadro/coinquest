@@ -63,20 +63,20 @@ const ALLOWED_DESTINATION_HASHES = new Set([
 
 const statusCopy: Record<MonthlyDecisionStatus, Pick<MonthlyDecisionReport, 'headline' | 'summaryMessage'>> = {
   empty: {
-    headline: 'Sem dados suficientes para revisar o mes',
-    summaryMessage: 'Registre movimentacoes reais ou planos do mes para formar uma leitura local.',
+    headline: 'Sem dados suficientes para revisar o mês',
+    summaryMessage: 'Registre movimentações reais ou planos do mês para formar uma leitura local.',
   },
   stable: {
-    headline: 'Mes com sinais estaveis',
-    summaryMessage: 'Ha dados locais para acompanhar, sem ponto principal de atencao no momento.',
+    headline: 'Mês com sinais estáveis',
+    summaryMessage: 'Há dados locais para acompanhar, sem ponto principal de atenção no momento.',
   },
   review: {
-    headline: 'Pontos para revisar no mes',
-    summaryMessage: 'Alguns sinais locais ajudam a orientar a revisao do mes.',
+    headline: 'Pontos para revisar no mês',
+    summaryMessage: 'Alguns sinais locais ajudam a orientar a revisão do mês.',
   },
   attention: {
-    headline: 'Prioridades de atencao do mes',
-    summaryMessage: 'Ha pontos do mes que vale revisar com calma antes de novas decisoes.',
+    headline: 'Prioridades de atenção do mês',
+    summaryMessage: 'Há pontos do mês que vale revisar com calma antes de novas decisões.',
   },
 }
 
@@ -163,50 +163,50 @@ function normalizeDestinationHash(destinationHash: string | undefined, source: M
 function titleForSource(source: MonthlyDecisionSource, kind: MonthlyDecisionKind) {
   switch (source) {
     case 'budget':
-      return 'Revisar planejamento do mes'
+      return 'Revisar planejamento do mês'
     case 'recurring':
       return 'Conferir compromissos previstos'
     case 'card':
-      return 'Revisar faturas do cartao'
+      return 'Revisar faturas do cartão'
     case 'projection':
-      return 'Revisar estimativa do mes'
+      return 'Revisar estimativa do mês'
     case 'goal':
-      return 'Acompanhar missoes'
+      return 'Acompanhar missões'
     case 'history':
-      return 'Revisar movimentacoes reais'
+      return 'Revisar movimentações reais'
     case 'data':
       return 'Revisar dados locais'
     case 'insight':
-      return kind === 'attention' ? 'Ponto de atencao do mes' : 'Leitura do mes'
+      return kind === 'attention' ? 'Ponto de atenção do mês' : 'Leitura do mês'
     case 'overview':
     default:
-      return 'Acompanhar o mes'
+      return 'Acompanhar o mês'
   }
 }
 
 function messageForSource(source: MonthlyDecisionSource, kind: MonthlyDecisionKind) {
   switch (source) {
     case 'budget':
-      return 'Veja se os limites planejados ainda fazem sentido para este mes.'
+      return 'Veja se os limites planejados ainda fazem sentido para este mês.'
     case 'recurring':
       return 'Revise o que ainda e previsto antes de confirmar como movimento real.'
     case 'card':
-      return 'Compras no cartao aparecem como compromisso; pagamento de fatura e movimento real.'
+      return 'Compras no cartão aparecem como compromisso; pagamento de fatura e movimento real.'
     case 'projection':
       return 'A estimativa indica um ponto para conferir junto dos itens previstos.'
     case 'goal':
-      return 'Veja o progresso das alocacoes sem criar movimento real automaticamente.'
+      return 'Veja o progresso das alocações sem criar movimento real automaticamente.'
     case 'history':
-      return 'Acompanhe as movimentacoes reais registradas neste mes.'
+      return 'Acompanhe as movimentações reais registradas neste mês.'
     case 'data':
-      return 'Revise sinais locais e backups sem depender de sincronizacao em nuvem.'
+      return 'Revise sinais locais e backups sem depender de sincronização em nuvem.'
     case 'insight':
       return kind === 'attention'
-        ? 'Ha um sinal local que vale revisar no contexto do mes.'
-        : 'Ha uma leitura local para acompanhar no mes.'
+        ? 'Há um sinal local que vale revisar no contexto do mês.'
+        : 'Há uma leitura local para acompanhar no mês.'
     case 'overview':
     default:
-      return 'Use os dados locais para acompanhar o mes com calma.'
+      return 'Use os dados locais para acompanhar o mês com calma.'
   }
 }
 
