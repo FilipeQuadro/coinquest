@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import packageJson from './package.json'
+import { hashedBuildAssetPattern } from './src/pwa/precache'
 
 export default defineConfig({
   define: {
@@ -49,6 +50,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
+        dontCacheBustURLsMatching: hashedBuildAssetPattern,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,

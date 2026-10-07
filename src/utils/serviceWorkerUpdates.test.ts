@@ -23,14 +23,19 @@ function setup(onLine = true) {
 }
 
 describe('watchServiceWorkerUpdates', () => {
+  it('checks once as soon as the app starts', () => {
+    const { registration } = setup()
+    expect(registration.update).toHaveBeenCalledTimes(1)
+  })
+
   it('checks for a new version when the app becomes visible again', () => {
     const { env, registration, listeners } = setup()
     listeners.get('visibilitychange')?.()
-    expect(registration.update).not.toHaveBeenCalled()
+    expect(registration.update).toHaveBeenCalledTimes(1)
 
     env.document.visibilityState = 'visible'
     listeners.get('visibilitychange')?.()
-    expect(registration.update).toHaveBeenCalledTimes(1)
+    expect(registration.update).toHaveBeenCalledTimes(2)
   })
 
   it('checks periodically while open', () => {
@@ -38,7 +43,7 @@ describe('watchServiceWorkerUpdates', () => {
     expect(env.setInterval).toHaveBeenCalledWith(expect.any(Function), 1000)
     tick()
     tick()
-    expect(registration.update).toHaveBeenCalledTimes(2)
+    expect(registration.update).toHaveBeenCalledTimes(3)
   })
 
   it('skips checks while offline so the local-first app keeps working', () => {
