@@ -4566,6 +4566,71 @@ footer {
 .world-section .health-card strong { color: #ecebe7; }
 .world-section .health-card span:last-child { color: #9fa9ba; font-size: 12px; }
 
+.world-desk {
+  margin-top: 16px;
+  padding: 16px;
+  background: #121722;
+  border: 1px solid #2a303d;
+  border-radius: 8px;
+}
+.world-desk-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 14px;
+}
+.world-desk-head .eyebrow { color: #b9a365; font-size: 10px; }
+.world-desk-head h3 { margin: 3px 0 0; color: #efeee9; font-size: 16px; font-weight: 620; }
+.world-tier { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.world-tier strong { display: block; color: #ecebe7; font-size: 14px; }
+.world-tier div > span { display: block; color: #9fa9ba; font-size: 12px; line-height: 1.35; }
+.world-tier-pips { display: inline-flex; gap: 4px; flex: none; }
+.world-tier-pips > span {
+  width: 10px;
+  height: 14px;
+  background: #1c2230;
+  border: 1px solid #3a4253;
+  border-radius: 2px;
+}
+.world-tier-pips > span.filled { background: #7fd2df; border-color: #4c97a2; }
+.world-tier.tier-thriving .world-tier-pips > span.filled { background: #e2c16f; border-color: #8f7438; }
+.world-desk-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.world-desk-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 44px;
+  padding: 12px;
+  color: inherit;
+  text-decoration: none;
+  background: #0f131d;
+  border: 1px solid #282f3d;
+  border-radius: 6px;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.world-desk-link:hover { border-color: #49402d; background: #141a26; }
+.world-desk-link:focus-visible { outline: 3px solid #67c9d5; outline-offset: 2px; }
+.world-desk-kind { color: #b9a365; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.world-desk-link strong { color: #ecebe7; font-size: 14px; font-weight: 620; }
+.world-desk-value { color: #9fa9ba; font-size: 12px; }
+@media (max-width: 900px) {
+  .world-desk-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .world-desk-link:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 420px) {
+  .world-desk { padding: 12px; }
+  .world-desk-link { padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-desk-link { transition: none; }
+}
+
 
 @media (max-width: 980px) {
   .world-intro.home-hero { grid-template-columns: minmax(0, 1fr); gap: 18px; }
