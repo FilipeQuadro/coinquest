@@ -1,4 +1,5 @@
 declare const __PLAYWRIGHT__: boolean
+declare const __APP_VERSION__: string
 
 interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL?: string

@@ -163,6 +163,7 @@ test('keeps key data areas reachable on a mobile viewport', async ({ page }) => 
 
   const registerBounds = await primaryActions.getByRole('link', { name: 'Registrar movimento', exact: true }).boundingBox()
   expect(registerBounds?.y).toBeLessThan(844)
+  await expect(page.getByTestId('app-version')).toHaveText(/^v\d+\.\d+\.\d+$/)
   const mobileWidth = await page.evaluate(() => document.documentElement.scrollWidth)
   expect(mobileWidth).toBeLessThanOrEqual(390)
 
