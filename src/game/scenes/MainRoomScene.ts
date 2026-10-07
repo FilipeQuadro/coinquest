@@ -7,6 +7,14 @@ import { FinanceMonitor } from '../entities/FinanceMonitor'
 import { Programmer } from '../entities/Programmer'
 import { FinancialEffects } from '../effects/FinancialEffects'
 import { financeBus, type FinancialHealthUpdate, type GoalCompletedPresentation } from '../events'
+import {
+  atmosphereMotion,
+  atmospherePalette,
+  prefersReducedMotion,
+  resolveTimeOfDay,
+  type AtmosphereMotion,
+  type AtmospherePalette,
+} from '../systems/atmosphere'
 import { ParallaxBackdrop } from '../systems/ParallaxBackdrop'
 import { getInitialRoomSetupState } from '../systems/setupTier'
 
@@ -22,6 +30,9 @@ export class MainRoomScene extends Phaser.Scene {
   private statusText?: Phaser.GameObjects.Text
   private moodOverlay?: Phaser.GameObjects.Rectangle
   private healthLights: Phaser.GameObjects.Rectangle[] = []
+  private palette: AtmospherePalette = atmospherePalette('day')
+  private motion: AtmosphereMotion = atmosphereMotion(false)
+  private activeMotes = 0
   private transactionHandler?: EventListener
   private healthHandler?: EventListener
   private goalCompletedHandler?: EventListener
@@ -37,18 +48,23 @@ export class MainRoomScene extends Phaser.Scene {
   }
 
   create() {
-    const isNight = this.isNight()
+    this.palette = atmospherePalette(resolveTimeOfDay(window.location.search, new Date().getHours()))
+    this.motion = atmosphereMotion(prefersReducedMotion())
+    const isNight = this.palette.usesNightTextures
     const setupState = getInitialRoomSetupState()
     ensureSpriteFallbacks(this)
     this.game.canvas.dataset.setupTier = setupState.tier
+    this.game.canvas.dataset.timeOfDay = this.palette.timeOfDay
+    this.game.canvas.dataset.reducedMotion = String(this.motion.reduced)
 
-    this.cameras.main.setBackgroundColor(isNight ? '#091125' : '#78b9d8')
+    this.cameras.main.setBackgroundColor(this.palette.cameraBackground)
     this.cameras.main.setBounds(0, 0, SCENE_WIDTH, SCENE_HEIGHT)
     this.cameras.main.roundPixels = true
     this.configureCamera()
     this.scale.on(Phaser.Scale.Events.RESIZE, this.handleResize, this)
-    this.backdrop = new ParallaxBackdrop(this, isNight, SCENE_WIDTH, SCENE_HEIGHT)
+    this.backdrop = new ParallaxBackdrop(this, this.palette, this.motion, SCENE_WIDTH, SCENE_HEIGHT)
     this.drawRoomShell(isNight)
+    this.drawAmbientLight(isNight)
     this.drawDeskStation(isNight)
     this.drawTechDecorations(isNight)
 
@@ -63,32 +79,21 @@ export class MainRoomScene extends Phaser.Scene {
 
     this.addTitle()
     this.bindFinanceEvents()
-    this.createAmbientParticles(isNight)
+    this.createAmbientParticles()
   }
 
   update(time: number) {
     this.backdrop?.update(time)
   }
 
-  private isNight() {
-    const forcedTimeOfDay = new URLSearchParams(window.location.search).get('timeOfDay')
-    if (forcedTimeOfDay === 'night') return true
-    if (forcedTimeOfDay === 'day') return false
-
-    const hour = new Date().getHours()
-    return hour < 6 || hour >= 18
-  }
-
   private drawRoomShell(isNight: boolean) {
-    const glassColor = isNight ? 0x14294a : 0xd7f2ff
-    const glassAlpha = isNight ? 0.18 : 0.14
-    const externalLight = isNight ? 0x42d9f4 : 0xfff0b0
+    const { glassColor, glassAlpha } = this.palette
 
     const wall = this.add.image(480, 210, getTextureKey(this, 'wall'))
     const floor = this.add.image(480, 462, getTextureKey(this, 'floor'))
     const windowFrame = this.add.image(520, 220, getTextureKey(this, 'windowFrame'))
     const glass = this.add.rectangle(520, 220, 474, 208, glassColor, glassAlpha)
-    const windowLight = this.add.rectangle(520, 320, 472, 72, externalLight, isNight ? 0.04 : 0.1)
+    const windowLight = this.add.rectangle(520, 320, 472, 72, this.palette.windowLight, this.palette.windowLightAlpha)
     const contactShadow = this.add.rectangle(520, 446, 540, 18, isNight ? 0x42d9f4 : 0xffe7a0, isNight ? 0.06 : 0.05)
     this.moodOverlay = this.add.rectangle(480, 270, SCENE_WIDTH, SCENE_HEIGHT, 0x42d9f4, 0)
 
@@ -99,7 +104,7 @@ export class MainRoomScene extends Phaser.Scene {
     const roomConsolePurple = this.add.rectangle(124, 340, 54, 5, 0x7f67d8, 0.6)
     this.healthLights.push(wallPanelCyan, wallPanelGreen, wallPanelGold)
 
-    this.tweens.add({
+    this.addAmbientTween({
       targets: glass,
       alpha: isNight ? 0.28 : 0.1,
       duration: 1800,
@@ -147,7 +152,7 @@ export class MainRoomScene extends Phaser.Scene {
     cable.lineTo(668, 417)
     cable.strokePath()
 
-    this.tweens.add({
+    this.addAmbientTween({
       targets: [towerFanA, towerFanB],
       angle: 180,
       alpha: 0.28,
@@ -157,7 +162,7 @@ export class MainRoomScene extends Phaser.Scene {
       ease: 'Stepped',
     })
 
-    this.tweens.add({
+    this.addAmbientTween({
       targets: [monitorGlow, deskGlow, deskFrontLed],
       alpha: isNight ? 0.4 : 0.2,
       duration: 1300,
@@ -166,7 +171,7 @@ export class MainRoomScene extends Phaser.Scene {
       ease: 'Sine.inOut',
     })
 
-    this.tweens.add({
+    this.addAmbientTween({
       targets: terminalLabel,
       alpha: 0.45,
       duration: 520,
@@ -200,7 +205,7 @@ export class MainRoomScene extends Phaser.Scene {
     smallBot.add([botBody, botEye, botWheel])
     this.healthLights.push(ledStrip, serverLedA, serverLedB, botEye)
 
-    this.tweens.add({
+    this.addAmbientTween({
       targets: [ledStrip, serverLedA, serverLedB, botEye],
       alpha: 0.25,
       duration: 1200,
@@ -209,7 +214,7 @@ export class MainRoomScene extends Phaser.Scene {
       ease: 'Sine.inOut',
     })
 
-    this.tweens.add({
+    this.addAmbientTween({
       targets: smallBot,
       y: smallBot.y - 3,
       duration: 1400,
@@ -438,27 +443,83 @@ export class MainRoomScene extends Phaser.Scene {
     }
   }
 
-  private createAmbientParticles(isNight: boolean) {
+  /** Looping decor motion; skipped entirely when the viewer prefers reduced motion. */
+  private addAmbientTween(config: Phaser.Types.Tweens.TweenBuilderConfig) {
+    if (this.motion.reduced) return
+    this.tweens.add(config)
+  }
+
+  private drawAmbientLight(isNight: boolean) {
+    const { lightShaftColor, lightShaftAlpha, roomShade, roomShadeAlpha } = this.palette
+
+    // Window light falls diagonally across the room; additive so it brightens without hiding detail.
+    const shaft = this.add.graphics().setBlendMode(Phaser.BlendModes.ADD).setDepth(3.6)
+    shaft.fillStyle(lightShaftColor, lightShaftAlpha)
+    shaft.fillPoints([
+      new Phaser.Math.Vector2(300, 122),
+      new Phaser.Math.Vector2(560, 122),
+      new Phaser.Math.Vector2(880, 530),
+      new Phaser.Math.Vector2(470, 530),
+    ], true)
+    shaft.fillStyle(lightShaftColor, lightShaftAlpha * 0.7)
+    shaft.fillPoints([
+      new Phaser.Math.Vector2(380, 122),
+      new Phaser.Math.Vector2(480, 122),
+      new Phaser.Math.Vector2(760, 530),
+      new Phaser.Math.Vector2(600, 530),
+    ], true)
+
+    const monitorPool = this.add.ellipse(415, 452, 250, 34, 0x42d9f4, isNight ? 0.09 : this.palette.timeOfDay === 'dusk' ? 0.06 : 0.03)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setDepth(3.7)
+    this.add.rectangle(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, SCENE_WIDTH, SCENE_HEIGHT, roomShade, roomShadeAlpha).setDepth(11)
+
+    this.addAmbientTween({
+      targets: shaft,
+      alpha: 0.72,
+      duration: 4200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.inOut',
+    })
+    this.addAmbientTween({
+      targets: monitorPool,
+      alpha: monitorPool.alpha * 0.6,
+      duration: 1600,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.inOut',
+    })
+  }
+
+  private createAmbientParticles() {
+    const { moteInterval, maxMotes } = this.motion
+    if (moteInterval === null) return
+    const rising = this.palette.timeOfDay === 'night'
+
     this.time.addEvent({
-      delay: 900,
+      delay: moteInterval,
       loop: true,
       callback: () => {
-        const particle = this.add.rectangle(
-          Phaser.Math.Between(250, 900),
-          Phaser.Math.Between(130, 410),
-          3,
-          3,
-          isNight ? 0x68ffda : 0xffffff,
-          isNight ? 0.35 : 0.18,
-        )
+        if (this.activeMotes >= maxMotes) return
+        // Daylight dust drifts down inside the window light; at night data motes rise from the desk.
+        const x = rising ? Phaser.Math.Between(250, 900) : Phaser.Math.Between(400, 760)
+        const y = rising ? Phaser.Math.Between(130, 410) : Phaser.Math.Between(170, 420)
+        const size = Phaser.Math.Between(0, 3) === 0 ? 3 : 2
+        const particle = this.add.rectangle(x, y, size, size, this.palette.moteColor, this.palette.moteAlpha).setDepth(3.8)
+        this.activeMotes += 1
 
         this.tweens.add({
           targets: particle,
-          y: particle.y - Phaser.Math.Between(18, 42),
+          x: rising ? x : x + Phaser.Math.Between(10, 26),
+          y: rising ? y - Phaser.Math.Between(18, 42) : y + Phaser.Math.Between(14, 34),
           alpha: 0,
-          duration: Phaser.Math.Between(1400, 2200),
+          duration: rising ? Phaser.Math.Between(1400, 2200) : Phaser.Math.Between(2600, 4200),
           ease: 'Sine.out',
-          onComplete: () => particle.destroy(),
+          onComplete: () => {
+            this.activeMotes -= 1
+            particle.destroy()
+          },
         })
       },
     })
