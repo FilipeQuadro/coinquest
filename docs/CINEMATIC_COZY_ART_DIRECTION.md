@@ -522,6 +522,8 @@ Escopo sugerido:
 - cofre local mais memoravel;
 - manifest e testes de assets.
 
+Status (v1.19.0): conceito em `docs/V2_2D_CHARACTER_WORLD_CONCEPT.md`. Novo sprite sheet da pessoa guardia da base, cofre-lanterna e quatro objetos (estante de livros-caixa, quadro do mes, planta, caneca) gerados por `scripts/generate-cozy-base-pack.mjs`, com fallback procedural e testes de manifest/dimensao.
+
 ### V2.2E — UI bridge entre mundo e finanças
 
 Objetivo: aproximar Centro de Decisao, GameWorld e cards principais.
