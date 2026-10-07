@@ -238,11 +238,11 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
 
   if (!summary) {
     return (
-      <section className="panel monthly-overview" aria-busy="true" aria-live="polite">
+      <section className="panel monthly-overview dashboard-month-summary" aria-busy="true" aria-live="polite">
         <div className="monthly-overview-head">
           <div>
-            <span className="eyebrow">RESUMO DO MES</span>
-            <h2>Como esta o mes</h2>
+            <span className="eyebrow">RESUMO DO M&Ecirc;S</span>
+            <h2>Como est&aacute; o m&ecirc;s</h2>
           </div>
         </div>
         <div className="monthly-overview-loading">Carregando resumo do mes...</div>
@@ -265,19 +265,19 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
   const featuredGoalPercent = highlights.featuredGoal?.percentageDisplay ?? 0
 
   return (
-    <section id="inicio" className="panel monthly-overview" aria-labelledby="monthly-overview-title" data-testid="monthly-overview-panel">
+    <section className="panel monthly-overview dashboard-month-summary" aria-labelledby="monthly-overview-title" data-testid="monthly-overview-panel">
       <div className="monthly-overview-head">
         <div>
-          <span className="eyebrow">RESUMO DO MES</span>
-          <h2 id="monthly-overview-title">Como esta o mes</h2>
+          <span className="eyebrow">RESUMO DO M&Ecirc;S</span>
+          <h2 id="monthly-overview-title">Como est&aacute; o m&ecirc;s</h2>
         </div>
       </div>
 
       <div className="monthly-overview-grid dashboard-overview-grid">
         <article className={`monthly-overview-hero tone-${valueTone(overview.actual.net)}`}>
-          <span>Resultado realizado</span>
+          <span>Resultado do m&ecirc;s</span>
           <strong data-testid="summary-balance">{formatBRL(overview.actual.net)}</strong>
-          <p>Entradas menos saidas deste mes.</p>
+          <p>Entradas menos sa&iacute;das deste m&ecirc;s.</p>
           <span className="dashboard-record-count">Registros: <span data-testid="summary-count">{overview.actual.transactionCount}</span></span>
         </article>
 
@@ -324,8 +324,8 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
             </>
           ) : (
             <div className="dashboard-budget-empty">
-              <span>Nenhum limite planejado.</span>
-              <a className="inline-link" href="#planejamento">Definir orcamento</a>
+              <span>Sem limite definido.</span>
+              <a className="inline-link" href="#planejamento">Definir limite</a>
             </div>
           )}
         </article>
@@ -337,7 +337,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
         >
           <div className="monthly-overview-card-title monthly-decision-header">
             <div>
-              <span className="eyebrow">DESTAQUE DO MES</span>
+              <span className="eyebrow">DESTAQUE DO M&Ecirc;S</span>
               <h3 id="monthly-decision-title">
                 {primaryDecisionItem?.title ?? (nextCommitment ? 'Proximo compromisso' : 'O que merece atencao')}
               </h3>
@@ -349,7 +349,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
             </div>
           </div>
           {primaryDecisionItem ? (
-            <a className="inline-link" href={primaryDecisionItem.destinationHash}>Ver area</a>
+            <a className="inline-link" href={primaryDecisionItem.destinationHash}>Ver &aacute;rea</a>
           ) : nextCommitment ? (
             <a className="inline-link" href="#cartoes">Ver compromissos</a>
           ) : null}
@@ -357,7 +357,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
       </div>
 
       <details className="monthly-overview-details" id="detalhes-do-mes">
-        <summary>Ver mais detalhes do mes</summary>
+        <summary>Ver mais detalhes do m&ecirc;s</summary>
         <div className="monthly-overview-details-grid">
           {decisionReport.secondaryItems.length > 0 && (
             <p className="monthly-decision-more monthly-overview-secondary-count">
@@ -373,7 +373,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
                 {additionalDecisionItems.map((item) => (
                   <article className={`monthly-decision-item decision-${item.kind}`} key={item.id}>
                     <div><strong>{item.title}</strong><p>{item.message}</p></div>
-                    <a className="inline-link" href={item.destinationHash}>Ver area</a>
+                    <a className="inline-link" href={item.destinationHash}>Ver &aacute;rea</a>
                   </article>
                 ))}
               </div>
@@ -418,7 +418,7 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
                 {visibleActions.map((action) => (
                   <article className={`monthly-action action-${action.kind}`} data-testid="monthly-action-item" key={action.id}>
                     <div><strong>{action.title}</strong><p>{action.message}</p></div>
-                    <a className="inline-link" href={action.destinationHash}>Ver area</a>
+                    <a className="inline-link" href={action.destinationHash}>Ver &aacute;rea</a>
                   </article>
                 ))}
               </div>

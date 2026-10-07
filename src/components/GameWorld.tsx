@@ -49,9 +49,10 @@ const healthCopy: Record<FinancialHealth['level'], { icon: string; label: string
 
 interface GameWorldProps {
   selectedMonth: SelectedMonth
+  active?: boolean
 }
 
-export function GameWorld({ selectedMonth }: GameWorldProps) {
+export function GameWorld({ selectedMonth, active = true }: GameWorldProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const transactions = useLiveQuery(() => db.transactions.toArray(), [], [])
@@ -102,10 +103,30 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
 
     return () => {
       gameRef.current?.destroy(true)
+      if (gameRef.current?.isRunning) gameRef.current.loop.wake()
       gameRef.current = null
       parent.replaceChildren()
     }
   }, [])
+
+  useEffect(() => {
+    const game = gameRef.current
+    if (!game) return
+    // Keep event listeners alive, but stop rendering outside the World area.
+    const updateVisibility = () => {
+      if (!game.scene.isActive('main-room')) return
+      if (active) {
+        game.events.off('postrender', updateVisibility)
+        game.scale.refresh()
+        game.loop.wake()
+      } else {
+        game.loop.sleep()
+      }
+    }
+    game.events.on('postrender', updateVisibility)
+    updateVisibility()
+    return () => { game.events.off('postrender', updateVisibility) }
+  }, [active])
 
   useEffect(() => {
     emitFinancialHealth({ health, summary, budgetProgress, monthlyOutlook })
@@ -137,13 +158,13 @@ export function GameWorld({ selectedMonth }: GameWorldProps) {
   ])
 
   return (
-    <section className={`game-shell health-${health.level}`}>
+    <section className={`game-shell health-${health.level}`} aria-labelledby="world-title">
       <div className="world-panel-bar">
         <div>
           <span className="eyebrow">MUNDO</span>
-          <h2>Sua base financeira</h2>
+          <h2 id="world-title">Sua base no CoinQuest</h2>
         </div>
-        <span className="status-chip">LOCAL-FIRST</span>
+        <a className="world-return-link" href="#inicio">Voltar ao in&iacute;cio <span aria-hidden="true">&#8593;</span></a>
       </div>
 
       <div ref={containerRef} className="game-canvas" aria-label="Mundo pixel art do CoinQuest" />
