@@ -1,11 +1,16 @@
 import { useRegisterSW } from 'virtual:pwa-register/react'
+import { watchServiceWorkerUpdates } from '../utils/serviceWorkerUpdates'
 
 export function PwaStatus() {
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
-  } = useRegisterSW()
+  } = useRegisterSW({
+    onRegisteredSW(_swUrl, registration) {
+      if (registration) watchServiceWorkerUpdates(registration)
+    },
+  })
 
   if (!offlineReady && !needRefresh) return null
 
