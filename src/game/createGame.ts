@@ -2,8 +2,9 @@ import Phaser from 'phaser'
 import { MainRoomScene } from './scenes/MainRoomScene'
 
 export function createCoinQuestGame(parent: HTMLElement) {
-  const width = Math.max(parent.clientWidth, 320)
-  const height = Math.max(parent.clientHeight, 260)
+  // Keep the full room composition while the parent scales the display.
+  const width = 960
+  const height = 540
 
   return new Phaser.Game({
     type: __PLAYWRIGHT__ ? Phaser.CANVAS : Phaser.AUTO,
@@ -22,7 +23,8 @@ export function createCoinQuestGame(parent: HTMLElement) {
       roundPixels: true,
     },
     scale: {
-      mode: Phaser.Scale.RESIZE,
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
       width,
       height,
     },

@@ -1,7 +1,7 @@
 {
   "name": "coinquest",
   "private": true,
-  "version": "1.14.0",
+  "version": "1.16.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
@@ -13,14 +13,12 @@
     "e2e": "node ./scripts/run-e2e.mjs"
   },
   "dependencies": {
-    "@react-three/fiber": "^9.8.1",
     "@supabase/supabase-js": "^2.115.0",
     "dexie": "^4.4.5",
     "dexie-react-hooks": "^4.2.0",
     "phaser": "3.90.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "three": "^0.186.1"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",

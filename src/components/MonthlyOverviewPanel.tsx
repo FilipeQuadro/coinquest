@@ -6,7 +6,7 @@ import { calculateCategoryBudgetProgress } from '../finance/budget/budget'
 import { buildCreditCardInvoices, getCommittedCardExpenses } from '../finance/cards/cards'
 import { calculateFinancialHealth } from '../finance/health/financialHealth'
 import { deriveFinancialInsights, type CategoryInsightInput } from '../finance/insights/financialInsights'
-import { formatMonthYear, isDateInMonth, type SelectedMonth } from '../finance/month'
+import { isDateInMonth, type SelectedMonth } from '../finance/month'
 import { deriveMonthlyActions } from '../finance/summary/monthlyActions'
 import { buildMonthlyDecisionReport } from '../finance/summary/monthlyDecisionCenter'
 import { buildMonthlyHighlights } from '../finance/summary/monthlyHighlights'
@@ -238,11 +238,11 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
 
   if (!summary) {
     return (
-      <section className="panel monthly-overview" aria-busy="true" aria-live="polite">
+      <section className="panel monthly-overview dashboard-month-summary" aria-busy="true" aria-live="polite">
         <div className="monthly-overview-head">
           <div>
-            <span className="eyebrow">CENTRAL DO MES</span>
-            <h2>{formatMonthYear(selectedMonth)}</h2>
+            <span className="eyebrow">RESUMO DO M&Ecirc;S</span>
+            <h2>Como est&aacute; o m&ecirc;s</h2>
           </div>
         </div>
         <div className="monthly-overview-loading">Carregando resumo do mes...</div>
@@ -253,7 +253,9 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
   const { overview, highlights, insights, monthlyActions, decisionReport } = summary
   const visibleInsights = insights.slice(0, 5)
   const visibleActions = monthlyActions.slice(0, 4)
-  const visibleDecisionItems = decisionReport.primaryItems
+  const primaryDecisionItem = decisionReport.primaryItems[0]
+  const additionalDecisionItems = decisionReport.primaryItems.slice(1)
+  const nextCommitment = highlights.commitments[0]
   const tone = budgetTone(overview.budget.percentageUsed)
   const percentLabel = formatPercent(overview.budget.percentageUsed)
   const budgetUsageLabel = `Uso do orcamento: ${percentLabel}`
@@ -263,20 +265,20 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
   const featuredGoalPercent = highlights.featuredGoal?.percentageDisplay ?? 0
 
   return (
-    <section className="panel monthly-overview" aria-labelledby="monthly-overview-title" data-testid="monthly-overview-panel">
+    <section className="panel monthly-overview dashboard-month-summary" aria-labelledby="monthly-overview-title" data-testid="monthly-overview-panel">
       <div className="monthly-overview-head">
         <div>
-          <span className="eyebrow">CENTRAL DO MES</span>
-          <h2 id="monthly-overview-title">{formatMonthYear(overview.month)}</h2>
+          <span className="eyebrow">RESUMO DO M&Ecirc;S</span>
+          <h2 id="monthly-overview-title">Como est&aacute; o m&ecirc;s</h2>
         </div>
-        <span className="monthly-overview-chip">Realizado + outlook</span>
       </div>
 
-      <div className="monthly-overview-grid">
+      <div className="monthly-overview-grid dashboard-overview-grid">
         <article className={`monthly-overview-hero tone-${valueTone(overview.actual.net)}`}>
-          <span>Resultado realizado</span>
+          <span>Resultado do m&ecirc;s</span>
           <strong data-testid="summary-balance">{formatBRL(overview.actual.net)}</strong>
-          <p>Dinheiro que realmente entrou e saiu neste mes selecionado.</p>
+          <p>Entradas menos sa&iacute;das deste m&ecirc;s.</p>
+          <span className="dashboard-record-count">Registros: <span data-testid="summary-count">{overview.actual.transactionCount}</span></span>
         </article>
 
         <article className="monthly-overview-metrics" aria-label="Metricas realizadas">
@@ -288,108 +290,13 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
             <span>Despesas</span>
             <strong className="expense" data-testid="summary-expenses">{formatBRL(overview.actual.expenses)}</strong>
           </div>
-          <div>
-            <span>Registros</span>
-            <strong data-testid="summary-count">{overview.actual.transactionCount}</strong>
-          </div>
         </article>
 
-        {decisionReport.status !== 'empty' && (
-          <section
-            className={`monthly-decision-center status-${decisionReport.status}`}
-            aria-labelledby="monthly-decision-title"
-            data-testid="monthly-decision-center"
-          >
-            <div className="monthly-overview-card-title monthly-decision-header">
-              <div>
-                <span className="eyebrow">CENTRO DE DECISAO</span>
-                <h3 id="monthly-decision-title">{decisionReport.headline}</h3>
-                <p>{decisionReport.summaryMessage}</p>
-              </div>
-            </div>
-
-            {visibleDecisionItems.length > 0 && (
-              <div className="monthly-decision-list">
-                {visibleDecisionItems.map((item) => (
-                  <article className={`monthly-decision-item decision-${item.kind}`} key={item.id}>
-                    <div>
-                      <strong>{item.title}</strong>
-                      <p>{item.message}</p>
-                    </div>
-                    <a className="inline-link" href={item.destinationHash}>Ver area</a>
-                  </article>
-                ))}
-              </div>
-            )}
-
-            {decisionReport.secondaryItems.length > 0 && (
-              <p className="monthly-decision-more">
-                {formatSecondaryDecisionCount(decisionReport.secondaryItems.length)}
-              </p>
-            )}
-          </section>
-        )}
-
-        <article className="monthly-overview-insights" data-testid="monthly-insights">
-          <div className="monthly-overview-card-title">
-            <div>
-              <span className="eyebrow">INSIGHTS DO MES</span>
-              <h3>Leituras financeiras</h3>
-            </div>
-          </div>
-
-          {visibleInsights.length > 0 ? (
-            <div className="monthly-insight-list">
-              {visibleInsights.map((insight) => (
-                <div className={`monthly-insight insight-${insight.kind}`} data-testid="monthly-insight-item" key={insight.id}>
-                  <div>
-                    <strong>{insight.title}</strong>
-                    <p>{insight.message}</p>
-                    {(insight.category || insight.amount !== undefined) && (
-                      <span>
-                        {insight.category ? `${insight.category}` : ''}
-                        {insight.category && insight.amount !== undefined ? ' · ' : ''}
-                        {insight.amount !== undefined ? formatBRL(insight.amount) : ''}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="monthly-overview-empty-text">Sem alertas relevantes com os dados atuais do mes.</p>
-          )}
-        </article>
-
-        {visibleActions.length > 0 && (
-          <section className="monthly-overview-actions" aria-labelledby="monthly-actions-title" data-testid="monthly-actions">
-            <div className="monthly-overview-card-title">
-              <div>
-                <span className="eyebrow">ACOES DO MES</span>
-                <h3 id="monthly-actions-title">Pontos para revisar</h3>
-                <p>Atalhos baseados nos sinais deste mes.</p>
-              </div>
-            </div>
-
-            <div className="monthly-actions-list">
-              {visibleActions.map((action) => (
-                <article className={`monthly-action action-${action.kind}`} data-testid="monthly-action-item" key={action.id}>
-                  <div>
-                    <strong>{action.title}</strong>
-                    <p>{action.message}</p>
-                  </div>
-                  <a className="inline-link" href={action.destinationHash}>Ver area</a>
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-
-        <article className={`monthly-overview-budget tone-${tone}`}>
+        <article className={`monthly-overview-budget dashboard-budget tone-${tone}`}>
           <div className="monthly-overview-card-title">
             <div>
               <span className="eyebrow">ORCAMENTO</span>
-              <h3>Plano do mes</h3>
+              <h3>Limite planejado</h3>
             </div>
             {overview.budget.hasBudget ? <strong>{percentLabel}</strong> : null}
           </div>
@@ -406,116 +313,180 @@ export function MonthlyOverviewPanel({ selectedMonth }: MonthlyOverviewPanelProp
               >
                 <span style={{ width: `${barWidth(overview.budget.percentageUsed)}%` }} />
               </div>
-              <div className="budget-meta">
-                <span>Usado {formatBRL(overview.budget.spent)}</span>
-                <span>Limite {formatBRL(overview.budget.limit)}</span>
-                <span>
+              <div className="dashboard-budget-copy">
+                <span>Usado {formatBRL(overview.budget.spent)} de {formatBRL(overview.budget.limit)}</span>
+                <strong>
                   {overview.budget.isOverLimit
-                    ? `Passou ${formatBRL(overview.budget.overLimitAmount)}`
-                    : `Restam ${formatBRL(overview.budget.remaining)}`}
-                </span>
+                    ? `Acima do limite em ${formatBRL(overview.budget.overLimitAmount)}`
+                    : `Restante do limite: ${formatBRL(overview.budget.remaining)}`}
+                </strong>
               </div>
             </>
           ) : (
-            <div className="monthly-overview-empty">
-              <p>Sem orcamento definido para este mes.</p>
-              <a className="button ghost compact" href="#orcamento">Ir para orcamento</a>
+            <div className="dashboard-budget-empty">
+              <span>Sem limite definido.</span>
+              <a className="inline-link" href="#planejamento">Definir limite</a>
             </div>
           )}
         </article>
 
-        <article className="monthly-overview-outlook">
-          <div className="monthly-overview-card-title">
+        <section
+          className={`monthly-decision-center dashboard-attention status-${decisionReport.status}`}
+          aria-labelledby="monthly-decision-title"
+          data-testid="monthly-decision-center"
+        >
+          <div className="monthly-overview-card-title monthly-decision-header">
             <div>
-              <span className="eyebrow">OUTLOOK</span>
-              <h3>Visao ate o fim do mes</h3>
+              <span className="eyebrow">DESTAQUE DO M&Ecirc;S</span>
+              <h3 id="monthly-decision-title">
+                {primaryDecisionItem?.title ?? (nextCommitment ? 'Proximo compromisso' : 'O que merece atencao')}
+              </h3>
+              <p>
+                {primaryDecisionItem?.message ?? (nextCommitment
+                  ? `${nextCommitment.label} · ${formatShortDate(nextCommitment.dueDate)} · ${formatBRL(nextCommitment.amount)}`
+                  : 'Nenhum destaque com os dados atuais deste mes.')}
+              </p>
             </div>
           </div>
-          <div className="monthly-overview-outlook-grid">
-            <div>
-              <span>Receitas previstas</span>
-              <strong className="income">{formatBRL(overview.outlook.plannedRecurringIncome)}</strong>
-            </div>
-            <div>
-              <span>Recorrencias previstas</span>
-              <strong className="expense">{formatBRL(overview.outlook.plannedRecurringExpense)}</strong>
-            </div>
-            <div>
-              <span>Cartao comprometido</span>
-              <strong className="expense">{formatBRL(overview.outlook.committedCardExpense)}</strong>
-            </div>
-            <div>
-              <span>Resultado projetado</span>
-              <strong
-                className={`monthly-overview-projected tone-${valueTone(overview.outlook.projectedNet)}`}
-                data-testid="monthly-overview-projected-net"
-              >
-                {formatBRL(overview.outlook.projectedNet)}
-              </strong>
-            </div>
-          </div>
-        </article>
-
-        <article className="monthly-overview-commitments">
-          <div className="monthly-overview-card-title">
-            <div>
-              <span className="eyebrow">PROXIMOS COMPROMISSOS</span>
-              <h3>Agenda financeira</h3>
-            </div>
-          </div>
-
-          {highlights.commitments.length > 0 ? (
-            <div className="monthly-overview-commitment-list">
-              {highlights.commitments.map((commitment) => (
-                <div className={`monthly-overview-commitment status-${commitment.status}`} key={commitment.id}>
-                  <div>
-                    <strong>{commitment.label}</strong>
-                    <span>
-                      {formatShortDate(commitment.dueDate)} · {formatBRL(commitment.amount)}
-                    </span>
-                  </div>
-                  {commitment.status === 'overdue' && <span className="commitment-status">ATRASADO</span>}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="monthly-overview-empty-text">Nenhum compromisso pendente neste mes.</p>
-          )}
-        </article>
-
-        <article className="monthly-overview-featured-goal">
-          <div className="monthly-overview-card-title">
-            <div>
-              <span className="eyebrow">META EM DESTAQUE</span>
-              <h3>{highlights.featuredGoal ? highlights.featuredGoal.name : 'Nenhuma meta ativa'}</h3>
-            </div>
-            {highlights.featuredGoal && <strong>{formatPercent(featuredGoalPercent / 100)}</strong>}
-          </div>
-
-          {highlights.featuredGoal ? (
-            <>
-              <div
-                className="goal-progress monthly-overview-goal-progress"
-                aria-label={`Progresso da meta em destaque: ${formatPercent(featuredGoalPercent / 100)}`}
-              >
-                <span style={{ width: `${featuredGoalPercent}%` }} />
-              </div>
-              <div className="monthly-overview-goal-meta">
-                <span>
-                  {formatBRL(highlights.featuredGoal.allocatedAmount)} de {formatBRL(highlights.featuredGoal.targetAmount)}
-                </span>
-                <span>Faltam {formatBRL(highlights.featuredGoal.remainingAmount)}</span>
-              </div>
-              <a className="button ghost compact" href="#missoes">Ver metas</a>
-            </>
-          ) : (
-            <div className="monthly-overview-empty">
-              <p>Nenhuma meta ativa.</p>
-              <a className="button ghost compact" href="#missoes">Ver metas</a>
-            </div>
-          )}
-        </article>
+          {primaryDecisionItem ? (
+            <a className="inline-link" href={primaryDecisionItem.destinationHash}>Ver &aacute;rea</a>
+          ) : nextCommitment ? (
+            <a className="inline-link" href="#cartoes">Ver compromissos</a>
+          ) : null}
+        </section>
       </div>
+
+      <details className="monthly-overview-details" id="detalhes-do-mes">
+        <summary>Ver mais detalhes do m&ecirc;s</summary>
+        <div className="monthly-overview-details-grid">
+          {decisionReport.secondaryItems.length > 0 && (
+            <p className="monthly-decision-more monthly-overview-secondary-count">
+              {formatSecondaryDecisionCount(decisionReport.secondaryItems.length)}
+            </p>
+          )}
+          {additionalDecisionItems.length > 0 && (
+            <section className={`monthly-decision-center status-${decisionReport.status}`} aria-label="Outros pontos para revisar">
+              <div className="monthly-overview-card-title">
+                <div><span className="eyebrow">OUTROS PONTOS</span><h3>Para revisar</h3></div>
+              </div>
+              <div className="monthly-decision-list">
+                {additionalDecisionItems.map((item) => (
+                  <article className={`monthly-decision-item decision-${item.kind}`} key={item.id}>
+                    <div><strong>{item.title}</strong><p>{item.message}</p></div>
+                    <a className="inline-link" href={item.destinationHash}>Ver &aacute;rea</a>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <article className="monthly-overview-insights" data-testid="monthly-insights">
+            <div className="monthly-overview-card-title">
+              <div><span className="eyebrow">INSIGHTS DO MES</span><h3>Leituras financeiras</h3></div>
+            </div>
+            {visibleInsights.length > 0 ? (
+              <div className="monthly-insight-list">
+                {visibleInsights.map((insight) => (
+                  <div className={`monthly-insight insight-${insight.kind}`} data-testid="monthly-insight-item" key={insight.id}>
+                    <div>
+                      <strong>{insight.title}</strong>
+                      <p>{insight.message}</p>
+                      {(insight.category || insight.amount !== undefined) && (
+                        <span>
+                          {insight.category ? `${insight.category}` : ''}
+                          {insight.category && insight.amount !== undefined ? ' · ' : ''}
+                          {insight.amount !== undefined ? formatBRL(insight.amount) : ''}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : <p className="monthly-overview-empty-text">Sem alertas relevantes com os dados atuais do mes.</p>}
+          </article>
+
+          {visibleActions.length > 0 && (
+            <section className="monthly-overview-actions" aria-labelledby="monthly-actions-title" data-testid="monthly-actions">
+              <div className="monthly-overview-card-title">
+                <div>
+                  <span className="eyebrow">ACOES DO MES</span>
+                  <h3 id="monthly-actions-title">Pontos para revisar</h3>
+                  <p>Atalhos baseados nos sinais deste mes.</p>
+                </div>
+              </div>
+              <div className="monthly-actions-list">
+                {visibleActions.map((action) => (
+                  <article className={`monthly-action action-${action.kind}`} data-testid="monthly-action-item" key={action.id}>
+                    <div><strong>{action.title}</strong><p>{action.message}</p></div>
+                    <a className="inline-link" href={action.destinationHash}>Ver &aacute;rea</a>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <article className="monthly-overview-outlook">
+            <div className="monthly-overview-card-title">
+              <div><span className="eyebrow">PREVISAO</span><h3>Estimativa ate o fim do mes</h3></div>
+            </div>
+            <p className="monthly-overview-empty-text">Estimativa, nao saldo bancario.</p>
+            <div className="monthly-overview-outlook-grid">
+              <div><span>Receitas previstas</span><strong className="income">{formatBRL(overview.outlook.plannedRecurringIncome)}</strong></div>
+              <div><span>Recorrencias previstas</span><strong className="expense">{formatBRL(overview.outlook.plannedRecurringExpense)}</strong></div>
+              <div><span>Cartao comprometido</span><strong className="expense">{formatBRL(overview.outlook.committedCardExpense)}</strong></div>
+              <div>
+                <span>Resultado projetado</span>
+                <strong className={`monthly-overview-projected tone-${valueTone(overview.outlook.projectedNet)}`} data-testid="monthly-overview-projected-net">
+                  {formatBRL(overview.outlook.projectedNet)}
+                </strong>
+              </div>
+            </div>
+          </article>
+
+          <article className="monthly-overview-commitments">
+            <div className="monthly-overview-card-title">
+              <div><span className="eyebrow">PROXIMOS COMPROMISSOS</span><h3>Agenda financeira</h3></div>
+            </div>
+            {highlights.commitments.length > 0 ? (
+              <div className="monthly-overview-commitment-list">
+                {highlights.commitments.map((commitment) => (
+                  <div className={`monthly-overview-commitment status-${commitment.status}`} key={commitment.id}>
+                    <div><strong>{commitment.label}</strong><span>{formatShortDate(commitment.dueDate)} · {formatBRL(commitment.amount)}</span></div>
+                    {commitment.status === 'overdue' && <span className="commitment-status">ATRASADO</span>}
+                  </div>
+                ))}
+              </div>
+            ) : <p className="monthly-overview-empty-text">Nenhum compromisso pendente neste mes.</p>}
+          </article>
+
+          <article className="monthly-overview-featured-goal">
+            <div className="monthly-overview-card-title">
+              <div>
+                <span className="eyebrow">META EM DESTAQUE</span>
+                <h3>{highlights.featuredGoal ? highlights.featuredGoal.name : 'Nenhuma meta ativa'}</h3>
+              </div>
+              {highlights.featuredGoal && <strong>{formatPercent(featuredGoalPercent / 100)}</strong>}
+            </div>
+            {highlights.featuredGoal ? (
+              <>
+                <div className="goal-progress monthly-overview-goal-progress" aria-label={`Progresso da meta em destaque: ${formatPercent(featuredGoalPercent / 100)}`}>
+                  <span style={{ width: `${featuredGoalPercent}%` }} />
+                </div>
+                <div className="monthly-overview-goal-meta">
+                  <span>Alocado {formatBRL(highlights.featuredGoal.allocatedAmount)} de {formatBRL(highlights.featuredGoal.targetAmount)}</span>
+                  <span>Falta alocar {formatBRL(highlights.featuredGoal.remainingAmount)}</span>
+                </div>
+                <a className="button ghost compact" href="#missoes">Ver metas</a>
+              </>
+            ) : (
+              <div className="monthly-overview-empty">
+                <p>Nenhuma meta ativa.</p>
+                <a className="button ghost compact" href="#missoes">Ver metas</a>
+              </div>
+            )}
+          </article>
+        </div>
+      </details>
     </section>
   )
 }
