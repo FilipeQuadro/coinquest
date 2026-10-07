@@ -67,6 +67,7 @@ export class MainRoomScene extends Phaser.Scene {
     this.drawAmbientLight(isNight)
     this.drawDeskStation(isNight)
     this.drawTechDecorations(isNight)
+    this.drawCozyProps()
 
     this.financeMonitor = new FinanceMonitor(this, 407, 313, isNight)
     this.financeMonitor.container.setDepth(6)
@@ -226,6 +227,29 @@ export class MainRoomScene extends Phaser.Scene {
     shelf.setDepth(3)
     serverA.setDepth(3)
     serverB.setDepth(3)
+  }
+
+  // V2.2D diorama props: decoration only, never financial data.
+  private drawCozyProps() {
+    this.add.image(122, 150, getTextureKey(this, 'ledgerShelf')).setScale(1.25).setDepth(3)
+    this.add.image(900, 300, getTextureKey(this, 'monthBoard')).setScale(1.25).setDepth(3)
+    this.add.ellipse(72, 478, 54, 10, 0x050711, 0.35).setDepth(3.9)
+    this.add.image(72, 446, getTextureKey(this, 'plantPot')).setScale(1.5).setDepth(4)
+    this.add.image(522, 411, getTextureKey(this, 'deskMug')).setScale(1.5).setDepth(8.5)
+
+    if (this.motion.reduced) return
+    ;[0, 1].forEach((index) => {
+      const steam = this.add.rectangle(518 + index * 6, 396, 2, 4, 0xf6f3e8, 0).setDepth(8.6)
+      this.tweens.add({
+        targets: steam,
+        y: 380,
+        alpha: { from: 0.45, to: 0 },
+        duration: 1800,
+        delay: index * 900,
+        repeat: -1,
+        ease: 'Sine.out',
+      })
+    })
   }
 
   private addTitle() {

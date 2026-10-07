@@ -34,7 +34,8 @@ The programmer must be readable on an iPhone-width viewport after the mobile cam
   - Torso/hoodie: 35-40%.
   - Legs/shoes: 24-30%.
   - Arms/hands must read clearly while typing.
-- Required visual traits: hoodie or tech jacket, hair, simple face, headset, small mic, hands, pants, sneakers, cyan/purple/green tech accent.
+- Required visual traits: tech jacket (V2.2D: teal knit jacket), hair (V2.2D: top knot), simple face (V2.2D: round glasses), headset, small mic, hands, pants, sneakers, cyan tech accent.
+- V2.2D signature: mustard scarf with a tail on the right and a small gold coin pin. See `docs/V2_2D_CHARACTER_WORLD_CONCEPT.md`.
 - Keep silhouette recognizable even if facial details are reduced.
 
 ## Character Sprite Sheet Plan
@@ -68,6 +69,8 @@ Recommended asset split:
 Only split into `desk.png`, `monitor-frame.png` or `pc-case.png` when animation or layering requires it.
 
 ## Digital Vault Specification
+
+V2.2D shape: lantern vault (navy body, brass frame, round door, lantern cap). Overlay anchors below are unchanged.
 
 Recommended asset split:
 
